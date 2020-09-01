@@ -1,4 +1,11 @@
-import nncam
+import git
+import sys
+
+repo = git.Repo('.', search_parent_directories=True)
+
+sys.path.insert(0, repo.working_tree_dir)
+from SDK.nncamsdk.python import nncam
+
 
 class App:
     def __init__(self):
