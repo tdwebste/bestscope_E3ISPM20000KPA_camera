@@ -7,10 +7,6 @@ CSizeDlg::CSizeDlg(CWnd* pParent /*=NULL*/)
 {
 }
 
-CSizeDlg::~CSizeDlg()
-{
-}
-
 void CSizeDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);

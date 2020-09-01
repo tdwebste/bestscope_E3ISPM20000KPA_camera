@@ -2,15 +2,15 @@
 #define __imagelib_h__
 
 #ifdef IMAGELIB_EXPORTS
-#define _imagelib_port_(r) __declspec(dllexport) r __cdecl
+#define IMAGELIB_API(r) __declspec(dllexport) r __cdecl
 #else
-#define _imagelib_port_(r) __declspec(dllimport) r __cdecl
+#define IMAGELIB_API(r) __declspec(dllimport) r __cdecl
 #pragma comment(lib, "imagelib.lib")
 #endif
 
 #pragma pack(push, 4)
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #define IL_MERIT_ZERO           0
@@ -19,19 +19,22 @@ extern "C"{
 #define IL_MERIT_NORMAL         64
 #define IL_MERIT_HIGH           128
 #define IL_MERTI_MAX            255
-    
+
 #define GIFCODEC_LZW            0
 #define GIFCODEC_RLE            1
 #define GIFCODEC_NONE           2
 
-#define DCMCODEC_LOSSLESS_JPEG  0
+#define DCMCODEC_LOSSLESS_JPEG  0   /* lossless jpeg */
 #define DCMCODEC_RLE            1
 #define DCMCODEC_NONE           2
+#define DCMCODEC_JPEG2000       3   /* lossless jpeg2000 */
 
-#define DNGCODEC_LOSSLESS       0
+#define DNGCODEC_LOSSLESS       0   /* lossless jpeg */
 #define DNGCODEC_NONE           1
 
-enum IMAGEFORMAT{
+#define DEF_COMPRESSION_LEVEL   50  /* default compression level */
+
+enum IMAGEFORMAT {
     IMAGEFORMAT_UNKNOWN,
     IMAGEFORMAT_BMP,
     IMAGEFORMAT_JPG,
@@ -55,25 +58,25 @@ enum IMAGEFORMAT{
     IMAGEFORMAT_MAX
 };
 
-typedef struct{
-    wchar_t*    ext;    //file name extension,such as jpg,bmp,tif,gif
-    DWORD       fmt;    //image format
+typedef struct {
+    wchar_t*    ext;    /* file name extension,such as jpg,bmp,tif,gif */
+    DWORD       fmt;    /* image format */
 }ExtFmt;
 
-typedef struct{
-    DWORD        fmt;    //image format
-    BYTE         code;   //this codec support compression?
-    BYTE         decode; //this codec support decompression?
-    wchar_t*     name;   //codec name
-    DWORD        codec;  //codec
+typedef struct {
+    DWORD        fmt;    /* image format */
+    BYTE         code;   /* this codec support compression? */
+    BYTE         decode; /* this codec support decompression? */
+    wchar_t*     name;   /* codec name */
+    DWORD        codec;  /* codec */
 }FmtCodec;
 
-typedef struct{
+typedef struct {
     DWORD        fmt;    //image format
     wchar_t*     ext;
-    wchar_t*     abbr;   //abbr. for format's name
-    wchar_t*     name;   //image format's name
-    BYTE         merit;  //it's merit, [0, 255], see IL_MERIT_*
+    wchar_t*     abbr;   /* abbr. for format's name */
+    wchar_t*     name;   /* image format's name */
+    BYTE         merit;  /* it's merit, [0, 255], see IL_MERIT_* */
     struct{
         unsigned bpp1: 1;
         unsigned bpp4: 1;
@@ -88,31 +91,32 @@ typedef struct{
     }cap;
 }FmtInfo;
 
-typedef struct{
-    DWORD               iType;              //original image format
-    DWORD               iCodec;             //to tiff: see s_codec
-                                            //to gif: LZW(default), RLE, NONE
-                                            //to dng: 0->compress, 1->none
-    BYTE                bAppend;            //used for TIFF, GIF: append file? TRUE or FALSE
-    BYTE                bInterlaced;        //used for PNG, GIF, TRUE or FALSE
-    BYTE                bPreview;           //decoding this image for previewing, so sometimes we may decode it with low quality, TRUE or FALSE
-    BYTE                nQuality;           //used for saving JPEG & JP2000, 0..100
-    BYTE                nSmoothing;         //used for saving JPEG & JP2000: 0..100
-    BYTE                bProgressive;       //used for JPEG: is it a progressive jpeg? TRUE or FALSE
-    BYTE                bOptimize;          //used for saving JPEG: optimize entropy encoding? TRUE or FALSE
-    LONG                nPage;              //used for TIF, GIF, ICO : actual page
-    LONG                nPages;             //used for TIF, GIF, ICO : total number of pages
-    DWORD               nDelay;             //used for GIF: (100ms)
-    BYTE                bOpenFile;          //open file
-    double              dPPM;
-    int                 ExpoTimeA;          // expo time
+typedef struct {
+    DWORD               iType;              /* original image format */
+    DWORD               iCodec;             /* to tiff: see s_codec */
+                                            /* to gif: LZW(default), RLE, NONE */
+                                            /* to dng: 0->lossless jpeg compress, 1->none */
+    BYTE                bAppend;            /* used for TIFF, GIF: append file? TRUE or FALSE */
+    BYTE                bInterlaced;        /* used for PNG, GIF, TRUE or FALSE */
+    BYTE                bPreview;           /* decoding this image for previewing, so sometimes we may decode it with low quality, TRUE or FALSE */
+    BYTE                nQuality;           /* used for saving JPEG & JP2000, 0..100 */
+                                            /* used for saving PNG, 0..100, compression level */
+    BYTE                nSmoothing;         /* used for saving JPEG & JP2000: 0..100 */
+    BYTE                bProgressive;       /* used for JPEG: is it a progressive jpeg? TRUE or FALSE */
+    BYTE                bOptimize;          /* used for saving JPEG: optimize entropy encoding? TRUE or FALSE */
+    LONG                nPage;              /* used for TIF, GIF, ICO: actual page */
+    LONG                nPages;             /* used for TIF, GIF, ICO: total number of pages */
+    DWORD               nDelay;             /* used for GIF: (100ms) */
+    BYTE                bOpenFile;          /* open file */
+    int                 ExpoTimeA;          /* expo time */
     int                 ExpoTimeB;
     int                 latitude;
     int                 longitude;
     void*               extTag;
     DWORD               extTagLen;
-    unsigned long long  timestamp;          // timestamp in microseconds, 0 or -1 means NA
-	BYTE				bImageUniqueID;
+    unsigned long long  timestamp;          /* timestamp in microseconds, 0 or -1 means NA */
+    unsigned            seq;                /* sequence number */
+    BYTE                bImageUniqueID;
     char                cDateTimeOrg[24];
     char                cDateTimeDig[24];
     char                cCamera[32];
@@ -122,20 +126,21 @@ typedef struct{
     char                cComment[256];
     char                cDescription[256];
     wchar_t             cError[256];
+    BYTE                bHintGreyScale;    /* hint for grey scale, such as captured from a black/white camera */
 }XIMAGEINFO;
 
-_imagelib_port_(PBYTE) ImageLib_Open(const wchar_t* file, XIMAGEINFO* pInfo);
-_imagelib_port_(PBYTE) ImageLib_OpenMemory(const PBYTE pData, size_t nLength, XIMAGEINFO* pInfo);
-_imagelib_port_(void) ImageLib_Free(void* pDIB);
-_imagelib_port_(BOOL) ImageLib_Save(const wchar_t* file, void* pDIB, XIMAGEINFO* pInfo);
+IMAGELIB_API(PBYTE) ImageLib_Open(const wchar_t* file, XIMAGEINFO* pInfo);
+IMAGELIB_API(PBYTE) ImageLib_OpenMemory(const PBYTE pData, size_t nLength, XIMAGEINFO* pInfo);
+IMAGELIB_API(void) ImageLib_Free(void* pDIB);
+IMAGELIB_API(BOOL) ImageLib_Save(const wchar_t* file, void* pDIB, XIMAGEINFO* pInfo);
 
-_imagelib_port_(BOOL) ImageLib_CanSave(const void* pDIB, const XIMAGEINFO* pInfo);
-_imagelib_port_(DWORD) ImageLib_GetExtFmt(const wchar_t* file);
-_imagelib_port_(const FmtInfo*) ImageLib_FmtInfo();
-_imagelib_port_(const ExtFmt*) ImageLib_ExtFmt();
-_imagelib_port_(const FmtCodec*) ImageLib_Codec();
-_imagelib_port_(const FmtInfo*) ImageLib_GetFmtInfo(DWORD iType);
-_imagelib_port_(BOOL) ImageLib_SupportExif(DWORD iType);
+IMAGELIB_API(BOOL) ImageLib_CanSave(const void* pDIB, const XIMAGEINFO* pInfo);
+IMAGELIB_API(DWORD) ImageLib_GetExtFmt(const wchar_t* file);
+IMAGELIB_API(const FmtInfo*) ImageLib_FmtInfo();
+IMAGELIB_API(const ExtFmt*) ImageLib_ExtFmt();
+IMAGELIB_API(const FmtCodec*) ImageLib_Codec();
+IMAGELIB_API(const FmtInfo*) ImageLib_GetFmtInfo(DWORD iType);
+IMAGELIB_API(BOOL) ImageLib_SupportExif(DWORD iType);
 
 #ifdef __cplusplus
 }

@@ -3,15 +3,15 @@
 
 #ifdef _WIN32
 #ifdef IMAGEPRO_EXPORTS
-#define _imagepro_port_(r) __declspec(dllexport) r __cdecl
+#define IMAGEPRO_API(r) __declspec(dllexport) r __cdecl
 #else
-#define _imagepro_port_(r) __declspec(dllimport) r __cdecl
+#define IMAGEPRO_API(r) __declspec(dllimport) r __cdecl
 #endif
 
 #pragma pack(push, 8)
 #else
 #define __cdecl
-#define _imagepro_port_(r) r
+#define IMAGEPRO_API(r) r
 #endif
 
 #ifdef __cplusplus
@@ -20,7 +20,7 @@ extern "C"
 #endif
 
 typedef void* (__cdecl *pfun_imagepro_malloc)(size_t); /* malloc(size) */
-_imagepro_port_(void) imagepro_init(pfun_imagepro_malloc pfun);
+IMAGEPRO_API(void) imagepro_init(pfun_imagepro_malloc pfun);
 
 enum eImageproStitchRet {
     eImageproStitchRet_EMPTY,
@@ -86,20 +86,18 @@ typedef void (__cdecl *IMAGEPRO_STITCH_ECALLBACK)(void* ctx, eImageproStitchEven
 
 #ifdef _WIN32
 typedef struct { int unused; } *HImageproStitch;
-_imagepro_port_(HImageproStitch) imagepro_stitch_new(bool bGlobalShutter, int videoW, int videoH, IMAGEPRO_STITCH_CALLBACK pFun, IMAGEPRO_STITCH_ECALLBACK pEFun, void* ctx);
-_imagepro_port_(void) imagepro_stitch_delete(HImageproStitch handle);
-_imagepro_port_(void) imagepro_stitch_start(HImageproStitch handle);
-_imagepro_port_(void*) imagepro_stitch_stop(HImageproStitch handle, bool normal, bool crop);
-_imagepro_port_(void) imagepro_stitch_readdata(HImageproStitch handle, void* data, int w, int h, int roix = 0, int roiy = 0, int roiw = 0, int roih = 0);
-_imagepro_port_(HRESULT) imagepro_stitch_pull(HImageproStitch handle, HToupCam h, bool bFeed, void* pImageData, int bits, int rowPitch, ToupcamFrameInfoV2* pInfo);
+IMAGEPRO_API(HImageproStitch) imagepro_stitch_new(bool bGlobalShutter, int videoW, int videoH, IMAGEPRO_STITCH_CALLBACK pFun, IMAGEPRO_STITCH_ECALLBACK pEFun, void* ctx);
+IMAGEPRO_API(void) imagepro_stitch_delete(HImageproStitch handle);
+IMAGEPRO_API(void) imagepro_stitch_start(HImageproStitch handle);
+IMAGEPRO_API(void*) imagepro_stitch_stop(HImageproStitch handle, bool normal, bool crop);
+IMAGEPRO_API(void) imagepro_stitch_readdata(HImageproStitch handle, void* data, int w, int h, int roix = 0, int roiy = 0, int roiw = 0, int roih = 0);
+IMAGEPRO_API(HRESULT) imagepro_stitch_pull(HImageproStitch handle, HToupcam h, bool bFeed, void* pImageData, int bits, int rowPitch, ToupcamFrameInfoV2* pInfo);
 #endif
 
 enum eImageproEdfMethod {
     eImageproEdfM_Pyr_Max,
     eImageproEdfM_Pyr_Weighted,
-    eImageproEdfM_Stack,
-    eImageproEdfM_SoftStack,
-    eImageproEdfM_Pyr_Stack
+    eImageproEdfM_Stack
 };
 
 enum eImageproEdfEvent {
@@ -118,12 +116,12 @@ typedef void (__cdecl *IMAGEPRO_EDF_ECALLBACK)(void* ctx, eImageproEdfEvent evt)
 
 #ifdef _WIN32
 typedef struct { int unused; } *HImageproEdf;
-_imagepro_port_(HImageproEdf) imagepro_edf_new(eImageproEdfMethod method, IMAGEPRO_EDF_CALLBACK pEdfFun, IMAGEPRO_EDF_ECALLBACK pEventFun, void* ctx);
-_imagepro_port_(void) imagepro_edf_delete(HImageproEdf handle);
-_imagepro_port_(void) imagepro_edf_start(HImageproEdf handle);
-_imagepro_port_(void) imagepro_edf_stop(HImageproEdf handle);
-_imagepro_port_(void) imagepro_edf_readdata(HImageproEdf handle, void* data, int stride);
-_imagepro_port_(HRESULT) imagepro_edf_pull(HImageproEdf handle, HToupCam h, bool bFeed, void* pImageData, int bits, int rowPitch, ToupcamFrameInfoV2* pInfo);
+IMAGEPRO_API(HImageproEdf) imagepro_edf_new(eImageproEdfMethod method, IMAGEPRO_EDF_CALLBACK pEdfFun, IMAGEPRO_EDF_ECALLBACK pEventFun, void* ctx);
+IMAGEPRO_API(void) imagepro_edf_delete(HImageproEdf handle);
+IMAGEPRO_API(void) imagepro_edf_start(HImageproEdf handle);
+IMAGEPRO_API(void) imagepro_edf_stop(HImageproEdf handle);
+IMAGEPRO_API(void) imagepro_edf_readdata(HImageproEdf handle, void* data, int stride);
+IMAGEPRO_API(HRESULT) imagepro_edf_pull(HImageproEdf handle, HToupcam h, bool bFeed, void* pImageData, int bits, int rowPitch, ToupcamFrameInfoV2* pInfo);
 #endif
 
 #ifdef __cplusplus

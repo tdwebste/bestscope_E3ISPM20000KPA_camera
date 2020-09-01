@@ -27,7 +27,7 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 
-#include "nncam.h"
+#include "toupcam.h"
 
 
 #define MSG_CAMEVENT			(WM_APP + 1)

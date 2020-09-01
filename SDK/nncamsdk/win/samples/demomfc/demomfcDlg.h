@@ -2,7 +2,7 @@
 
 class CdemomfcDlg : public CDialog
 {
-	HNnCam			m_hcam;
+	HToupcam			m_hcam;
 	void*				m_pImageData;
 	BITMAPINFOHEADER	m_header;
 public:

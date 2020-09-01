@@ -2,7 +2,7 @@
 
 class CdemomonoDlg : public CDialog
 {
-	HNnCam	m_hcam;
+	HToupcam	m_hcam;
 	PBYTE		m_pImageData;
 	PBYTE		m_pDisplayData;
 	int			m_maxBitDepth;

@@ -2531,13 +2531,16 @@ void ChooseDevices(IMoniker *pmVideo, IMoniker *pmAudio)
             (S_OK == gcap.rgpmVideoMenu[i]->IsEqual(gcap.pmVideo)) ? MF_CHECKED : MF_UNCHECKED);
     }
 
-    for(i = 0; i < NUMELMS(gcap.rgpmAudioMenu); i++)
+    if (gcap.pmAudio)
     {
-        if(gcap.rgpmAudioMenu[i] == NULL)
-            break;
+        for (i = 0; i < NUMELMS(gcap.rgpmAudioMenu); i++)
+        {
+            if (gcap.rgpmAudioMenu[i] == NULL)
+                break;
 
-        CheckMenuItem(GetMenu(ghwndApp), MENU_ADEVICE0 + i,
-            (S_OK == gcap.rgpmAudioMenu[i]->IsEqual(gcap.pmAudio)) ? MF_CHECKED : MF_UNCHECKED);
+            CheckMenuItem(GetMenu(ghwndApp), MENU_ADEVICE0 + i,
+                (S_OK == gcap.rgpmAudioMenu[i]->IsEqual(gcap.pmAudio)) ? MF_CHECKED : MF_UNCHECKED);
+        }
     }
 
     // Put the video driver name in the status bar - if the filter supports

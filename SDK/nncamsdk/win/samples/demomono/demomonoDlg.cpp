@@ -31,7 +31,7 @@ BEGIN_MESSAGE_MAP(CdemomonoDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON2, &CdemomonoDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_CHECK1, &CdemomonoDlg::OnBnClickedCheck1)
 	ON_WM_HSCROLL()
-	ON_COMMAND_RANGE(IDM_SNAP_RESOLUTION, IDM_SNAP_RESOLUTION + NNCAM_MAX, &CdemomonoDlg::OnSnapResolution)
+	ON_COMMAND_RANGE(IDM_SNAP_RESOLUTION, IDM_SNAP_RESOLUTION + TOUPCAM_MAX, &CdemomonoDlg::OnSnapResolution)
 END_MESSAGE_MAP()
 
 BOOL CdemomonoDlg::OnInitDialog()
@@ -51,7 +51,7 @@ void CdemomonoDlg::OnBnClickedButton1()
 	if (m_hcam)
 		return;
 
-	m_hcam = Nncam_Open(NULL);
+	m_hcam = Toupcam_Open(NULL);
 	if (NULL == m_hcam)
 	{
 		AfxMessageBox(_T("No Device"));
@@ -61,38 +61,38 @@ void CdemomonoDlg::OnBnClickedButton1()
 
 	CComboBox* pCombox = (CComboBox*)GetDlgItem(IDC_COMBO1);
 	pCombox->ResetContent();
-	int n = (int)Nncam_get_ResolutionNumber(m_hcam);
+	int n = (int)Toupcam_get_ResolutionNumber(m_hcam);
 	if (n > 0)
 	{
 		TCHAR txt[128];
 		int nWidth, nHeight;
 		for (int i = 0; i < n; ++i)
 		{
-			Nncam_get_Resolution(m_hcam, i, &nWidth, &nHeight);
+			Toupcam_get_Resolution(m_hcam, i, &nWidth, &nHeight);
 			_stprintf(txt, _T("%d * %d"), nWidth, nHeight);
 			pCombox->AddString(txt);
 		}
 
 		unsigned nCur = 0;
-		Nncam_get_eSize(m_hcam, &nCur);
+		Toupcam_get_eSize(m_hcam, &nCur);
 		pCombox->SetCurSel(nCur);
 	}
 
 	GetDlgItem(IDC_CHECK2)->EnableWindow(FALSE);
-	m_maxBitDepth = Nncam_get_MaxBitDepth(m_hcam);
+	m_maxBitDepth = Toupcam_get_MaxBitDepth(m_hcam);
 
 	if ((8 == m_maxBitDepth) || IsDlgButtonChecked(IDC_CHECK2))
 	{
 		m_bBitDepth = false;
 		CheckDlgButton(IDC_CHECK2, 0);
-		Nncam_put_Option(m_hcam, NNCAM_OPTION_RGB, 3);
-		Nncam_put_Option(m_hcam, NNCAM_OPTION_BITDEPTH, 0);
+		Toupcam_put_Option(m_hcam, TOUPCAM_OPTION_RGB, 3);
+		Toupcam_put_Option(m_hcam, TOUPCAM_OPTION_BITDEPTH, 0);
 	}
 	else
 	{
 		m_bBitDepth = true;
-		Nncam_put_Option(m_hcam, NNCAM_OPTION_RGB, 4);
-		Nncam_put_Option(m_hcam, NNCAM_OPTION_BITDEPTH, 1);
+		Toupcam_put_Option(m_hcam, TOUPCAM_OPTION_RGB, 4);
+		Toupcam_put_Option(m_hcam, TOUPCAM_OPTION_BITDEPTH, 1);
 	}
 	
 	StartDevice();
@@ -101,7 +101,7 @@ void CdemomonoDlg::OnBnClickedButton1()
 void CdemomonoDlg::StartDevice()
 {
 	int nWidth = 0, nHeight = 0;
-	HRESULT hr = Nncam_get_Size(m_hcam, &nWidth, &nHeight);
+	HRESULT hr = Toupcam_get_Size(m_hcam, &nWidth, &nHeight);
 	if (FAILED(hr))
 		return;
 
@@ -111,15 +111,15 @@ void CdemomonoDlg::StartDevice()
 	else
 		m_pImageData = (PBYTE)realloc(m_pImageData, TDIBWIDTHBYTES(nWidth * 8) * nHeight);
 
-	Nncam_StartPullModeWithWndMsg(m_hcam, m_hWnd, MSG_CAMEVENT);
+	Toupcam_StartPullModeWithWndMsg(m_hcam, m_hWnd, MSG_CAMEVENT);
 
 	BOOL bEnableAutoExpo = TRUE;
-	Nncam_get_AutoExpoEnable(m_hcam, &bEnableAutoExpo);
+	Toupcam_get_AutoExpoEnable(m_hcam, &bEnableAutoExpo);
 	CheckDlgButton(IDC_CHECK1, bEnableAutoExpo ? 1 : 0);
 	GetDlgItem(IDC_SLIDER1)->EnableWindow(!bEnableAutoExpo);
 
 	unsigned nMinExpTime, nMaxExpTime, nDefExpTime;
-	Nncam_get_ExpTimeRange(m_hcam, &nMinExpTime, &nMaxExpTime, &nDefExpTime);
+	Toupcam_get_ExpTimeRange(m_hcam, &nMinExpTime, &nMaxExpTime, &nDefExpTime);
 	((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->SetRange(nMinExpTime / 1000, nMaxExpTime / 1000);
 
 	OnEventExpo();
@@ -139,17 +139,17 @@ void CdemomonoDlg::OnCbnSelchangeCombo1()
 		return;
 
 	unsigned nResolutionIndex = 0;
-	HRESULT hr = Nncam_get_eSize(m_hcam, &nResolutionIndex);
+	HRESULT hr = Toupcam_get_eSize(m_hcam, &nResolutionIndex);
 	if (FAILED(hr))
 		return;
 
 	if (nResolutionIndex != nSel)
 	{
-		hr = Nncam_Stop(m_hcam);
+		hr = Toupcam_Stop(m_hcam);
 		if (FAILED(hr))
 			return;
 
-		Nncam_put_eSize(m_hcam, nSel);
+		Toupcam_put_eSize(m_hcam, nSel);
 
 		StartDevice();
 	}
@@ -159,17 +159,17 @@ LRESULT CdemomonoDlg::OnMsgCamevent(WPARAM wp, LPARAM /*lp*/)
 {
 	switch (wp)
 	{
-	case NNCAM_EVENT_ERROR:
-	case NNCAM_EVENT_TIMEOUT:
+	case TOUPCAM_EVENT_ERROR:
+	case TOUPCAM_EVENT_NOFRAMETIMEOUT:
 		OnEventError();
 		break;
-	case NNCAM_EVENT_DISCONNECTED:
+	case TOUPCAM_EVENT_DISCONNECTED:
 		OnEventDisconnected();
 		break;
-	case NNCAM_EVENT_IMAGE:
+	case TOUPCAM_EVENT_IMAGE:
 		OnEventImage();
 		break;
-	case NNCAM_EVENT_EXPOSURE:
+	case TOUPCAM_EVENT_EXPOSURE:
 		OnEventExpo();
 		break;
 	default:
@@ -182,7 +182,7 @@ void CdemomonoDlg::OnEventDisconnected()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	AfxMessageBox(_T("The camera is disconnected, mybe has been pulled out."));
@@ -192,7 +192,7 @@ void CdemomonoDlg::OnEventError()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	AfxMessageBox(_T("Error"));
@@ -201,19 +201,19 @@ void CdemomonoDlg::OnEventError()
 void CdemomonoDlg::OnEventExpo()
 {
 	unsigned nTime = 0;
-	Nncam_get_ExpoTime(m_hcam, &nTime);
+	Toupcam_get_ExpoTime(m_hcam, &nTime);
 	SetDlgItemInt(IDC_STATIC1, nTime / 1000, FALSE);
 	((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->SetPos(nTime / 1000);
 }
 
 void CdemomonoDlg::OnEventImage()
 {
-	NncamFrameInfoV2 info;
+	ToupcamFrameInfoV2 info;
 	/* bits: 24 (RGB24), 32 (RGB32), 8 (Gray) or 16 (Gray). In RAW mode, this parameter is ignored. */
-	HRESULT hr = Nncam_PullImageV2(m_hcam, m_pImageData, m_bBitDepth ? 16 : 8, &info);
+	HRESULT hr = Toupcam_PullImageV2(m_hcam, m_pImageData, m_bBitDepth ? 16 : 8, &info);
 	if (SUCCEEDED(hr))
 	{
-		BITMAPINFOHEADER header = { sizeof(header) };
+		BITMAPINFOHEADER header = { sizeof(BITMAPINFOHEADER) };
 		header.biPlanes = 1;
 		header.biBitCount = 24;
 		header.biWidth = info.width;
@@ -271,7 +271,7 @@ void CdemomonoDlg::OnDestroy()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	if (m_pImageData)
@@ -290,17 +290,17 @@ void CdemomonoDlg::OnDestroy()
 
 void CdemomonoDlg::OnSnapResolution(UINT nID)
 {
-	Nncam_Snap(m_hcam, nID - IDM_SNAP_RESOLUTION);
+	Toupcam_Snap(m_hcam, nID - IDM_SNAP_RESOLUTION);
 }
 
 void CdemomonoDlg::OnBnClickedButton2()
 {
-	int n = Nncam_get_StillResolutionNumber(m_hcam);
+	int n = Toupcam_get_StillResolutionNumber(m_hcam);
 	if (n <= 0)
 	{
 		unsigned e = 0;
-		Nncam_get_eSize(m_hcam, &e);
-		Nncam_Snap(m_hcam, e);
+		Toupcam_get_eSize(m_hcam, &e);
+		Toupcam_Snap(m_hcam, e);
 	}
 	else
 	{
@@ -312,7 +312,7 @@ void CdemomonoDlg::OnBnClickedButton2()
 		int w, h;
 		for (int i = 0; i < n; ++i)
 		{
-			Nncam_get_StillResolution(m_hcam, i, &w, &h);
+			Toupcam_get_StillResolution(m_hcam, i, &w, &h);
 			_stprintf(text, _T("%d * %d"), w, h);
 			menu.AppendMenu(MF_STRING, IDM_SNAP_RESOLUTION + i, text);
 		}
@@ -323,7 +323,7 @@ void CdemomonoDlg::OnBnClickedButton2()
 void CdemomonoDlg::OnBnClickedCheck1()
 {
 	if (m_hcam)
-		Nncam_put_AutoExpoEnable(m_hcam, IsDlgButtonChecked(IDC_CHECK1) ? TRUE : FALSE);
+		Toupcam_put_AutoExpoEnable(m_hcam, IsDlgButtonChecked(IDC_CHECK1) ? TRUE : FALSE);
 	GetDlgItem(IDC_SLIDER1)->EnableWindow(IsDlgButtonChecked(IDC_CHECK1) ? FALSE : TRUE);
 }
 
@@ -333,7 +333,7 @@ void CdemomonoDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nTime = ((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->GetPos();
 		SetDlgItemInt(IDC_STATIC1, nTime, TRUE);
-		Nncam_put_ExpoTime(m_hcam, nTime * 1000);
+		Toupcam_put_ExpoTime(m_hcam, nTime * 1000);
 	}
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);

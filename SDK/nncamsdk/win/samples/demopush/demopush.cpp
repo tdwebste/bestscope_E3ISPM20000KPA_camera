@@ -12,7 +12,7 @@ CAppModule _Module;
 #include <atlcrack.h>
 #include <atldlgs.h>
 #include <atlstr.h>
-#include "nncam.h"
+#include "toupcam.h"
 #include "resource.h"
 #include <sstream>
 #include <mutex>
@@ -43,11 +43,11 @@ static BOOL SaveImageBmp(const wchar_t* strFilename, const void* pData, const BI
 
 class CExposureTimeDlg : public CDialogImpl<CExposureTimeDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_EXPOSURETIME };
 
-	CExposureTimeDlg(HNnCam hCam)
+	CExposureTimeDlg(HToupcam hCam)
 	: m_hCam(hCam)
 	{
 	}
@@ -63,13 +63,13 @@ public:
 		CenterWindow(GetParent());
 
 		unsigned nMin = 0, nMax = 0, nDef = 0, nTime = 0;
-		if (SUCCEEDED(Nncam_get_ExpTimeRange(m_hCam, &nMin, &nMax, &nDef)))
+		if (SUCCEEDED(Toupcam_get_ExpTimeRange(m_hCam, &nMin, &nMax, &nDef)))
 		{
 			CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
 			ctrl.SetRangeMin(nMin);
 			ctrl.SetRangeMax(nMax);
 
-			if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)))
+			if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)))
 				ctrl.SetPos(nTime);
 		}
 		
@@ -79,7 +79,7 @@ public:
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
-		Nncam_put_ExpoTime(m_hCam, ctrl.GetPos());
+		Toupcam_put_ExpoTime(m_hCam, ctrl.GetPos());
 
 		EndDialog(wID);
 		return 0;
@@ -127,20 +127,20 @@ public:
 
 class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFrame>
 {
-	HNnCam		m_hCam;
-	CMainView		m_view;
-	NncamInstV2	m_ti[NNCAM_MAX];
-	unsigned		m_nIndex;
-	bool			m_bSnap;
-	unsigned		m_nFrameCount;
-	DWORD			m_dwStartTick, m_dwLastTick;
-
-	wchar_t			m_szFilePath[MAX_PATH];
-
-	std::mutex		m_mutex;
-	BYTE*			m_pData;
+	HToupcam			m_hCam;
+	CMainView			m_view;
+	ToupcamDeviceV2		m_dev[TOUPCAM_MAX];
+	unsigned			m_nIndex;
+	bool				m_bSnap;
+	unsigned			m_nFrameCount;
+	DWORD				m_dwStartTick, m_dwLastTick;
+	
+	wchar_t				m_szFilePath[MAX_PATH];
+	
+	std::mutex			m_mutex;
+	BYTE*				m_pData;
 	BITMAPINFOHEADER	m_header;
-	LONG			m_nOldWidth, m_nOldHeight;
+	LONG				m_nOldWidth, m_nOldHeight;
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAIN)
 
@@ -180,17 +180,17 @@ public:
 	{
 		switch (wParam)
 		{
-		case NNCAM_EVENT_ERROR:
-		case NNCAM_EVENT_TIMEOUT:
+		case TOUPCAM_EVENT_ERROR:
+		case TOUPCAM_EVENT_NOFRAMETIMEOUT:
 			OnEventError();
 			break;
-		case NNCAM_EVENT_DISCONNECTED:
+		case TOUPCAM_EVENT_DISCONNECTED:
 			OnEventDisconnected();
 			break;
-		case NNCAM_EVENT_EXPOSURE:
+		case TOUPCAM_EVENT_EXPOSURE:
 			OnEventExpo();
 			break;
-		case NNCAM_EVENT_TEMPTINT:
+		case TOUPCAM_EVENT_TEMPTINT:
 			OnEventTemptint();
 			break;
 		default:
@@ -202,7 +202,7 @@ public:
 	CMainFrame()
 		: m_hCam(NULL), m_nIndex(0), m_bSnap(false), m_nFrameCount(0), m_dwStartTick(0), m_dwLastTick(0), m_pData(NULL), m_view(this), m_nOldWidth(0), m_nOldHeight(0)
 	{
-		memset(m_ti, 0, sizeof(m_ti));
+		memset(m_dev, 0, sizeof(m_dev));
 		memset(m_szFilePath, 0, sizeof(m_szFilePath));
 
 		memset(&m_header, 0, sizeof(m_header));
@@ -218,13 +218,13 @@ public:
 		while (submenu.GetMenuItemCount() > 0)
 			submenu.RemoveMenu(submenu.GetMenuItemCount() - 1, MF_BYPOSITION);
 
-		unsigned cnt = Nncam_EnumV2(m_ti);
+		unsigned cnt = Toupcam_EnumV2(m_dev);
 		if (0 == cnt)
 			submenu.AppendMenu(MF_GRAYED | MF_STRING, ID_DEVICE_DEVICE0, L"No Device");
 		else
 		{
 			for (unsigned i = 0; i < cnt; ++i)
-				submenu.AppendMenu(MF_STRING, ID_DEVICE_DEVICE0 + i, m_ti[i].displayname);
+				submenu.AppendMenu(MF_STRING, ID_DEVICE_DEVICE0 + i, m_dev[i].displayname);
 		}
 
 		CreateSimpleStatusBar();
@@ -243,7 +243,7 @@ public:
 	void OnWhiteBalance(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		if (m_hCam)
-			Nncam_AwbOnePush(m_hCam, NULL, NULL);
+			Toupcam_AwbOnePush(m_hCam, NULL, NULL);
 	}
 
 	void OnAutoExposure(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
@@ -251,10 +251,10 @@ public:
 		if (m_hCam)
 		{
 			BOOL bAutoExposure = FALSE;
-			if (SUCCEEDED(Nncam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
+			if (SUCCEEDED(Toupcam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
 			{
 				bAutoExposure = !bAutoExposure;
-				Nncam_put_AutoExpoEnable(m_hCam, bAutoExposure);
+				Toupcam_put_AutoExpoEnable(m_hCam, bAutoExposure);
 				UISetCheck(ID_CONFIG_AUTOEXPOSURE, bAutoExposure ? 1 : 0);
 				UIEnable(ID_CONFIG_EXPOSURETIME, !bAutoExposure);
 			}
@@ -291,10 +291,10 @@ public:
 		return 0;
 	}
 
-	void OnDataCallbackV3(const void* pData, const NncamFrameInfoV2* pInfo, int bSnap)
+	void OnDataCallbackV3(const void* pData, const ToupcamFrameInfoV2* pInfo, int bSnap)
 	{
 		if (NULL == pData)
-			PostMessage(MSG_CAMEVENT, NNCAM_EVENT_ERROR);
+			PostMessage(MSG_CAMEVENT, TOUPCAM_EVENT_ERROR);
 		else if (bSnap)
 		{
 			BITMAPINFOHEADER header = { 0 };
@@ -327,7 +327,7 @@ public:
 		}
 	}
 
-	static void __stdcall StaticOnDataCallbackV3(const void* pData, const NncamFrameInfoV2* pInfo, int bSnap, void* pCallbackCtx)
+	static void __stdcall StaticOnDataCallbackV3(const void* pData, const ToupcamFrameInfoV2* pInfo, int bSnap, void* pCallbackCtx)
 	{
 		CMainFrame* pThis = (CMainFrame*)pCallbackCtx;
 		pThis->OnDataCallbackV3(pData, pInfo, bSnap);
@@ -345,22 +345,22 @@ public:
 			return;
 
 		unsigned eSize = 0;
-		if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+		if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 		{
 			if (eSize != nID - ID_PREVIEW_RESOLUTION0)
 			{
-				if (SUCCEEDED(Nncam_Stop(m_hCam)))
+				if (SUCCEEDED(Toupcam_Stop(m_hCam)))
 				{
 					m_nFrameCount = 0;
 					m_bSnap = false;
 					m_dwStartTick = m_dwLastTick = 0;
 					m_nOldWidth = m_nOldHeight = 0;
 
-					Nncam_put_eSize(m_hCam, nID - ID_PREVIEW_RESOLUTION0);
-					for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+					Toupcam_put_eSize(m_hCam, nID - ID_PREVIEW_RESOLUTION0);
+					for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 						UISetCheck(ID_PREVIEW_RESOLUTION0 + i, (nID - ID_PREVIEW_RESOLUTION0 == i) ? 1 : 0);
 					UpdateSnapMenu();
-					if (SUCCEEDED(Nncam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight)))
+					if (SUCCEEDED(Toupcam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight)))
 					{
 						UpdateResolutionText();
 						UpdateFrameText(L"");
@@ -373,7 +373,7 @@ public:
 							m_pData = NULL;
 						}
 						m_pData = (BYTE*)malloc(m_header.biSizeImage);
-						Nncam_StartPushModeV3(m_hCam, StaticOnDataCallbackV3, this, StaticOnEventCallback, this);
+						Toupcam_StartPushModeV3(m_hCam, StaticOnDataCallbackV3, this, StaticOnEventCallback, this);
 					}
 				}
 			}
@@ -389,7 +389,7 @@ public:
 		if (IDOK == dlg.DoModal())
 		{
 			wcscpy(m_szFilePath, dlg.m_szFileName);
-			if (SUCCEEDED(Nncam_Snap(m_hCam, nID - ID_SNAP_RESOLUTION0)))
+			if (SUCCEEDED(Toupcam_Snap(m_hCam, nID - ID_SNAP_RESOLUTION0)))
 			{
 				m_bSnap = true;
 				UpdateSnapMenu();
@@ -408,10 +408,10 @@ public:
 		m_dwStartTick = m_dwLastTick = 0;
 		m_nOldWidth = m_nOldHeight = 0;
 		m_nIndex = nID - ID_DEVICE_DEVICE0;
-		m_hCam = Nncam_Open(m_ti[m_nIndex].id);
+		m_hCam = Toupcam_Open(m_dev[m_nIndex].id);
 		if (m_hCam)
 		{
-			Nncam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight);
+			Toupcam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight);
 
 			OnDeviceChanged();
 			UpdateFrameText(L"");
@@ -421,12 +421,12 @@ public:
 				m_header.biSizeImage = TDIBWIDTHBYTES(m_header.biWidth * m_header.biBitCount) * m_header.biHeight;
 				m_pData = (BYTE*)malloc(m_header.biSizeImage);
 				unsigned eSize = 0;
-				if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+				if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 				{
-					for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+					for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 						UISetCheck(ID_PREVIEW_RESOLUTION0 + i, (eSize == i) ? 1 : 0);
 				}
-				Nncam_StartPushModeV3(m_hCam, StaticOnDataCallbackV3, this, StaticOnEventCallback, this);
+				Toupcam_StartPushModeV3(m_hCam, StaticOnDataCallbackV3, this, StaticOnEventCallback, this);
 			}
 		}
 	}
@@ -455,8 +455,8 @@ public:
 	{
 		CStatusBarCtrl statusbar(m_hWndStatusBar);
 		wchar_t res[128];
-		int nTemp = NNCAM_TEMP_DEF, nTint = NNCAM_TINT_DEF;
-		Nncam_get_TempTint(m_hCam, &nTemp, &nTint);
+		int nTemp = TOUPCAM_TEMP_DEF, nTint = TOUPCAM_TINT_DEF;
+		Toupcam_get_TempTint(m_hCam, &nTemp, &nTint);
 		swprintf(res, L"Temp = %d, Tint = %d", nTemp, nTint);
 		statusbar.SetText(2, res);
 	}
@@ -467,7 +467,7 @@ public:
 		wchar_t res[128];
 		unsigned nTime = 0;
 		unsigned short AGain = 0;
-		if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Nncam_get_ExpoAGain(m_hCam, &AGain)))
+		if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Toupcam_get_ExpoAGain(m_hCam, &AGain)))
 		{
 			swprintf(res, L"ExposureTime = %u, AGain = %hu", nTime, AGain);
 			statusbar.SetText(1, res);
@@ -507,7 +507,7 @@ private:
 		m_bSnap = false;
 		if (m_hCam)
 		{
-			Nncam_Close(m_hCam);
+			Toupcam_Close(m_hCam);
 			m_hCam = NULL;
 
 			if (m_pData)
@@ -549,12 +549,12 @@ private:
 		else
 		{
 			unsigned eSize = 0;
-			Nncam_get_eSize(m_hCam, &eSize);
+			Toupcam_get_eSize(m_hCam, &eSize);
 
 			wchar_t res[128];
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 			{
-				swprintf(res, L"%u * %u", m_ti[m_nIndex].model->res[i].width, m_ti[m_nIndex].model->res[i].height);
+				swprintf(res, L"%u * %u", m_dev[m_nIndex].model->res[i].width, m_dev[m_nIndex].model->res[i].height);
 				previewsubmenu.AppendMenu(MF_STRING, ID_PREVIEW_RESOLUTION0 + i, res);
 				snapsubmenu.AppendMenu(MF_STRING, ID_SNAP_RESOLUTION0 + i, res);
 
@@ -565,15 +565,15 @@ private:
 			UpdateResolutionText();
 			UpdateExposureTimeText();
 
-			int nTemp = NNCAM_TEMP_DEF, nTint = NNCAM_TINT_DEF;
-			if (SUCCEEDED(Nncam_get_TempTint(m_hCam, &nTemp, &nTint)))
+			int nTemp = TOUPCAM_TEMP_DEF, nTint = TOUPCAM_TINT_DEF;
+			if (SUCCEEDED(Toupcam_get_TempTint(m_hCam, &nTemp, &nTint)))
 			{
 				swprintf(res, L"Temp = %d, Tint = %d", nTemp, nTint);
 				statusbar.SetText(2, res);
 			}
 
 			BOOL bAutoExposure = TRUE;
-			if (SUCCEEDED(Nncam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
+			if (SUCCEEDED(Toupcam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
 			{
 				UISetCheck(ID_CONFIG_AUTOEXPOSURE, bAutoExposure ? 1 : 0);
 				UIEnable(ID_CONFIG_EXPOSURETIME, !bAutoExposure);
@@ -588,23 +588,23 @@ private:
 	{
 		if (m_bSnap)
 		{
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 				UIEnable(ID_SNAP_RESOLUTION0 + i, FALSE);
 			return;
 		}
 
 		unsigned eSize = 0;
-		if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+		if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 		{
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 			{
-				if (m_ti[m_nIndex].model->still == m_ti[m_nIndex].model->preview) /* still capture full supported */
+				if (m_dev[m_nIndex].model->still == m_dev[m_nIndex].model->preview) /* still capture full supported */
 					UIEnable(ID_SNAP_RESOLUTION0 + i, TRUE);
-				else if (0 == m_ti[m_nIndex].model->still) /* still capture not supported */
+				else if (0 == m_dev[m_nIndex].model->still) /* still capture not supported */
 					UIEnable(ID_SNAP_RESOLUTION0 + i, (eSize == i) ? TRUE : FALSE);
-				else if (m_ti[m_nIndex].model->still < m_ti[m_nIndex].model->preview)
+				else if (m_dev[m_nIndex].model->still < m_dev[m_nIndex].model->preview)
 				{
-					if ((eSize == i) || (i < m_ti[m_nIndex].model->still))
+					if ((eSize == i) || (i < m_dev[m_nIndex].model->still))
 						UIEnable(ID_SNAP_RESOLUTION0 + i, TRUE);
 					else
 						UIEnable(ID_SNAP_RESOLUTION0 + i, FALSE);
@@ -618,7 +618,7 @@ private:
 		CStatusBarCtrl statusbar(m_hWndStatusBar);
 		wchar_t res[128];
 		unsigned xOffset = 0, yOffset = 0, nWidth = 0, nHeight = 0;
-		if (SUCCEEDED(Nncam_get_Roi(m_hCam, &xOffset, &yOffset, &nWidth, &nHeight)))
+		if (SUCCEEDED(Toupcam_get_Roi(m_hCam, &xOffset, &yOffset, &nWidth, &nHeight)))
 		{
 			swprintf(res, L"%u, %u, %u * %u", xOffset, yOffset, nWidth, nHeight);
 			statusbar.SetText(0, res);
@@ -647,7 +647,7 @@ private:
 		wchar_t res[128];
 		unsigned nTime = 0;
 		unsigned short AGain = 0;
-		if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Nncam_get_ExpoAGain(m_hCam, &AGain)))
+		if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Toupcam_get_ExpoAGain(m_hCam, &AGain)))
 		{
 			swprintf(res, L"ExposureTime = %u, AGain = %hu", nTime, AGain);
 			statusbar.SetText(1, res);

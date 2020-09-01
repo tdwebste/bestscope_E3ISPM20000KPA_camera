@@ -110,7 +110,7 @@ BEGIN_MESSAGE_MAP(CdemomfcDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK1, &CdemomfcDlg::OnBnClickedCheck1)
 	ON_BN_CLICKED(IDC_BUTTON3, &CdemomfcDlg::OnBnClickedButton3)
 	ON_WM_HSCROLL()
-	ON_COMMAND_RANGE(IDM_SNAP_RESOLUTION, IDM_SNAP_RESOLUTION + NNCAM_MAX, &CdemomfcDlg::OnSnapResolution)
+	ON_COMMAND_RANGE(IDM_SNAP_RESOLUTION, IDM_SNAP_RESOLUTION + TOUPCAM_MAX, &CdemomfcDlg::OnSnapResolution)
 END_MESSAGE_MAP()
 
 BOOL CdemomfcDlg::OnInitDialog()
@@ -133,7 +133,7 @@ void CdemomfcDlg::OnBnClickedButton1()
 	if (m_hcam)
 		return;
 
-	m_hcam = Nncam_Open(NULL);
+	m_hcam = Toupcam_Open(NULL);
 	if (NULL == m_hcam)
 	{
 		AfxMessageBox(_T("No Device"));
@@ -142,20 +142,20 @@ void CdemomfcDlg::OnBnClickedButton1()
 
 	CComboBox* pCombox = (CComboBox*)GetDlgItem(IDC_COMBO1);
 	pCombox->ResetContent();
-	int n = (int)Nncam_get_ResolutionNumber(m_hcam);
+	int n = (int)Toupcam_get_ResolutionNumber(m_hcam);
 	if (n > 0)
 	{
 		TCHAR txt[128];
 		int nWidth, nHeight;
 		for (int i = 0; i < n; ++i)
 		{
-			Nncam_get_Resolution(m_hcam, i, &nWidth, &nHeight);
+			Toupcam_get_Resolution(m_hcam, i, &nWidth, &nHeight);
 			_stprintf(txt, _T("%d * %d"), nWidth, nHeight);
 			pCombox->AddString(txt);
 		}
 
 		unsigned nCur = 0;
-		Nncam_get_eSize(m_hcam, &nCur);
+		Toupcam_get_eSize(m_hcam, &nCur);
 		pCombox->SetCurSel(nCur);
 	}
 	
@@ -165,7 +165,7 @@ void CdemomfcDlg::OnBnClickedButton1()
 void CdemomfcDlg::StartDevice()
 {
 	int nWidth = 0, nHeight = 0;
-	HRESULT hr = Nncam_get_Size(m_hcam, &nWidth, &nHeight);
+	HRESULT hr = Toupcam_get_Size(m_hcam, &nWidth, &nHeight);
 	if (FAILED(hr))
 		return;
 
@@ -179,18 +179,18 @@ void CdemomfcDlg::StartDevice()
 	}
 	m_pImageData = malloc(m_header.biSizeImage);
 
-	Nncam_StartPullModeWithWndMsg(m_hcam, m_hWnd, MSG_CAMEVENT);
+	Toupcam_StartPullModeWithWndMsg(m_hcam, m_hWnd, MSG_CAMEVENT);
 
 	BOOL bEnableAutoExpo = TRUE;
-	Nncam_get_AutoExpoEnable(m_hcam, &bEnableAutoExpo);
+	Toupcam_get_AutoExpoEnable(m_hcam, &bEnableAutoExpo);
 	CheckDlgButton(IDC_CHECK1, bEnableAutoExpo ? 1 : 0);
 	GetDlgItem(IDC_SLIDER1)->EnableWindow(!bEnableAutoExpo);
 
 	unsigned nMinExpTime, nMaxExpTime, nDefExpTime;
-	Nncam_get_ExpTimeRange(m_hcam, &nMinExpTime, &nMaxExpTime, &nDefExpTime);
+	Toupcam_get_ExpTimeRange(m_hcam, &nMinExpTime, &nMaxExpTime, &nDefExpTime);
 	((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->SetRange(nMinExpTime / 1000, nMaxExpTime / 1000);
-	((CSliderCtrl*)GetDlgItem(IDC_SLIDER2))->SetRange(NNCAM_TEMP_MIN, NNCAM_TEMP_MAX);
-	((CSliderCtrl*)GetDlgItem(IDC_SLIDER3))->SetRange(NNCAM_TINT_MIN, NNCAM_TINT_MAX);
+	((CSliderCtrl*)GetDlgItem(IDC_SLIDER2))->SetRange(TOUPCAM_TEMP_MIN, TOUPCAM_TEMP_MAX);
+	((CSliderCtrl*)GetDlgItem(IDC_SLIDER3))->SetRange(TOUPCAM_TINT_MIN, TOUPCAM_TINT_MAX);
 
 	OnEventExpo();
 	OnEventTempTint();
@@ -214,17 +214,17 @@ void CdemomfcDlg::OnCbnSelchangeCombo1()
 		return;
 
 	unsigned nResolutionIndex = 0;
-	HRESULT hr = Nncam_get_eSize(m_hcam, &nResolutionIndex);
+	HRESULT hr = Toupcam_get_eSize(m_hcam, &nResolutionIndex);
 	if (FAILED(hr))
 		return;
 
 	if (nResolutionIndex != nSel)
 	{
-		hr = Nncam_Stop(m_hcam);
+		hr = Toupcam_Stop(m_hcam);
 		if (FAILED(hr))
 			return;
 
-		Nncam_put_eSize(m_hcam, nSel);
+		Toupcam_put_eSize(m_hcam, nSel);
 
 		StartDevice();
 	}
@@ -234,23 +234,23 @@ LRESULT CdemomfcDlg::OnMsgCamevent(WPARAM wp, LPARAM /*lp*/)
 {
 	switch (wp)
 	{
-	case NNCAM_EVENT_ERROR:
-	case NNCAM_EVENT_TIMEOUT:
+	case TOUPCAM_EVENT_ERROR:
+	case TOUPCAM_EVENT_NOFRAMETIMEOUT:
 		OnEventError();
 		break;
-	case NNCAM_EVENT_DISCONNECTED:
+	case TOUPCAM_EVENT_DISCONNECTED:
 		OnEventDisconnected();
 		break;
-	case NNCAM_EVENT_IMAGE:
+	case TOUPCAM_EVENT_IMAGE:
 		OnEventImage();
 		break;
-	case NNCAM_EVENT_EXPOSURE:
+	case TOUPCAM_EVENT_EXPOSURE:
 		OnEventExpo();
 		break;
-	case NNCAM_EVENT_TEMPTINT:
+	case TOUPCAM_EVENT_TEMPTINT:
 		OnEventTempTint();
 		break;
-	case NNCAM_EVENT_STILLIMAGE:
+	case TOUPCAM_EVENT_STILLIMAGE:
 		OnEventStillImage();
 		break;
 	default:
@@ -263,7 +263,7 @@ void CdemomfcDlg::OnEventDisconnected()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	AfxMessageBox(_T("The camera is disconnected, mybe has been pulled out."));
@@ -273,7 +273,7 @@ void CdemomfcDlg::OnEventError()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	AfxMessageBox(_T("Error"));
@@ -282,15 +282,15 @@ void CdemomfcDlg::OnEventError()
 void CdemomfcDlg::OnEventExpo()
 {
 	unsigned nTime = 0;
-	Nncam_get_ExpoTime(m_hcam, &nTime);
+	Toupcam_get_ExpoTime(m_hcam, &nTime);
 	SetDlgItemInt(IDC_STATIC1, nTime / 1000, FALSE);
 	((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->SetPos(nTime / 1000);
 }
 
 void CdemomfcDlg::OnEventTempTint()
 {
-	int nTemp = NNCAM_TEMP_DEF, nTint = NNCAM_TINT_DEF;
-	Nncam_get_TempTint(m_hcam, &nTemp, &nTint);
+	int nTemp = TOUPCAM_TEMP_DEF, nTint = TOUPCAM_TINT_DEF;
+	Toupcam_get_TempTint(m_hcam, &nTemp, &nTint);
 	SetDlgItemInt(IDC_STATIC2, nTemp, TRUE);
 	SetDlgItemInt(IDC_STATIC3, nTint, TRUE);
 	((CSliderCtrl*)GetDlgItem(IDC_SLIDER2))->SetPos(nTemp);
@@ -299,7 +299,7 @@ void CdemomfcDlg::OnEventTempTint()
 
 void CdemomfcDlg::OnEventImage()
 {
-	HRESULT hr = Nncam_PullImageV2(m_hcam, m_pImageData, 24, NULL);
+	HRESULT hr = Toupcam_PullImageV2(m_hcam, m_pImageData, 24, NULL);
 	if (SUCCEEDED(hr))
 	{
 		CClientDC dc(this);
@@ -320,12 +320,12 @@ void CdemomfcDlg::OnEventImage()
 
 void CdemomfcDlg::OnEventStillImage()
 {
-	NncamFrameInfoV2 info = { 0 };
-	HRESULT hr = Nncam_PullStillImageV2(m_hcam, NULL, 24, &info);
+	ToupcamFrameInfoV2 info = { 0 };
+	HRESULT hr = Toupcam_PullStillImageV2(m_hcam, NULL, 24, &info);
 	if (SUCCEEDED(hr))
 	{
 		void* pData = malloc(TDIBWIDTHBYTES(info.width * 24) * info.height);
-		hr = Nncam_PullStillImage(m_hcam, pData, 24, NULL, NULL);
+		hr = Toupcam_PullStillImage(m_hcam, pData, 24, NULL, NULL);
 		if (SUCCEEDED(hr))
 		{
 			BITMAPINFOHEADER header = { 0 };
@@ -345,7 +345,7 @@ void CdemomfcDlg::OnDestroy()
 {
 	if (m_hcam)
 	{
-		Nncam_Close(m_hcam);
+		Toupcam_Close(m_hcam);
 		m_hcam = NULL;
 	}
 	if (m_pImageData)
@@ -359,17 +359,17 @@ void CdemomfcDlg::OnDestroy()
 
 void CdemomfcDlg::OnSnapResolution(UINT nID)
 {
-	Nncam_Snap(m_hcam, nID - IDM_SNAP_RESOLUTION);
+	Toupcam_Snap(m_hcam, nID - IDM_SNAP_RESOLUTION);
 }
 
 void CdemomfcDlg::OnBnClickedButton2()
 {
-	int n = Nncam_get_StillResolutionNumber(m_hcam);
+	int n = Toupcam_get_StillResolutionNumber(m_hcam);
 	if (n <= 0)
 	{
 		unsigned e = 0;
-		Nncam_get_eSize(m_hcam, &e);
-		Nncam_Snap(m_hcam, e);
+		Toupcam_get_eSize(m_hcam, &e);
+		Toupcam_Snap(m_hcam, e);
 	}
 	else
 	{
@@ -381,7 +381,7 @@ void CdemomfcDlg::OnBnClickedButton2()
 		int w, h;
 		for (int i = 0; i < n; ++i)
 		{
-			Nncam_get_StillResolution(m_hcam, i, &w, &h);
+			Toupcam_get_StillResolution(m_hcam, i, &w, &h);
 			_stprintf(text, _T("%d * %d"), w, h);
 			menu.AppendMenu(MF_STRING, IDM_SNAP_RESOLUTION + i, text);
 		}
@@ -392,14 +392,14 @@ void CdemomfcDlg::OnBnClickedButton2()
 void CdemomfcDlg::OnBnClickedCheck1()
 {
 	if (m_hcam)
-		Nncam_put_AutoExpoEnable(m_hcam, IsDlgButtonChecked(IDC_CHECK1) ? TRUE : FALSE);
+		Toupcam_put_AutoExpoEnable(m_hcam, IsDlgButtonChecked(IDC_CHECK1) ? TRUE : FALSE);
 	GetDlgItem(IDC_SLIDER1)->EnableWindow(IsDlgButtonChecked(IDC_CHECK1) ? FALSE : TRUE);
 }
 
 void CdemomfcDlg::OnBnClickedButton3()
 {
 	if (m_hcam)
-		Nncam_AwbOnePush(m_hcam, NULL, NULL);
+		Toupcam_AwbOnePush(m_hcam, NULL, NULL);
 }
 
 void CdemomfcDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -408,7 +408,7 @@ void CdemomfcDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nTime = ((CSliderCtrl*)GetDlgItem(IDC_SLIDER1))->GetPos();
 		SetDlgItemInt(IDC_STATIC1, nTime, TRUE);
-		Nncam_put_ExpoTime(m_hcam, nTime * 1000);
+		Toupcam_put_ExpoTime(m_hcam, nTime * 1000);
 	}
 	else
 	{
@@ -416,7 +416,7 @@ void CdemomfcDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		int nTint = ((CSliderCtrl*)GetDlgItem(IDC_SLIDER3))->GetPos();
 		SetDlgItemInt(IDC_STATIC2, nTemp, TRUE);
 		SetDlgItemInt(IDC_STATIC3, nTint, TRUE);
-		Nncam_put_TempTint(m_hcam, nTemp, nTint);
+		Toupcam_put_TempTint(m_hcam, nTemp, nTint);
 	}
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);

@@ -24,7 +24,7 @@ protected:
 	afx_msg void OnUpdateCamera(CCmdUI* pCmdUI);
 	afx_msg void OnCamera(UINT nID);
 	afx_msg void OnSetup(UINT nID);
-	afx_msg void OnDestroy();
+	afx_msg void OnClose();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg LRESULT OnMsgDsnotify(WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnMsgDssize(WPARAM wp, LPARAM lp);

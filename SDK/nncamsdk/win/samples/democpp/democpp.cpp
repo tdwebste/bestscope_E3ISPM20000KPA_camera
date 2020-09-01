@@ -12,7 +12,7 @@ CAppModule _Module;
 #include <atlcrack.h>
 #include <atldlgs.h>
 #include <atlstr.h>
-#include "nncam.h"
+#include "toupcam.h"
 #include "resource.h"
 #include <sstream>
 #include <iomanip>
@@ -102,7 +102,7 @@ static BOOL SaveImageByWIC(const wchar_t* strFilename, const void* pData, const 
 	if (FAILED(hr))
 		return FALSE;
 
-	LONG nWidthBytes = TDIBWIDTHBYTES(pHeader->biWidth * pHeader->biBitCount);
+	const LONG nWidthBytes = TDIBWIDTHBYTES(pHeader->biWidth * pHeader->biBitCount);
 	for (LONG i = 0; i < pHeader->biHeight; ++i)
 	{
 		hr = spIWICBitmapFrameEncode->WritePixels(1, nWidthBytes, nWidthBytes, ((BYTE*)pData) + nWidthBytes * (pHeader->biHeight - i - 1));
@@ -122,11 +122,11 @@ static BOOL SaveImageByWIC(const wchar_t* strFilename, const void* pData, const 
 
 class CExposureTimeDlg : public CDialogImpl<CExposureTimeDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_EXPOSURETIME };
 
-	CExposureTimeDlg(HNnCam hCam)
+	CExposureTimeDlg(HToupcam hCam)
 	: m_hCam(hCam)
 	{
 	}
@@ -142,13 +142,13 @@ public:
 		CenterWindow(GetParent());
 
 		unsigned nMin = 0, nMax = 0, nDef = 0, nTime = 0;
-		if (SUCCEEDED(Nncam_get_ExpTimeRange(m_hCam, &nMin, &nMax, &nDef)))
+		if (SUCCEEDED(Toupcam_get_ExpTimeRange(m_hCam, &nMin, &nMax, &nDef)))
 		{
 			CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
 			ctrl.SetRangeMin(nMin);
 			ctrl.SetRangeMax(nMax);
 
-			if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)))
+			if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)))
 				ctrl.SetPos(nTime);
 		}
 		
@@ -158,7 +158,7 @@ public:
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
-		Nncam_put_ExpoTime(m_hCam, ctrl.GetPos());
+		Toupcam_put_ExpoTime(m_hCam, ctrl.GetPos());
 
 		EndDialog(wID);
 		return 0;
@@ -173,11 +173,11 @@ public:
 
 class CSpeedDlg : public CDialogImpl<CSpeedDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_SPEED };
 
-	CSpeedDlg(HNnCam hCam)
+	CSpeedDlg(HToupcam hCam)
 		: m_hCam(hCam)
 	{
 	}
@@ -194,10 +194,10 @@ public:
 
 		CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
 		ctrl.SetRangeMin(0);
-		ctrl.SetRangeMax(Nncam_get_MaxSpeed(m_hCam));
+		ctrl.SetRangeMax(Toupcam_get_MaxSpeed(m_hCam));
 
 		unsigned short nSpeed = 0;
-		if (SUCCEEDED(Nncam_get_Speed(m_hCam, &nSpeed)))
+		if (SUCCEEDED(Toupcam_get_Speed(m_hCam, &nSpeed)))
 			ctrl.SetPos(nSpeed);
 
 		return TRUE;
@@ -206,7 +206,7 @@ public:
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CTrackBarCtrl ctrl(GetDlgItem(IDC_SLIDER1));
-		Nncam_put_Speed(m_hCam, ctrl.GetPos());
+		Toupcam_put_Speed(m_hCam, ctrl.GetPos());
 
 		EndDialog(wID);
 		return 0;
@@ -221,11 +221,11 @@ public:
 
 class CMaxAEDlg : public CDialogImpl<CMaxAEDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_MAXAE };
 
-	CMaxAEDlg(HNnCam hCam)
+	CMaxAEDlg(HToupcam hCam)
 		: m_hCam(hCam)
 	{
 	}
@@ -247,10 +247,10 @@ public:
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		BOOL bTran1 = FALSE, bTran2 = FALSE;
-		UINT nTime = GetDlgItemInt(IDC_EDIT1, &bTran1, FALSE);
-		UINT nGain = GetDlgItemInt(IDC_EDIT2, &bTran2, FALSE);
+		const UINT nTime = GetDlgItemInt(IDC_EDIT1, &bTran1, FALSE);
+		const UINT nGain = GetDlgItemInt(IDC_EDIT2, &bTran2, FALSE);
 		if (bTran1 && bTran2)
-			Nncam_put_MaxAutoExpoTimeAGain(m_hCam, nTime, nGain);
+			Toupcam_put_MaxAutoExpoTimeAGain(m_hCam, nTime, nGain);
 		EndDialog(wID);
 		return 0;
 	}
@@ -264,11 +264,11 @@ public:
 
 class CLedDlg : public CDialogImpl<CLedDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_LED };
 
-	CLedDlg(HNnCam hCam)
+	CLedDlg(HToupcam hCam)
 	: m_hCam(hCam)
 	{
 	}
@@ -289,23 +289,23 @@ public:
 
 	LRESULT OnButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		UINT nIndex = GetDlgItemInt(IDC_EDIT1);
-		Nncam_put_LEDState(m_hCam, nIndex, 1, 0);
+		const UINT nIndex = GetDlgItemInt(IDC_EDIT1);
+		Toupcam_put_LEDState(m_hCam, nIndex, 1, 0);
 		return 0;
 	}
 
 	LRESULT OnButton2(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		UINT nIndex = GetDlgItemInt(IDC_EDIT1);
-		UINT nPeriod = GetDlgItemInt(IDC_EDIT2);
-		Nncam_put_LEDState(m_hCam, nIndex, 2, nPeriod);
+		const UINT nIndex = GetDlgItemInt(IDC_EDIT1);
+		const UINT nPeriod = GetDlgItemInt(IDC_EDIT2);
+		Toupcam_put_LEDState(m_hCam, nIndex, 2, nPeriod);
 		return 0;
 	}
 
 	LRESULT OnButton3(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		UINT nIndex = GetDlgItemInt(IDC_EDIT1);
-		Nncam_put_LEDState(m_hCam, nIndex, 0, 0);
+		const UINT nIndex = GetDlgItemInt(IDC_EDIT1);
+		Toupcam_put_LEDState(m_hCam, nIndex, 0, 0);
 		return 0;
 	}
 
@@ -318,13 +318,13 @@ public:
 
 class CPixelFormatDlg : public CDialogImpl<CPixelFormatDlg>
 {
-	const NncamInstV2&	m_inst;
-	HNnCam				m_hCam;
+	const ToupcamDeviceV2&	m_inst;
+	HToupcam				m_hCam;
 public:
 	enum { IDD = IDD_PIXELFORMAT };
 
-	CPixelFormatDlg(const NncamInstV2& inst, HNnCam hCam)
-	: m_inst(inst), m_hCam(hCam)
+	CPixelFormatDlg(const ToupcamDeviceV2& tdev, HToupcam hCam)
+	: m_inst(tdev), m_hCam(hCam)
 	{
 	}
 
@@ -340,20 +340,20 @@ public:
 	{
 		CenterWindow(GetParent());
 
-		if (0 == (m_inst.model->flag & (NNCAM_FLAG_RAW8 | NNCAM_FLAG_GMCY8)))
+		if (0 == (m_inst.model->flag & (TOUPCAM_FLAG_RAW8 | TOUPCAM_FLAG_GMCY8)))
 			GetDlgItem(IDC_RADIO1).EnableWindow(FALSE);
 		
-		if (m_inst.model->flag & (NNCAM_FLAG_RAW10 | NNCAM_FLAG_RAW12 | NNCAM_FLAG_RAW14 | NNCAM_FLAG_RAW16 | NNCAM_FLAG_GMCY12))
+		if (m_inst.model->flag & (TOUPCAM_FLAG_RAW10 | TOUPCAM_FLAG_RAW12 | TOUPCAM_FLAG_RAW14 | TOUPCAM_FLAG_RAW16 | TOUPCAM_FLAG_GMCY12))
 		{
-			TCHAR str[16];
+			wchar_t str[16];
 			unsigned bits = 16;
-			if (m_inst.model->flag & NNCAM_FLAG_RAW10)
+			if (m_inst.model->flag & TOUPCAM_FLAG_RAW10)
 				bits = 10;
-			else if (m_inst.model->flag & (NNCAM_FLAG_RAW12 | NNCAM_FLAG_GMCY12))
+			else if (m_inst.model->flag & (TOUPCAM_FLAG_RAW12 | TOUPCAM_FLAG_GMCY12))
 				bits = 12;
-			else if (m_inst.model->flag & NNCAM_FLAG_RAW14)
+			else if (m_inst.model->flag & TOUPCAM_FLAG_RAW14)
 				bits = 14;
-			_stprintf(str, _T("RAW%u"), bits);
+			swprintf(str, L"RAW%u", bits);
 			GetDlgItem(IDC_RADIO2).SetWindowText(str);
 		}
 		else
@@ -361,50 +361,50 @@ public:
 			GetDlgItem(IDC_RADIO2).EnableWindow(FALSE);
 		}
 
-		if (0 == (m_inst.model->flag & (NNCAM_FLAG_VUYY | NNCAM_FLAG_UYVY)))
+		if (0 == (m_inst.model->flag & (TOUPCAM_FLAG_VUYY | TOUPCAM_FLAG_UYVY)))
 			GetDlgItem(IDC_RADIO3).EnableWindow(FALSE);
 
 		int val = 0;
-		Nncam_get_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, &val);
-		if ((NNCAM_PIXELFORMAT_RAW8 == val) || (NNCAM_PIXELFORMAT_GMCY8 == val))
+		Toupcam_get_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, &val);
+		if ((TOUPCAM_PIXELFORMAT_RAW8 == val) || (TOUPCAM_PIXELFORMAT_GMCY8 == val))
 			CheckDlgButton(IDC_RADIO1, 1);
-		else if ((NNCAM_PIXELFORMAT_RAW10 == val) || (NNCAM_PIXELFORMAT_RAW12 == val) || (NNCAM_PIXELFORMAT_RAW14 == val) || (NNCAM_PIXELFORMAT_RAW16 == val) || (NNCAM_PIXELFORMAT_GMCY12 == val))
+		else if ((TOUPCAM_PIXELFORMAT_RAW10 == val) || (TOUPCAM_PIXELFORMAT_RAW12 == val) || (TOUPCAM_PIXELFORMAT_RAW14 == val) || (TOUPCAM_PIXELFORMAT_RAW16 == val) || (TOUPCAM_PIXELFORMAT_GMCY12 == val))
 			CheckDlgButton(IDC_RADIO2, 1);
-		else if ((NNCAM_PIXELFORMAT_VUYY == val) || (NNCAM_PIXELFORMAT_UYVY == val))
+		else if ((TOUPCAM_PIXELFORMAT_VUYY == val) || (TOUPCAM_PIXELFORMAT_UYVY == val))
 			CheckDlgButton(IDC_RADIO3, 1);
 		return TRUE;
 	}
 
 	LRESULT OnRadio1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		if (m_inst.model->flag & NNCAM_FLAG_RAW8)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_RAW8);
-		else if (m_inst.model->flag & NNCAM_FLAG_GMCY8)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_GMCY8);
+		if (m_inst.model->flag & TOUPCAM_FLAG_RAW8)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_RAW8);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_GMCY8)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_GMCY8);
 		return 0;
 	}
 
 	LRESULT OnRadio2(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		if (m_inst.model->flag & NNCAM_FLAG_RAW10)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_RAW10);
-		else if (m_inst.model->flag & NNCAM_FLAG_RAW12)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_RAW12);
-		else if (m_inst.model->flag & NNCAM_FLAG_RAW14)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_RAW14);
-		else if (m_inst.model->flag & NNCAM_FLAG_RAW16)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_RAW16);
-		else if (m_inst.model->flag & NNCAM_FLAG_GMCY12)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_GMCY12);
+		if (m_inst.model->flag & TOUPCAM_FLAG_RAW10)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_RAW10);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_RAW12)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_RAW12);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_RAW14)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_RAW14);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_RAW16)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_RAW16);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_GMCY12)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_GMCY12);
 		return 0;
 	}
 
 	LRESULT OnRadio3(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		if (m_inst.model->flag & NNCAM_FLAG_VUYY)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_VUYY);
-		else if (m_inst.model->flag & NNCAM_FLAG_UYVY)
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_PIXELFORMAT_UYVY);
+		if (m_inst.model->flag & TOUPCAM_FLAG_VUYY)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_VUYY);
+		else if (m_inst.model->flag & TOUPCAM_FLAG_UYVY)
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_PIXELFORMAT_UYVY);
 		return 0;
 	}
 
@@ -529,11 +529,11 @@ public:
 
 class CTECTargetDlg : public CDialogImpl<CTECTargetDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_TECTARGET };
 
-	CTECTargetDlg(HNnCam hCam)
+	CTECTargetDlg(HToupcam hCam)
 		: m_hCam(hCam)
 	{
 	}
@@ -549,10 +549,10 @@ public:
 		CenterWindow(GetParent());
 
 		int val = 0;
-		Nncam_get_Option(m_hCam, NNCAM_OPTION_TECTARGET, &val);
+		Toupcam_get_Option(m_hCam, TOUPCAM_OPTION_TECTARGET, &val);
 
-		TCHAR str[256];
-		_stprintf(str, _T("%d.%d"), val / 10, val % 10);
+		wchar_t str[256];
+		swprintf(str, L"%d.%d", val / 10, val % 10);
 		SetDlgItemText(IDC_EDIT1, str);
 		return TRUE;
 	}
@@ -561,9 +561,9 @@ public:
 	{
 		CString str;
 		GetDlgItemText(IDC_EDIT1, str);
-		TCHAR* endptr;
-		double d = _tcstod((LPCTSTR)str, &endptr);
-		Nncam_put_Option(m_hCam, NNCAM_OPTION_TECTARGET, (int)(d * 10));
+		wchar_t* endptr;
+		const double d = _tcstod((LPCTSTR)str, &endptr);
+		Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_TECTARGET, (int)(d * 10));
 
 		EndDialog(wID);
 		return 0;
@@ -616,11 +616,11 @@ public:
 
 class CEEPROMDlg : public CDialogImpl<CEEPROMDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_EEPROM };
 
-	CEEPROMDlg(HNnCam hCam)
+	CEEPROMDlg(HToupcam hCam)
 	: m_hCam(hCam)
 	{
 	}
@@ -641,26 +641,26 @@ public:
 
 	LRESULT OnButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		TCHAR strAddr[64] = { 0 }, strLength[64] = { 0 };
+		wchar_t strAddr[64] = { 0 }, strLength[64] = { 0 };
 		if (GetDlgItemText(IDC_EDIT1, strAddr, _countof(strAddr)) && GetDlgItemText(IDC_EDIT2, strLength, _countof(strLength)))
 		{
-			TCHAR* endptr = NULL;
-			unsigned uAddr = _tcstoul(strAddr, &endptr, 16);
-			unsigned uLength = _tcstoul(strLength, &endptr, 16);
+			wchar_t* endptr = NULL;
+			const unsigned uAddr = _tcstoul(strAddr, &endptr, 16);
+			const unsigned uLength = _tcstoul(strLength, &endptr, 16);
 			if (uLength)
 			{
 				unsigned char* tmpBuffer = (unsigned char*)alloca(uLength);
-				HRESULT hr = Nncam_read_EEPROM(m_hCam, uAddr, tmpBuffer, uLength);
+				HRESULT hr = Toupcam_read_EEPROM(m_hCam, uAddr, tmpBuffer, uLength);
 				if (FAILED(hr))
-					AtlMessageBox(m_hWnd, _T("Failed to read EEPROM."));
+					AtlMessageBox(m_hWnd, L"Failed to read EEPROM.");
 				else if (0 == hr)
-					AtlMessageBox(m_hWnd, _T("Read EEPROM, 0 byte."));
+					AtlMessageBox(m_hWnd, L"Read EEPROM, 0 byte.");
 				else if (hr > 0)
 				{
 					std::wstringstream wstr;
-					wstr << _T("EEPROM: length = ") << hr << _T(", data = ");
+					wstr << L"EEPROM: length = " << hr << L", data = ";
 					for (int i = 0; i < hr; ++i)
-						wstr << std::hex << std::setw(2) << std::setfill((TCHAR)'0') << tmpBuffer[i] << _T(" ");
+						wstr << std::hex << std::setw(2) << std::setfill((wchar_t)'0') << tmpBuffer[i] << L" ";
 					AtlMessageBox(m_hWnd, wstr.str().c_str());
 				}
 			}
@@ -670,12 +670,12 @@ public:
 
 	LRESULT OnButton2(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		TCHAR strAddr[64] = { 0 }, strLength[64] = { 0 }, strData[1024] = { 0 };
+		wchar_t strAddr[64] = { 0 }, strLength[64] = { 0 }, strData[1024] = { 0 };
 		if (GetDlgItemText(IDC_EDIT1, strAddr, _countof(strAddr)) && GetDlgItemText(IDC_EDIT2, strLength, _countof(strLength)) && GetDlgItemText(IDC_EDIT3, strData, _countof(strData)))
 		{
-			TCHAR* endptr = NULL;
-			unsigned uAddr = _tcstoul((LPCTSTR)strAddr, &endptr, 16);
-			unsigned uLength = _tcstoul((LPCTSTR)strLength, &endptr, 16);
+			wchar_t* endptr = NULL;
+			const unsigned uAddr = _tcstoul((LPCTSTR)strAddr, &endptr, 16);
+			const unsigned uLength = _tcstoul((LPCTSTR)strLength, &endptr, 16);
 			if (uLength)
 			{
 				unsigned char* tmpBuffer = (unsigned char*)alloca(uLength);
@@ -697,9 +697,9 @@ public:
 					else if (strData[i + 1] >= 'A' && strData[i + 1] <= 'F')
 						tmpBuffer[i / 2] |= (strData[i + 1] - 'A' + 10);
 				}
-				HRESULT hr = Nncam_write_EEPROM(m_hCam, uAddr, tmpBuffer, uLength);
-				TCHAR strMessage[256];
-				_stprintf(strMessage, _T("Write EEPROM, length = %u, result = 0x%08x"), uLength, hr);
+				HRESULT hr = Toupcam_write_EEPROM(m_hCam, uAddr, tmpBuffer, uLength);
+				wchar_t strMessage[256];
+				swprintf(strMessage, L"Write EEPROM, length = %u, result = 0x%08x", uLength, hr);
 				AtlMessageBox(m_hWnd, strMessage);
 			}
 		}
@@ -708,27 +708,27 @@ public:
 
 	LRESULT OnButton3(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		TCHAR strLength[64] = { 0 };
+		wchar_t strLength[64] = { 0 };
 		if (GetDlgItemText(IDC_EDIT2, strLength, _countof(strLength)))
 		{
-			TCHAR* endptr = NULL;
-			unsigned uLength = _tcstoul((LPCTSTR)strLength, &endptr, 16);
+			wchar_t* endptr = NULL;
+			const unsigned uLength = _tcstoul((LPCTSTR)strLength, &endptr, 16);
 			if (uLength)
 			{
 				unsigned char* tmpWriteBuffer = (unsigned char*)alloca(uLength);
 				unsigned char* tmpReadBuffer = (unsigned char*)alloca(uLength);
-				HRESULT hr1 = Nncam_write_EEPROM(m_hCam, 0, tmpWriteBuffer, uLength);
-				HRESULT hr2 = Nncam_read_EEPROM(m_hCam, 0, tmpReadBuffer, uLength);
+				HRESULT hr1 = Toupcam_write_EEPROM(m_hCam, 0, tmpWriteBuffer, uLength);
+				HRESULT hr2 = Toupcam_read_EEPROM(m_hCam, 0, tmpReadBuffer, uLength);
 				if ((hr1 == uLength) && (hr2 == uLength))
 				{
 					if (0 == memcmp(tmpWriteBuffer, tmpReadBuffer, uLength))
 					{
-						AtlMessageBox(m_hWnd, _T("Test OK"));
+						AtlMessageBox(m_hWnd, L"Test OK");
 						return 0;
 					}
 				}
 
-				AtlMessageBox(m_hWnd, _T("Test Failed"));
+				AtlMessageBox(m_hWnd, L"Test Failed");
 			}
 		}
 		return 0;
@@ -743,11 +743,11 @@ public:
 
 class CUARTDlg : public CDialogImpl<CUARTDlg>
 {
-	HNnCam	m_hCam;
+	HToupcam	m_hCam;
 public:
 	enum { IDD = IDD_UART };
 
-	CUARTDlg(HNnCam hCam)
+	CUARTDlg(HToupcam hCam)
 		: m_hCam(hCam)
 	{
 	}
@@ -767,25 +767,25 @@ public:
 
 	LRESULT OnButton1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		TCHAR strLength[64] = { 0 };
+		wchar_t strLength[64] = { 0 };
 		if (GetDlgItemText(IDC_EDIT2, strLength, _countof(strLength)))
 		{
-			TCHAR* endptr = NULL;
-			unsigned uLength = _tcstoul(strLength, &endptr, 16);
+			wchar_t* endptr = NULL;
+			const unsigned uLength = _tcstoul(strLength, &endptr, 16);
 			if (uLength)
 			{
 				unsigned char* tmpBuffer = (unsigned char*)alloca(uLength);
-				HRESULT hr = Nncam_read_UART(m_hCam, tmpBuffer, uLength);
+				HRESULT hr = Toupcam_read_UART(m_hCam, tmpBuffer, uLength);
 				if (FAILED(hr))
-					AtlMessageBox(m_hWnd, _T("Failed to read UART."));
+					AtlMessageBox(m_hWnd, L"Failed to read UART.");
 				else if (0 == hr)
-					AtlMessageBox(m_hWnd, _T("Read UART, 0 byte."));
+					AtlMessageBox(m_hWnd, L"Read UART, 0 byte.");
 				else if (hr > 0)
 				{
 					std::wstringstream wstr;
-					wstr << _T("UART: length = ") << hr << _T(", data = ");
+					wstr << L"UART: length = " << hr << L", data = ";
 					for (int i = 0; i < hr; ++i)
-						wstr << std::hex << std::setw(2) << std::setfill((TCHAR)'0') << tmpBuffer[i] << _T(" ");
+						wstr << std::hex << std::setw(2) << std::setfill((wchar_t)'0') << tmpBuffer[i] << L" ";
 					AtlMessageBox(m_hWnd, wstr.str().c_str());
 				}
 			}
@@ -795,10 +795,10 @@ public:
 
 	LRESULT OnButton2(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		TCHAR strLength[64] = { 0 }, strData[1024] = { 0 };
+		wchar_t strLength[64] = { 0 }, strData[1024] = { 0 };
 		if (GetDlgItemText(IDC_EDIT2, strLength, _countof(strLength)) && GetDlgItemText(IDC_EDIT3, strData, _countof(strData)))
 		{
-			TCHAR* endptr = NULL;
+			wchar_t* endptr = NULL;
 			unsigned uLength = _tcstoul((LPCTSTR)strLength, &endptr, 16);
 			if (uLength)
 			{
@@ -821,9 +821,9 @@ public:
 					else if (strData[i + 1] >= 'A' && strData[i + 1] <= 'F')
 						tmpBuffer[i / 2] |= (strData[i + 1] - 'A' + 10);
 				}
-				HRESULT hr = Nncam_write_UART(m_hCam, tmpBuffer, uLength);
-				TCHAR strMessage[256];
-				_stprintf(strMessage, _T("Write UART, length = %u, result = 0x%08x"), uLength, hr);
+				HRESULT hr = Toupcam_write_UART(m_hCam, tmpBuffer, uLength);
+				wchar_t strMessage[256];
+				swprintf(strMessage, L"Write UART, length = %u, result = 0x%08x", uLength, hr);
 				AtlMessageBox(m_hWnd, strMessage);
 			}
 		}
@@ -839,13 +839,13 @@ public:
 
 class CIocontrolDlg : public CDialogImpl<CIocontrolDlg>
 {
-	HNnCam				m_hCam;
-	const NncamInstV2&	m_inst;
+	HToupcam				m_hCam;
+	const ToupcamDeviceV2&	m_tdev;
 public:
 	enum { IDD = IDD_IOCONTROL };
 
-	CIocontrolDlg(HNnCam hCam, const NncamInstV2& inst)
-		: m_hCam(hCam), m_inst(inst)
+	CIocontrolDlg(HToupcam hCam, const ToupcamDeviceV2& tdev)
+		: m_hCam(hCam), m_tdev(tdev)
 	{
 	}
 
@@ -862,55 +862,55 @@ public:
 
 		{
 			CComboBox box(GetDlgItem(IDC_IOINDEX));
-			box.AddString(_T("Isolated input"));
-			box.AddString(_T("Isolated output"));
-			box.AddString(_T("GPIO0"));
-			box.AddString(_T("GPIO1"));
+			box.AddString(L"Isolated input");
+			box.AddString(L"Isolated output");
+			box.AddString(L"GPIO0");
+			box.AddString(L"GPIO1");
 			box.SetCurSel(0);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_GPIODIR));
-			box.AddString(_T("Input"));
-			box.AddString(_T("Output"));
+			box.AddString(L"Input");
+			box.AddString(L"Output");
 			box.SetCurSel(0);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_IOFORMAT));
-			box.AddString(_T("Not connected"));
-			box.AddString(_T("Tri-state"));
-			box.AddString(_T("TTL"));
-			box.AddString(_T("LVDS"));
-			box.AddString(_T("RS422"));
-			box.AddString(_T("Opto-coupled"));
+			box.AddString(L"Not connected");
+			box.AddString(L"Tri-state");
+			box.AddString(L"TTL");
+			box.AddString(L"LVDS");
+			box.AddString(L"RS422");
+			box.AddString(L"Opto-coupled");
 			box.SetCurSel(5);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_OUTPUTINVERTER));
-			box.AddString(_T("No"));
-			box.AddString(_T("Yes"));
+			box.AddString(L"No");
+			box.AddString(L"Yes");
 			box.SetCurSel(0);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_INPUTACTIVATION));
-			box.AddString(_T("Positive"));
-			box.AddString(_T("Negative"));
+			box.AddString(L"Positive");
+			box.AddString(L"Negative");
 			box.SetCurSel(0);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_TRIGGERSOURCE));
-			box.AddString(_T("Isolated input"));
-			box.AddString(_T("GPIO0"));
-			box.AddString(_T("GPIO1"));
-			box.AddString(_T("Counter"));
-			box.AddString(_T("PWM"));
-			box.AddString(_T("Software"));
+			box.AddString(L"Isolated input");
+			box.AddString(L"GPIO0");
+			box.AddString(L"GPIO1");
+			box.AddString(L"Counter");
+			box.AddString(L"PWM");
+			box.AddString(L"Software");
 			box.SetCurSel(0);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_COUNTERSOURCE));
-			box.AddString(_T("Isolated input"));
-			box.AddString(_T("GPIO0"));
-			box.AddString(_T("GPIO1"));
+			box.AddString(L"Isolated input");
+			box.AddString(L"GPIO0");
+			box.AddString(L"GPIO1");
 			box.SetCurSel(0);
 		}
 		{
@@ -955,7 +955,7 @@ public:
 
 	LRESULT OnCounterReset(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_RESETCOUNTER, 0, NULL);
+		Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_RESETCOUNTER, 0, NULL);
 		return 0;
 	}
 
@@ -969,17 +969,17 @@ public:
 		{
 			CComboBox box(GetDlgItem(IDC_GPIODIR));
 			if (0 == box.GetCurSel())
-				Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_GPIODIR, 0x00, NULL);
+				Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_GPIODIR, 0x00, NULL);
 			else
-				Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_GPIODIR, 0x01, NULL);
+				Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_GPIODIR, 0x01, NULL);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_OUTPUTINVERTER));
-			Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_OUTPUTINVERTER, box.GetCurSel(), NULL);
+			Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_OUTPUTINVERTER, box.GetCurSel(), NULL);
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_INPUTACTIVATION));
-			Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_INPUTACTIVATION, box.GetCurSel(), NULL);
+			Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_INPUTACTIVATION, box.GetCurSel(), NULL);
 		}
 		{
 			CString str;
@@ -987,8 +987,8 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_STROBEDURATION, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_STROBEDURATION, val, NULL);
 			}
 		}
 		{
@@ -997,8 +997,8 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME, val, NULL);
 			}
 		}
 		{
@@ -1007,13 +1007,13 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_COUNTERVALUE, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_COUNTERVALUE, val, NULL);
 			}
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_OUTPUTMODE));
-			Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_OUTPUTMODE, box.GetCurSel(), NULL);
+			Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_OUTPUTMODE, box.GetCurSel(), NULL);
 		}
 		{
 			CString str;
@@ -1021,13 +1021,13 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_USERVALUE, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_USERVALUE, val, NULL);
 			}
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_STROBEDELAYMODE));
-			Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_STROBEDELAYMODE, box.GetCurSel(), NULL);
+			Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYMODE, box.GetCurSel(), NULL);
 		}
 		{
 			CString str;
@@ -1035,8 +1035,8 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_STROBEDELAYTIME, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYTIME, val, NULL);
 			}
 		}
 		{
@@ -1045,13 +1045,13 @@ public:
 			str.Trim();
 			if (!str.IsEmpty())
 			{
-				int val = _ttoi((LPCTSTR)str);
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_TRIGGERDELAY, val, NULL);
+				const int val = _ttoi((LPCTSTR)str);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_TRIGGERDELAY, val, NULL);
 			}
 		}
 		{
 			CComboBox box(GetDlgItem(IDC_PWMSOURCE));
-			Nncam_IoControl(m_hCam, index, NNCAM_IOCONTROLTYPE_SET_PWMSOURCE, box.GetCurSel(), NULL);
+			Toupcam_IoControl(m_hCam, index, TOUPCAM_IOCONTROLTYPE_SET_PWMSOURCE, box.GetCurSel(), NULL);
 		}
 		return 0;
 	}
@@ -1070,7 +1070,7 @@ public:
 		{
 			{ sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW, StartWindowProc,
 			  0, 0, NULL, NULL, NULL, (HBRUSH)NULL_BRUSH, NULL, NULL, NULL },
-			NULL, NULL, IDC_ARROW, TRUE, 0, _T("")
+			NULL, NULL, IDC_ARROW, TRUE, 0, L""
 		};
 		return wc;
 	}
@@ -1341,9 +1341,9 @@ private:
 
 class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFrame>
 {
-	HNnCam		m_hCam;
+	HToupcam		m_hCam;
 	CMainView		m_view;
-	NncamInstV2	m_ti[NNCAM_MAX];
+	ToupcamDeviceV2	m_dev[TOUPCAM_MAX];
 	unsigned		m_nIndex;
 	BOOL			m_bPaused;
 	int				m_nSnapType; // 0-> not snaping, 1 -> single snap, 2 -> multiple snap
@@ -1358,6 +1358,7 @@ class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFr
 	BYTE*			m_pData;
 	BITMAPINFOHEADER	m_header;
 
+	bool			m_bTriggerMode;
 	typedef enum {
 		eTriggerNumber,
 		eTriggerLoop
@@ -1460,25 +1461,25 @@ public:
 	{
 		switch (wParam)
 		{
-		case NNCAM_EVENT_ERROR:
-		case NNCAM_EVENT_TIMEOUT:
+		case TOUPCAM_EVENT_ERROR:
+		case TOUPCAM_EVENT_NOFRAMETIMEOUT:
 			OnEventError();
 			break;
-		case NNCAM_EVENT_DISCONNECTED:
+		case TOUPCAM_EVENT_DISCONNECTED:
 			OnEventDisconnected();
 			break;
-		case NNCAM_EVENT_EXPOSURE:
+		case TOUPCAM_EVENT_EXPOSURE:
 			OnEventExpo();
 			break;
-		case NNCAM_EVENT_TEMPTINT:
+		case TOUPCAM_EVENT_TEMPTINT:
 			OnEventTemptint();
 			break;
-		case NNCAM_EVENT_IMAGE:
+		case TOUPCAM_EVENT_IMAGE:
 			OnEventImage();
 			if (eTriggerLoop == m_eTriggerType)
-				Nncam_Trigger(m_hCam, 1);
+				Toupcam_Trigger(m_hCam, 1);
 			break;
-		case NNCAM_EVENT_STILLIMAGE:
+		case TOUPCAM_EVENT_STILLIMAGE:
 			OnEventSnap();
 			break;
 		}
@@ -1488,10 +1489,11 @@ public:
 	CMainFrame()
 	: m_hCam(NULL), m_nIndex(0), m_bPaused(FALSE), m_nSnapType(0), m_nSnapSeq(0), m_nSnapFile(0), m_nFrameCount(0), m_dwStartTick(0), m_dwLastTick(0), m_pWmvRecord(NULL), m_pData(NULL), m_view(this)
 	{
+		m_bTriggerMode = false;
 		m_nTriggerNumber = 1;
 		m_eTriggerType = eTriggerNumber;
 
-		memset(m_ti, 0, sizeof(m_ti));
+		memset(m_dev, 0, sizeof(m_dev));
 		memset(m_szFilePath, 0, sizeof(m_szFilePath));
 		
 		memset(&m_header, 0, sizeof(m_header));
@@ -1509,13 +1511,13 @@ public:
 		while (submenu.GetMenuItemCount() > 0)
 			submenu.RemoveMenu(submenu.GetMenuItemCount() - 1, MF_BYPOSITION);
 
-		unsigned cnt = Nncam_EnumV2(m_ti);
+		const unsigned cnt = Toupcam_EnumV2(m_dev);
 		if (0 == cnt)
 			submenu.AppendMenu(MF_GRAYED | MF_STRING, ID_DEVICE_DEVICE0, L"No Device");
 		else
 		{
 			for (unsigned i = 0; i < cnt; ++i)
-				submenu.AppendMenu(MF_STRING, ID_DEVICE_DEVICE0 + i, m_ti[i].displayname);
+				submenu.AppendMenu(MF_STRING, ID_DEVICE_DEVICE0 + i, m_dev[i].displayname);
 		}
 
 		CreateSimpleStatusBar();
@@ -1534,7 +1536,7 @@ public:
 	void OnWhiteBalance(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		if (m_hCam)
-			Nncam_AwbOnePush(m_hCam, NULL, NULL);
+			Toupcam_AwbOnePush(m_hCam, NULL, NULL);
 	}
 
 	void OnAutoExposure(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
@@ -1542,10 +1544,10 @@ public:
 		if (m_hCam)
 		{
 			BOOL bAutoExposure = FALSE;
-			if (SUCCEEDED(Nncam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
+			if (SUCCEEDED(Toupcam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
 			{
 				bAutoExposure = !bAutoExposure;
-				Nncam_put_AutoExpoEnable(m_hCam, bAutoExposure);
+				Toupcam_put_AutoExpoEnable(m_hCam, bAutoExposure);
 				UISetCheck(ID_CONFIG_AUTOEXPOSURE, bAutoExposure ? 1 : 0);
 				UIEnable(ID_CONFIG_EXPOSURETIME, !bAutoExposure);
 			}
@@ -1557,10 +1559,10 @@ public:
 		if (m_hCam)
 		{
 			BOOL b = FALSE;
-			if (SUCCEEDED(Nncam_get_VFlip(m_hCam, &b)))
+			if (SUCCEEDED(Toupcam_get_VFlip(m_hCam, &b)))
 			{
 				b = !b;
-				Nncam_put_VFlip(m_hCam, b);
+				Toupcam_put_VFlip(m_hCam, b);
 				UISetCheck(ID_CONFIG_VERTICALFLIP, b ? 1 : 0);
 			}
 		}
@@ -1571,10 +1573,10 @@ public:
 		if (m_hCam)
 		{
 			BOOL b = FALSE;
-			if (SUCCEEDED(Nncam_get_HFlip(m_hCam, &b)))
+			if (SUCCEEDED(Toupcam_get_HFlip(m_hCam, &b)))
 			{
 				b = !b;
-				Nncam_put_HFlip(m_hCam, b);
+				Toupcam_put_HFlip(m_hCam, b);
 				UISetCheck(ID_CONFIG_HORIZONTALFLIP, b ? 1 : 0);
 			}
 		}
@@ -1585,7 +1587,7 @@ public:
 		if (m_hCam)
 		{
 			m_bPaused = !m_bPaused;
-			Nncam_Pause(m_hCam, m_bPaused);
+			Toupcam_Pause(m_hCam, m_bPaused);
 			
 			UISetCheck(ID_ACTION_PAUSE, m_bPaused ? 1 : 0);
 			UIEnable(ID_ACTION_STARTRECORD, !m_bPaused);
@@ -1624,14 +1626,14 @@ public:
 	{
 		if (m_hCam)
 		{
-			CPixelFormatDlg dlg(m_ti[m_nIndex], m_hCam);
+			CPixelFormatDlg dlg(m_dev[m_nIndex], m_hCam);
 			dlg.DoModal();
 		}
 	}
 
 	void OnTECTarget(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
-		if (m_hCam && (m_ti[m_nIndex].model->flag & NNCAM_FLAG_TEC_ONOFF)) // support set the tec target
+		if (m_hCam && (m_dev[m_nIndex].model->flag & TOUPCAM_FLAG_TEC_ONOFF)) // support set the tec target
 		{
 			CTECTargetDlg dlg(m_hCam);
 			dlg.DoModal();
@@ -1670,12 +1672,12 @@ public:
 		if (m_hCam)
 		{
 			CRoiDlg dlg;
-			Nncam_get_Roi(m_hCam, &dlg.xOffset_, &dlg.yOffset_, &dlg.xWidth_, &dlg.yHeight_);
+			Toupcam_get_Roi(m_hCam, &dlg.xOffset_, &dlg.yOffset_, &dlg.xWidth_, &dlg.yHeight_);
 			if (IDOK == dlg.DoModal())
 			{
-				if (SUCCEEDED(Nncam_put_Roi(m_hCam, dlg.xOffset_, dlg.yOffset_, dlg.xWidth_, dlg.yHeight_)))
+				if (SUCCEEDED(Toupcam_put_Roi(m_hCam, dlg.xOffset_, dlg.yOffset_, dlg.xWidth_, dlg.yHeight_)))
 				{
-					Nncam_get_Roi(m_hCam, NULL, NULL, (unsigned*)&m_header.biWidth, (unsigned*)&m_header.biHeight);
+					Toupcam_get_Roi(m_hCam, NULL, NULL, (unsigned*)&m_header.biWidth, (unsigned*)&m_header.biHeight);
 					m_header.biSizeImage = TDIBWIDTHBYTES(m_header.biWidth * m_header.biBitCount) * m_header.biHeight;
 					UpdateResolutionText();
 				}
@@ -1701,7 +1703,7 @@ public:
 	void OnFwVer(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		char ver[16] = { 0 };
-		if (SUCCEEDED(Nncam_get_FwVersion(m_hCam, ver)))
+		if (SUCCEEDED(Toupcam_get_FwVersion(m_hCam, ver)))
 		{
 			CA2T a2t(ver);
 			AtlMessageBox(m_hWnd, a2t.m_psz, L"FwVer");
@@ -1711,7 +1713,7 @@ public:
 	void OnHwVer(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		char ver[16] = { 0 };
-		if (SUCCEEDED(Nncam_get_HwVersion(m_hCam, ver)))
+		if (SUCCEEDED(Toupcam_get_HwVersion(m_hCam, ver)))
 		{
 			CA2T a2t(ver);
 			AtlMessageBox(m_hWnd, a2t.m_psz, L"HwVer");
@@ -1722,11 +1724,11 @@ public:
 	{
 		if (m_hCam)
 		{
-			if (m_ti[m_nIndex].model->ioctrol <= 0)
+			if (m_dev[m_nIndex].model->ioctrol <= 0)
 				AtlMessageBox(m_hWnd, L"No IoControl");
 			else
 			{
-				CIocontrolDlg dlg(m_hCam, m_ti[m_nIndex]);
+				CIocontrolDlg dlg(m_hCam, m_dev[m_nIndex]);
 				dlg.DoModal();
 			}
 		}
@@ -1735,7 +1737,7 @@ public:
 	void OnFpgaVer(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		char ver[16] = { 0 };
-		if (SUCCEEDED(Nncam_get_FpgaVersion(m_hCam, ver)))
+		if (SUCCEEDED(Toupcam_get_FpgaVersion(m_hCam, ver)))
 		{
 			CA2T a2t(ver);
 			AtlMessageBox(m_hWnd, a2t.m_psz, L"FPGAVer");
@@ -1749,13 +1751,13 @@ public:
 		int val = nID - ID_TESTPATTERN0;
 		if (val)
 			val = val * 2 + 1;
-		Nncam_put_Option(m_hCam, NNCAM_OPTION_TESTPATTERN, val);
+		Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_TESTPATTERN, val);
 	}
 
 	void OnProductionDate(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		char pdate[10] = { 0 };
-		if (SUCCEEDED(Nncam_get_ProductionDate(m_hCam, pdate)))
+		if (SUCCEEDED(Toupcam_get_ProductionDate(m_hCam, pdate)))
 		{
 			CA2T a2t(pdate);
 			AtlMessageBox(m_hWnd, a2t.m_psz, L"ProductionDate");
@@ -1765,7 +1767,7 @@ public:
 	void OnSn(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		char sn[32] = { 0 };
-		if (SUCCEEDED(Nncam_get_SerialNumber(m_hCam, sn)))
+		if (SUCCEEDED(Toupcam_get_SerialNumber(m_hCam, sn)))
 		{
 			CA2T a2t(sn);
 			AtlMessageBox(m_hWnd, a2t.m_psz, L"Serial Number");
@@ -1775,7 +1777,7 @@ public:
 	void OnRawformat(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
 		unsigned nFourCC = 0, bitsperpixel = 0;
-		if (SUCCEEDED(Nncam_get_RawFormat(m_hCam, &nFourCC, &bitsperpixel)))
+		if (SUCCEEDED(Toupcam_get_RawFormat(m_hCam, &nFourCC, &bitsperpixel)))
 		{
 			wchar_t str[257];
 			swprintf(str, L"FourCC:0x%08x, %c%c%c%c\nBits per Pixel: %u", nFourCC, (char)(nFourCC & 0xff), (char)((nFourCC >> 8) & 0xff), (char)((nFourCC >> 16) & 0xff), (char)((nFourCC >> 24) & 0xff), bitsperpixel);
@@ -1785,20 +1787,21 @@ public:
 
 	void OnTriggerMode(UINT /*uNotifyCode*/, int /*nID*/, HWND /*wndCtl*/)
 	{
+		m_bTriggerMode = !m_bTriggerMode;
+		UISetCheck(ID_TRIGGER_MODE, m_bTriggerMode ? 1 : 0);
 		if (m_hCam)
 		{
 			int val = 0;
-			Nncam_get_Option(m_hCam, NNCAM_OPTION_TRIGGER, &val);
+			Toupcam_get_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, &val);
 			if (val == 0)
-				val = 2;
+				val = (m_dev[m_nIndex].model->flag & TOUPCAM_FLAG_TRIGGER_EXTERNAL) ? 2 : 1;
 			else
 				val = 0;
-			Nncam_put_Option(m_hCam, NNCAM_OPTION_TRIGGER, val);
-			UISetCheck(ID_TRIGGER_MODE, (val == 2)? 1 : 0);
-			UIEnable(ID_ACTION_STOPRECORD, (m_hCam && (val == 2)) ? TRUE : FALSE);
-			UIEnable(ID_TRIGGER_TRIGGER, (val == 2) ? 1 : 0);
-			UIEnable(ID_TRIGGER_LOOP, (val == 2) ? 1 : 0);
-			UIEnable(ID_TRIGGER_IOCONFIG, (val == 2) ? 1 : 0);
+			Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, val);
+			UIEnable(ID_ACTION_STOPRECORD, (m_hCam && val) ? TRUE : FALSE);
+			UIEnable(ID_TRIGGER_TRIGGER, val ? 1 : 0);
+			UIEnable(ID_TRIGGER_LOOP, val ? 1 : 0);
+			UIEnable(ID_TRIGGER_IOCONFIG, (2 == val) ? 1 : 0);
 		}
 	}
 
@@ -1809,8 +1812,8 @@ public:
 		if (IDOK == dlg.DoModal())
 		{
 			m_nTriggerNumber = dlg.number_;
-			if (m_ti[m_nIndex].model->ioctrol > 0)
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_BURSTCOUNTER, m_nTriggerNumber, NULL);
+			if (m_dev[m_nIndex].model->ioctrol > 0)
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_BURSTCOUNTER, m_nTriggerNumber, NULL);
 		}
 	}
 
@@ -1819,16 +1822,16 @@ public:
 		if (m_hCam)
 		{
 			int val = 0;
-			Nncam_get_Option(m_hCam, NNCAM_OPTION_TRIGGER, &val);
+			Toupcam_get_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, &val);
 			if (val == 2)
 			{
 				m_eTriggerType = eTriggerNumber;
-				Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE, 5, NULL);
-				HRESULT hr = Nncam_Trigger(m_hCam, m_nTriggerNumber);
+				Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE, 5, NULL);
+				const HRESULT hr = Toupcam_Trigger(m_hCam, m_nTriggerNumber);
 				if (E_INVALIDARG == hr)
 				{
 					if (m_nTriggerNumber > 1)
-						AtlMessageBox(m_hWnd, L"NNCAM_FLAG_TRIGGER_SINGLE: only number = 1 supported");
+						AtlMessageBox(m_hWnd, L"TOUPCAM_FLAG_TRIGGER_SINGLE: only number = 1 supported");
 				}
 			}
 		}
@@ -1839,23 +1842,21 @@ public:
 		if (m_hCam)
 		{
 			int val = 0;
-			Nncam_get_Option(m_hCam, NNCAM_OPTION_TRIGGER, &val);
+			Toupcam_get_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, &val);
 			if (val == 2)
 			{
 				if (eTriggerLoop == m_eTriggerType)
 				{
 					m_eTriggerType = eTriggerNumber;
-					UIEnable(ID_TRIGGER_MODE, TRUE);
 					UIEnable(ID_TRIGGER_TRIGGER, TRUE);
-					Nncam_Trigger(m_hCam, 0);
+					Toupcam_Trigger(m_hCam, 0);
 				}
 				else
 				{
-					UIEnable(ID_TRIGGER_MODE, FALSE);
 					UIEnable(ID_TRIGGER_TRIGGER, FALSE);
 					m_eTriggerType = eTriggerLoop;
-					Nncam_IoControl(m_hCam, 0, NNCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE, 5, NULL);
-					Nncam_Trigger(m_hCam, 1);
+					Toupcam_IoControl(m_hCam, 0, TOUPCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE, 5, NULL);
+					Toupcam_Trigger(m_hCam, 1);
 				}
 			}
 		}
@@ -1867,11 +1868,11 @@ public:
 			return;
 
 		unsigned eSize = 0;
-		if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+		if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 		{
 			if (eSize != nID - ID_PREVIEW_RESOLUTION0)
 			{
-				if (SUCCEEDED(Nncam_Stop(m_hCam)))
+				if (SUCCEEDED(Toupcam_Stop(m_hCam)))
 				{
 					OnStopRecord(0, 0, NULL);
 
@@ -1882,11 +1883,11 @@ public:
 					m_nFrameCount = 0;
 					m_dwStartTick = m_dwLastTick = 0;
 
-					Nncam_put_eSize(m_hCam, nID - ID_PREVIEW_RESOLUTION0);
-					for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+					Toupcam_put_eSize(m_hCam, nID - ID_PREVIEW_RESOLUTION0);
+					for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 						UISetCheck(ID_PREVIEW_RESOLUTION0 + i, (nID - ID_PREVIEW_RESOLUTION0 == i) ? 1 : 0);
 					UpdateSnapMenu();
-					if (SUCCEEDED(Nncam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight)))
+					if (SUCCEEDED(Toupcam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight)))
 					{
 						UpdateResolutionText();
 						UpdateFrameText(L"");
@@ -1899,7 +1900,7 @@ public:
 							m_pData = NULL;
 						}
 						m_pData = (BYTE*)malloc(m_header.biSizeImage);
-						if (SUCCEEDED(Nncam_StartPullModeWithWndMsg(m_hCam, m_hWnd, MSG_CAMEVENT)))
+						if (SUCCEEDED(Toupcam_StartPullModeWithWndMsg(m_hCam, m_hWnd, MSG_CAMEVENT)))
 						{
 							UIEnable(ID_ACTION_PAUSE, TRUE);
 							UIEnable(ID_ACTION_STARTRECORD, TRUE);
@@ -1923,7 +1924,7 @@ public:
 		if (IDOK == dlg.DoModal())
 		{
 			wcscpy(m_szFilePath, dlg.m_szFileName);
-			if (SUCCEEDED(Nncam_Snap(m_hCam, nID - ID_SNAP_RESOLUTION0)))
+			if (SUCCEEDED(Toupcam_Snap(m_hCam, nID - ID_SNAP_RESOLUTION0)))
 			{
 				m_nSnapType = 1;
 				m_nSnapSeq = 0;
@@ -1940,7 +1941,7 @@ public:
 		CSnapnDlg dlg;
 		if ((IDOK == dlg.DoModal()) && (dlg.m_nNum > 0))
 		{
-			if (SUCCEEDED(Nncam_SnapN(m_hCam, nID - ID_SNAPN_RESOLUTION0, dlg.m_nNum)))
+			if (SUCCEEDED(Toupcam_SnapN(m_hCam, nID - ID_SNAPN_RESOLUTION0, dlg.m_nNum)))
 			{
 				m_nSnapType = 2;
 				m_nSnapSeq = dlg.m_nNum;
@@ -1962,18 +1963,26 @@ public:
 		m_nFrameCount = 0;
 		m_dwStartTick = m_dwLastTick = 0;
 		m_nIndex = nID - ID_DEVICE_DEVICE0;
-		m_hCam = Nncam_Open(m_ti[m_nIndex].id);
+		m_hCam = Toupcam_Open(m_dev[m_nIndex].id);
 		if (m_hCam)
 		{
 			/* just to demo put roi befor the camera is started */
 			if (m_xRoiWidth && m_yRoiHeight)
 			{
-				Nncam_put_Roi(m_hCam, m_xRoiOffset, m_yRoiOffset, m_xRoiWidth, m_yRoiHeight);
-				Nncam_get_Roi(m_hCam, NULL, NULL, (unsigned*)&m_header.biWidth, (unsigned*)&m_header.biHeight);
+				Toupcam_put_Roi(m_hCam, m_xRoiOffset, m_yRoiOffset, m_xRoiWidth, m_yRoiHeight);
+				Toupcam_get_Roi(m_hCam, NULL, NULL, (unsigned*)&m_header.biWidth, (unsigned*)&m_header.biHeight);
 			}
 			else
 			{
-				Nncam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight);
+				Toupcam_get_Size(m_hCam, (int*)&m_header.biWidth, (int*)&m_header.biHeight);
+			}
+
+			if (m_bTriggerMode)
+			{
+				if (m_dev->model->flag & TOUPCAM_FLAG_TRIGGER_EXTERNAL)
+					Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, 2);
+				else if (m_dev->model->flag & TOUPCAM_FLAG_TRIGGER_EXTERNAL)
+					Toupcam_put_Option(m_hCam, TOUPCAM_OPTION_TRIGGER, 1);
 			}
 
 			OnDeviceChanged();
@@ -1984,12 +1993,12 @@ public:
 				m_header.biSizeImage = TDIBWIDTHBYTES(m_header.biWidth * m_header.biBitCount) * m_header.biHeight;
 				m_pData = (BYTE*)malloc(m_header.biSizeImage);
 				unsigned eSize = 0;
-				if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+				if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 				{
-					for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+					for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 						UISetCheck(ID_PREVIEW_RESOLUTION0 + i, (eSize == i) ? 1 : 0);
 				}
-				if (SUCCEEDED(Nncam_StartPullModeWithWndMsg(m_hCam, m_hWnd, MSG_CAMEVENT)))
+				if (SUCCEEDED(Toupcam_StartPullModeWithWndMsg(m_hCam, m_hWnd, MSG_CAMEVENT)))
 				{
 					UIEnable(ID_ACTION_PAUSE, TRUE);
 					UIEnable(ID_ACTION_STARTRECORD, TRUE);
@@ -2034,8 +2043,8 @@ public:
 
 	void OnEventImage()
 	{
-		NncamFrameInfoV2 info = { 0 };
-		HRESULT hr = Nncam_PullImageV2(m_hCam, m_pData, m_header.biBitCount, &info);
+		ToupcamFrameInfoV2 info = { 0 };
+		HRESULT hr = Toupcam_PullImageV2(m_hCam, m_pData, m_header.biBitCount, &info);
 		if (FAILED(hr))
 			return;
 		if ((info.width != m_header.biWidth) || (info.height != m_header.biHeight))
@@ -2059,20 +2068,20 @@ public:
 		header.biSize = sizeof(header);
 		header.biPlanes = 1;
 		header.biBitCount = 24;
-		HRESULT hr = Nncam_PullStillImage(m_hCam, NULL, 24, (unsigned*)&header.biWidth, (unsigned*)&header.biHeight); //first, peek the width and height
+		HRESULT hr = Toupcam_PullStillImage(m_hCam, NULL, 24, (unsigned*)&header.biWidth, (unsigned*)&header.biHeight); //first, peek the width and height
 		if (SUCCEEDED(hr))
 		{
 			header.biSizeImage = TDIBWIDTHBYTES(header.biWidth * header.biBitCount) * header.biHeight;
 			void* pSnapData = malloc(header.biSizeImage);
 			if (pSnapData)
 			{
-				hr = Nncam_PullStillImage(m_hCam, pSnapData, 24, NULL, NULL);
+				hr = Toupcam_PullStillImage(m_hCam, pSnapData, 24, NULL, NULL);
 				if (SUCCEEDED(hr))
 				{
 					if (2 == m_nSnapType)
 					{
-						TCHAR strPath[MAX_PATH];
-						_stprintf(strPath, _T("%04u.jpg"), m_nSnapFile++);
+						wchar_t strPath[MAX_PATH];
+						swprintf(strPath, L"%04u.jpg", m_nSnapFile++);
 						SaveImageByWIC(strPath, pSnapData, &header);
 					}
 					else
@@ -2112,21 +2121,21 @@ public:
 	void OnEventError()
 	{
 		CloseDevice();
-		AtlMessageBox(m_hWnd, _T("Error"));
+		AtlMessageBox(m_hWnd, L"Error");
 	}
 
 	void OnEventDisconnected()
 	{
 		CloseDevice();
-		AtlMessageBox(m_hWnd, _T("The camera is disconnected, maybe has been pulled out."));
+		AtlMessageBox(m_hWnd, L"The camera is disconnected, maybe has been pulled out.");
 	}
 
 	void OnEventTemptint()
 	{
 		CStatusBarCtrl statusbar(m_hWndStatusBar);
 		wchar_t res[128];
-		int nTemp = NNCAM_TEMP_DEF, nTint = NNCAM_TINT_DEF;
-		Nncam_get_TempTint(m_hCam, &nTemp, &nTint);
+		int nTemp = TOUPCAM_TEMP_DEF, nTint = TOUPCAM_TINT_DEF;
+		Toupcam_get_TempTint(m_hCam, &nTemp, &nTint);
 		swprintf(res, L"Temp = %d, Tint = %d", nTemp, nTint);
 		statusbar.SetText(2, res);
 	}
@@ -2137,7 +2146,7 @@ public:
 		wchar_t res[128];
 		unsigned nTime = 0;
 		unsigned short AGain = 0;
-		if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Nncam_get_ExpoAGain(m_hCam, &AGain)))
+		if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Toupcam_get_ExpoAGain(m_hCam, &AGain)))
 		{
 			swprintf(res, L"ExposureTime = %u, AGain = %hu", nTime, AGain);
 			statusbar.SetText(1, res);
@@ -2163,7 +2172,7 @@ private:
 
 		if (m_hCam)
 		{
-			Nncam_Close(m_hCam);
+			Toupcam_Close(m_hCam);
 			m_hCam = NULL;
 
 			if (m_pData)
@@ -2209,12 +2218,12 @@ private:
 		else
 		{
 			unsigned eSize = 0;
-			Nncam_get_eSize(m_hCam, &eSize);
+			Toupcam_get_eSize(m_hCam, &eSize);
 
 			wchar_t res[128];
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 			{
-				swprintf(res, L"%u * %u", m_ti[m_nIndex].model->res[i].width, m_ti[m_nIndex].model->res[i].height);
+				swprintf(res, L"%u * %u", m_dev[m_nIndex].model->res[i].width, m_dev[m_nIndex].model->res[i].height);
 				previewsubmenu.AppendMenu(MF_STRING, ID_PREVIEW_RESOLUTION0 + i, res);
 				snapsubmenu.AppendMenu(MF_STRING, ID_SNAP_RESOLUTION0 + i, res);
 				snapnsubmenu.AppendMenu(MF_STRING, ID_SNAPN_RESOLUTION0 + i, res);
@@ -2226,15 +2235,15 @@ private:
 			UpdateResolutionText();
 			UpdateExposureTimeText();
 
-			int nTemp = NNCAM_TEMP_DEF, nTint = NNCAM_TINT_DEF;
-			if (SUCCEEDED(Nncam_get_TempTint(m_hCam, &nTemp, &nTint)))
+			int nTemp = TOUPCAM_TEMP_DEF, nTint = TOUPCAM_TINT_DEF;
+			if (SUCCEEDED(Toupcam_get_TempTint(m_hCam, &nTemp, &nTint)))
 			{
 				swprintf(res, L"Temp = %d, Tint = %d", nTemp, nTint);
 				statusbar.SetText(2, res);
 			}
 
 			BOOL bAutoExposure = TRUE;
-			if (SUCCEEDED(Nncam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
+			if (SUCCEEDED(Toupcam_get_AutoExpoEnable(m_hCam, &bAutoExposure)))
 			{
 				UISetCheck(ID_CONFIG_AUTOEXPOSURE, bAutoExposure ? 1 : 0);
 				UIEnable(ID_CONFIG_EXPOSURETIME, !bAutoExposure);
@@ -2262,11 +2271,10 @@ private:
 		UISetCheck(ID_CONFIG_HORIZONTALFLIP, 0);
 		UISetCheck(ID_CONFIG_VERTICALFLIP, 0);
 		UIEnable(ID_ACTION_STOPRECORD, m_hCam ? TRUE : FALSE);
-		UIEnable(ID_TECTARGET, (m_hCam && (m_ti[m_nIndex].model->flag & NNCAM_FLAG_TEC_ONOFF)) ? TRUE : FALSE);
+		UIEnable(ID_TECTARGET, (m_hCam && (m_dev[m_nIndex].model->flag & TOUPCAM_FLAG_TEC_ONOFF)) ? TRUE : FALSE);
 		UIEnable(ID_SPEED, m_hCam ? TRUE : FALSE);
 		UIEnable(ID_MAXAE, m_hCam ? TRUE : FALSE);
 
-		UIEnable(ID_TRIGGER_MODE, m_hCam ? TRUE : FALSE);
 		UIEnable(ID_TRIGGER_NUMBER, m_hCam ? TRUE : FALSE);
 		UIEnable(ID_TRIGGER_TRIGGER, FALSE);
 		UIEnable(ID_TRIGGER_LOOP, FALSE); 
@@ -2281,7 +2289,7 @@ private:
 	{
 		if (m_nSnapType)
 		{
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 			{
 				UIEnable(ID_SNAP_RESOLUTION0 + i, FALSE);
 				UIEnable(ID_SNAPN_RESOLUTION0 + i, FALSE);
@@ -2290,23 +2298,23 @@ private:
 		}
 
 		unsigned eSize = 0;
-		if (SUCCEEDED(Nncam_get_eSize(m_hCam, &eSize)))
+		if (SUCCEEDED(Toupcam_get_eSize(m_hCam, &eSize)))
 		{
-			for (unsigned i = 0; i < m_ti[m_nIndex].model->preview; ++i)
+			for (unsigned i = 0; i < m_dev[m_nIndex].model->preview; ++i)
 			{
-				if (m_ti[m_nIndex].model->still == m_ti[m_nIndex].model->preview) /* still capture full supported */
+				if (m_dev[m_nIndex].model->still == m_dev[m_nIndex].model->preview) /* still capture full supported */
 				{
 					UIEnable(ID_SNAP_RESOLUTION0 + i, TRUE);
 					UIEnable(ID_SNAPN_RESOLUTION0 + i, TRUE);
 				}
-				else if (0 == m_ti[m_nIndex].model->still) /* still capture not supported */
+				else if (0 == m_dev[m_nIndex].model->still) /* still capture not supported */
 				{
 					UIEnable(ID_SNAP_RESOLUTION0 + i, (eSize == i) ? TRUE : FALSE);
 					UIEnable(ID_SNAPN_RESOLUTION0 + i, (eSize == i) ? TRUE : FALSE);
 				}
-				else if (m_ti[m_nIndex].model->still < m_ti[m_nIndex].model->preview)
+				else if (m_dev[m_nIndex].model->still < m_dev[m_nIndex].model->preview)
 				{
-					if ((eSize == i) || (i < m_ti[m_nIndex].model->still))
+					if ((eSize == i) || (i < m_dev[m_nIndex].model->still))
 					{
 						UIEnable(ID_SNAP_RESOLUTION0 + i, TRUE);
 						UIEnable(ID_SNAPN_RESOLUTION0 + i, TRUE);
@@ -2326,7 +2334,7 @@ private:
 		CStatusBarCtrl statusbar(m_hWndStatusBar);
 		wchar_t res[128];
 		unsigned xOffset = 0, yOffset = 0, nWidth = 0, nHeight = 0;
-		if (SUCCEEDED(Nncam_get_Roi(m_hCam, &xOffset, &yOffset, &nWidth, &nHeight)))
+		if (SUCCEEDED(Toupcam_get_Roi(m_hCam, &xOffset, &yOffset, &nWidth, &nHeight)))
 		{
 			swprintf(res, L"%u, %u, %u * %u", xOffset, yOffset, nWidth, nHeight);
 			statusbar.SetText(0, res);
@@ -2339,19 +2347,19 @@ private:
 		statusbar.SetText(3, str);
 	}
 
-	void UpdateFrameText(const NncamFrameInfoV2& info)
+	void UpdateFrameText(const ToupcamFrameInfoV2& info)
 	{
 		wchar_t str[256];
 		if (m_dwLastTick != m_dwStartTick)
 		{
-			if (info.flag & (NNCAM_FRAMEINFO_FLAG_SEQ | NNCAM_FRAMEINFO_FLAG_TIMESTAMP))
+			if (info.flag & (TOUPCAM_FRAMEINFO_FLAG_SEQ | TOUPCAM_FRAMEINFO_FLAG_TIMESTAMP))
 				swprintf(str, L"%u, %.2f, %u, %llu", m_nFrameCount, m_nFrameCount / ((m_dwLastTick - m_dwStartTick) / 1000.0), info.seq, info.timestamp);
 			else
 				swprintf(str, L"%u, %.2f", m_nFrameCount, m_nFrameCount / ((m_dwLastTick - m_dwStartTick) / 1000.0));
 		}
 		else
 		{
-			if (info.flag & (NNCAM_FRAMEINFO_FLAG_SEQ | NNCAM_FRAMEINFO_FLAG_TIMESTAMP))
+			if (info.flag & (TOUPCAM_FRAMEINFO_FLAG_SEQ | TOUPCAM_FRAMEINFO_FLAG_TIMESTAMP))
 				swprintf(str, L"%u, %u, %llu", m_nFrameCount, info.seq, info.timestamp);
 			else
 				swprintf(str, L"%u", m_nFrameCount);
@@ -2365,7 +2373,7 @@ private:
 		wchar_t res[128];
 		unsigned nTime = 0;
 		unsigned short AGain = 0;
-		if (SUCCEEDED(Nncam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Nncam_get_ExpoAGain(m_hCam, &AGain)))
+		if (SUCCEEDED(Toupcam_get_ExpoTime(m_hCam, &nTime)) && SUCCEEDED(Toupcam_get_ExpoAGain(m_hCam, &AGain)))
 		{
 			swprintf(res, L"ExposureTime = %u, AGain = %hu", nTime, AGain);
 			statusbar.SetText(1, res);
@@ -2401,7 +2409,7 @@ LRESULT CMainView::OnWmPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 			m_nOldHeight = pHeader->biHeight;
 			dc.FillRect(&rc, (HBRUSH)WHITE_BRUSH);
 		}
-		int m = dc.SetStretchBltMode(COLORONCOLOR);
+		const int m = dc.SetStretchBltMode(COLORONCOLOR);
 		StretchDIBits(dc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 0, 0, pHeader->biWidth, pHeader->biHeight, pData, (BITMAPINFO*)pHeader, DIB_RGB_COLORS, SRCCOPY);
 		dc.SetStretchBltMode(m);
 	}
@@ -2421,10 +2429,7 @@ static int Run(int nCmdShow = SW_SHOWDEFAULT)
 	CMainFrame frmMain;
 
 	if (frmMain.CreateEx() == NULL)
-	{
-		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
-	}
 
 	frmMain.ShowWindow(nCmdShow);
 

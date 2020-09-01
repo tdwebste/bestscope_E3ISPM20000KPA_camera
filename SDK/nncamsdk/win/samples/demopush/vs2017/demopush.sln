@@ -1,5 +1,8 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demopush", "demopush.vcxproj", "{262DCBE0-F590-445E-B752-F425B125D15B}"
 EndProject
 Global

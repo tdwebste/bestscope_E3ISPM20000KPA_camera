@@ -7,7 +7,7 @@
 #include <Dshowasf.h>
 #include <wmsdk.h>
 #include <InitGuid.h>
-#include "../inc/nncam_dshow.h"
+#include "toupcam_dshow.h"
 
 #define SAFE_RELEASE(x)	\
 do{						\
@@ -20,20 +20,20 @@ do{						\
 
 interface ISampleGrabberCB : public IUnknown
 {
-	virtual STDMETHODIMP SampleCB( double SampleTime, IMediaSample *pSample ) = 0;
-	virtual STDMETHODIMP BufferCB( double SampleTime, BYTE *pBuffer, long BufferLen ) = 0;
+	virtual STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample) = 0;
+	virtual STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen) = 0;
 };
 
 static const IID IID_ISampleGrabberCB = { 0x0579154A, 0x2B53, 0x4994, { 0xB0, 0xD0, 0xE7, 0x73, 0x14, 0x8E, 0xFF, 0x85 } };
 interface ISampleGrabber: public IUnknown
 {
-	virtual HRESULT STDMETHODCALLTYPE SetOneShot( BOOL OneShot ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE SetMediaType( const AM_MEDIA_TYPE *pType ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE GetConnectedMediaType( AM_MEDIA_TYPE *pType ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE SetBufferSamples( BOOL BufferThem ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE GetCurrentBuffer( long *pBufferSize, long *pBuffer ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE GetCurrentSample( IMediaSample **ppSample ) = 0;
-	virtual HRESULT STDMETHODCALLTYPE SetCallback( ISampleGrabberCB *pCallback, long WhichMethodToCallback ) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetOneShot(BOOL OneShot) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetMediaType(const AM_MEDIA_TYPE *pType) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetConnectedMediaType( AM_MEDIA_TYPE *pType) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetBufferSamples(BOOL BufferThem) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetCurrentBuffer(long *pBufferSize, long *pBuffer) = 0;
+	virtual HRESULT STDMETHODCALLTYPE GetCurrentSample(IMediaSample **ppSample) = 0;
+	virtual HRESULT STDMETHODCALLTYPE SetCallback(ISampleGrabberCB *pCallback, long WhichMethodToCallback) = 0;
 };
 
 #ifndef __ICaptureGraphBuilder2_INTERFACE_DEFINED__
@@ -133,10 +133,10 @@ public:
 
 	virtual ULONG STDMETHODCALLTYPE AddRef() { return 2; }
 	virtual ULONG STDMETHODCALLTYPE Release() { return 1; }
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void ** ppvObject);
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject);
 
-	virtual STDMETHODIMP SampleCB( double SampleTime, IMediaSample *pSample );
-	virtual STDMETHODIMP BufferCB( double SampleTime, BYTE *pBuffer, long BufferLen );
+	virtual STDMETHODIMP SampleCB(double SampleTime, IMediaSample* pSample);
+	virtual STDMETHODIMP BufferCB(double SampleTime, BYTE* pBuffer, long BufferLen);
 };
 
 class TDshowContext

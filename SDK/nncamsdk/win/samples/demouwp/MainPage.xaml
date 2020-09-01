@@ -1,0 +1,29 @@
+﻿<Page
+    x:Class="demouwp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:demouwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+  <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+        <ComboBox Grid.Row="0" Grid.Column="0" x:Name="combobox_" Margin="10,10,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" SelectionChanged="OnDeviceChanged"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="rescombo_" Margin="10,10,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" SelectionChanged="OnResChanged"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="frames_" Margin="10,10,10,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="Frames:" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="exptime_" Margin="10,10,10,0" HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="ExpTime:" VerticalAlignment="Top"/>
+        <Button Grid.Row="1" Grid.Column="0" x:Name="wbonepush_" Content="White Balance One Push" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="OnWhiteBalance"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="autoexposure_" Content="Auto Exposure" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="OnAutoExposure"/>
+        <Image Grid.Row="3" Grid.ColumnSpan="2" x:Name="image_" HorizontalAlignment="Center" Margin="10,10,10,10" VerticalAlignment="Top" Stretch="Fill"/>
+</Grid>
+</Page>

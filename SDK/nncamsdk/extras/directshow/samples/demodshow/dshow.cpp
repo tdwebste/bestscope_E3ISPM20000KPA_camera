@@ -12,7 +12,7 @@
 
 void FreeMediaType(AM_MEDIA_TYPE& mt)
 {
-    if (mt.cbFormat != 0) {
+    if (mt.cbFormat) {
         CoTaskMemFree((PVOID)mt.pbFormat);
 
         // Strictly unnecessary but tidier
@@ -39,9 +39,8 @@ BOOL IsEqualObject(IUnknown* pFirst, IUnknown* pSecond)
     /*  Different objects can't have the same interface pointer for
         any interface
     */
-    if (pFirst == pSecond) {
+    if (pFirst == pSecond)
         return TRUE;
-    }
     /*  OK - do it the hard way - check if they have the same
         IUnknown pointers - a single object can only have one of these
     */
@@ -71,19 +70,16 @@ BOOL IsEqualObject(IUnknown* pFirst, IUnknown* pSecond)
 BOOL WINAPI FindConnectedPin(IBaseFilter* pFilter, REFGUID type, IPin** ppPin1, IPin** ppPin2)
 {
 	IEnumPins* pEnum = NULL;
-	IPin* pPin = NULL;
-	IPin* pTmp;
+	IPin *pPin = NULL, *pTmp;
 	PIN_DIRECTION ThisPinDir;
 
 	_ASSERTE(pFilter);
 	_ASSERTE(ppPin1 && ppPin2);
 	if (NULL == pFilter || NULL == ppPin1 || NULL == ppPin2)
 		return FALSE;
-	*ppPin1 = NULL;
-	*ppPin2 = NULL;
+	*ppPin1 = *ppPin2 = NULL;
 
-	HRESULT hr = pFilter->EnumPins(&pEnum);
-	if (FAILED(hr))
+	if (FAILED(pFilter->EnumPins(&pEnum)))
 		return FALSE;
 
 	while (pEnum->Next(1, &pPin, NULL) == S_OK)
@@ -126,8 +122,7 @@ BOOL WINAPI GetInputMediaType(IBaseFilter* pFilter, AM_MEDIA_TYPE* pType)
 	if (NULL == pFilter)
 		return FALSE;
 
-	HRESULT hr = pFilter->EnumPins(&pEnum);
-	if (FAILED(hr))
+	if (FAILED(pFilter->EnumPins(&pEnum)))
 		return FALSE;
 
 	while (pEnum->Next(1, &pPin, NULL) == S_OK)
@@ -161,8 +156,7 @@ BOOL WINAPI GetInputpinOutpin(IBaseFilter* pFilter, IPin** ppPin1, IPin** ppPin2
 		return FALSE;
 	*ppPin1 = *ppPin2 = NULL;
 
-	HRESULT hr = pFilter->EnumPins(&pEnum);
-	if (FAILED(hr))
+	if (FAILED(pFilter->EnumPins(&pEnum)))
 		return FALSE;
 
 	while (pEnum->Next(1, &pPin, NULL) == S_OK)
@@ -291,27 +285,27 @@ typedef IUnknown* (__stdcall *PFUN_DSHOWOPENCAMERA)(unsigned index);
 PFUN_DSHOWENUMCAMERA g_pDshowEnumCamera = NULL;
 PFUN_DSHOWGETMODELNAME g_pDshowGetModelName = NULL;
 PFUN_DSHOWOPENCAMERA g_pDshowOpenCamera = NULL;
-HMODULE g_hModuleNncamAx = NULL;
+HMODULE g_hModuleToupcamAx = NULL;
 
-void InitNncamAx()
+void InitToupcamAx()
 {
-    if (g_hModuleNncamAx)
+    if (g_hModuleToupcamAx)
         return;
 		
     HKEY hKey = NULL;
-    /* {EA6387A5-60C7-41D3-B058-8D90580A7BE1} is the clsid of nncam dshow object */
+    /* {EA6387A5-60C7-41D3-B058-8D90580A7BE1} is the clsid of toupcam dshow object */
     if (ERROR_SUCCESS == RegOpenKeyExW(HKEY_CLASSES_ROOT, L"CLSID\\{EA6387A5-60C7-41D3-B058-8D90580A7BE1}\\InprocServer32", 0, KEY_READ, &hKey))
     {
         wchar_t axPath[MAX_PATH + 1] = { 0 };
         DWORD cbData = MAX_PATH * sizeof(wchar_t);
-        if (ERROR_SUCCESS == RegQueryValueExW(hKey, NULL, NULL, NULL, (PBYTE)axPath, &cbData)) /* query the full path of nncam.ax */
+        if (ERROR_SUCCESS == RegQueryValueExW(hKey, NULL, NULL, NULL, (PBYTE)axPath, &cbData)) /* query the full path of toupcam.ax */
         {
-            g_hModuleNncamAx = LoadLibraryW(axPath);
-            if (g_hModuleNncamAx)
+            g_hModuleToupcamAx = LoadLibraryW(axPath);
+            if (g_hModuleToupcamAx)
             {
-                g_pDshowEnumCamera = (PFUN_DSHOWENUMCAMERA)GetProcAddress(g_hModuleNncamAx, "DshowEnumCamera");
-                g_pDshowGetModelName = (PFUN_DSHOWGETMODELNAME)GetProcAddress(g_hModuleNncamAx, "DshowGetModelName");
-                g_pDshowOpenCamera = (PFUN_DSHOWOPENCAMERA)GetProcAddress(g_hModuleNncamAx, "DshowOpenCamera");
+                g_pDshowEnumCamera = (PFUN_DSHOWENUMCAMERA)GetProcAddress(g_hModuleToupcamAx, "DshowEnumCamera");
+                g_pDshowGetModelName = (PFUN_DSHOWGETMODELNAME)GetProcAddress(g_hModuleToupcamAx, "DshowGetModelName");
+                g_pDshowOpenCamera = (PFUN_DSHOWOPENCAMERA)GetProcAddress(g_hModuleToupcamAx, "DshowOpenCamera");
             }
         }
         RegCloseKey(hKey);
@@ -333,21 +327,12 @@ TDshowContext::TDshowContext(const std::wstring& devname, HWND hParent, HWND hOw
     m_pFg = NULL;
 
 	m_pSampleGrabber = m_pStillSampleGrabber = NULL;
-
 	m_pStillImageVideoControl = NULL;
 	m_pStillImagePin = NULL;
 	m_pStillImageAMStreamConfig = NULL;
 
-    m_iVCapDialogPos = -1;
-    m_iVCapCapturePinDialogPos = -1;
-	m_iVStillImagePinDialogPos = -1;
-
-    m_fPreviewGraphBuilt = FALSE;
-    m_fPreviewing = FALSE;
-
-    m_fCaptureGraphBuilt = FALSE;
-    m_fCapturing = FALSE;
-
+    m_iVCapDialogPos = m_iVCapCapturePinDialogPos = m_iVStillImagePinDialogPos = -1;
+    m_fPreviewGraphBuilt = m_fPreviewing = m_fCaptureGraphBuilt = m_fCapturing = FALSE;
 	m_bFullscreen = FALSE;
 }
 
@@ -357,14 +342,14 @@ std::vector<TDshowDevice> dscap_enum_device()
 
 #ifdef USE_DSHOWOPENCAMERA
 
-	InitNncamAx();
+	InitToupcamAx();
 	if (g_pDshowEnumCamera)
 	{
 		unsigned n = g_pDshowEnumCamera();
 		for (unsigned i = 0; i < n; ++i)
 		{
 			TCHAR str[256];
-			_stprintf(str, _T("Nncam #%u"), i); /* Nncam #0, Nncam #1, etc */
+			_stprintf(str, _T("Toupcam #%u"), i); /* Toupcam #0, Toupcam #1, etc */
 
 			TDshowDevice dev;
 			dev.DisplayName = str;
@@ -462,11 +447,7 @@ void TDshowContext::MakeMenuOptions(BOOL bAdd, HMENU hMenuSub1, UINT pos, UINT t
 		return;
 
     int zz = 0;
-
-    m_iVCapDialogPos = -1;
-    m_iVCapCapturePinDialogPos = -1;
-	m_iVStillImagePinDialogPos = -1;
-
+    m_iVCapDialogPos = m_iVCapCapturePinDialogPos = m_iVStillImagePinDialogPos = -1;
     if (m_pSource == NULL)
         return;
 
@@ -544,8 +525,8 @@ BOOL TDshowContext::StopPreview()
 
     // stop the graph
     CComPtr<IMediaControl> spMC;
-    HRESULT hr = m_pFg->QueryInterface(IID_IMediaControl, (void**)&spMC);
-    if (SUCCEEDED(hr))
+    m_pFg->QueryInterface(IID_IMediaControl, (void**)&spMC);
+    if (spMC)
 		spMC->Stop();
 
     m_fPreviewing = FALSE;
@@ -621,17 +602,10 @@ void TDshowContext::TearDownGraph()
 void TDshowContext::FreeCapFilters()
 {
     SAFE_RELEASE(m_pFg);
-
-    if (m_pBuilder)
-    {
-		m_pBuilder->Release();
-        m_pBuilder = NULL;
-    }
-
+	SAFE_RELEASE(m_pBuilder);
     SAFE_RELEASE(m_pSource);
     SAFE_RELEASE(m_pAMStreamConfig);
 	SAFE_RELEASE(m_pSampleGrabber);
-
     SAFE_RELEASE(m_pDlg);
 
 	SAFE_RELEASE(m_pStillImageVideoControl);
@@ -662,10 +636,8 @@ void TDshowContext::stop()
 	_ASSERTE(NULL == m_pSampleGrabber);
 	_ASSERTE(NULL == m_pStillSampleGrabber);
 
-	m_iVCapDialogPos = -1;
-    m_iVCapCapturePinDialogPos = -1;
-	m_iVStillImagePinDialogPos = -1;
-
+	m_iVCapDialogPos = m_iVCapCapturePinDialogPos = m_iVStillImagePinDialogPos = -1;
+	
 	SAFE_RELEASE(m_pVideoMoniker);
 
 	delete this;
@@ -706,7 +678,7 @@ HRESULT TDshowContext::InitCapFilters()
 	if (g_pDshowOpenCamera)
 	{
 		unsigned nIndex = 0;
-		const wchar_t* p = _tcschr(m_devname.c_str(), '#'); // extract the index from the name, such as 'Nncam #0', 'Nncam #1'
+		const wchar_t* p = _tcschr(m_devname.c_str(), '#'); // extract the index from the name, such as 'Toupcam #0', 'Toupcam #1'
 		if (p)
 			nIndex = _ttoi(p + 1);
 		IUnknown* pIUnknown = g_pDshowOpenCamera(nIndex);
@@ -853,7 +825,7 @@ HRESULT TDshowContext::BuildPreviewGraph()
     }
     // Get the start window to be a child of our app's window.
 
-    // This will find the IVideoWindow interface on the renderer.  It is 
+    // This will find the IVideoWindow interface on the renderer. It is 
     // important to ask the filtergraph for this interface... do NOT use
     // ICaptureGraphBuilder2::FindInterface, because the filtergraph needs to
     // know we own the window so it can give us display changed messages, etc.
@@ -876,7 +848,7 @@ HRESULT TDshowContext::BuildPreviewGraph()
     if (hr == NOERROR)
         m_pME->SetNotifyWindow((OAHWND)m_hOwner, m_NotifyMsg, 0);
 
-	if (NULL != m_pStillImageVideoControl)
+	if (m_pStillImageVideoControl)
 	{
 		if (NULL == m_pStillImagePin)
 		{
@@ -885,7 +857,7 @@ HRESULT TDshowContext::BuildPreviewGraph()
 				SAFE_RELEASE(m_pStillImageVideoControl);
 		}
 
-		if (NULL != m_pStillImagePin)
+		if (m_pStillImagePin)
 		{
 			if (NULL == m_pStillImageAMStreamConfig)
 				m_pStillImagePin->QueryInterface(IID_IAMStreamConfig, (void**)&m_pStillImageAMStreamConfig);
@@ -944,7 +916,7 @@ BOOL TDshowContext::BuildCaptureGraph()
     // Render the video capture and start pins - even if the capture filter only
     // has a capture pin (and no start pin) this should work... because the
     // capture graph builder will use a smart tee filter to provide both capture
-    // and start.  We don't have to worry.  It will just work.
+    // and start. We don't have to worry. It will just work.
     //
     hr = m_pBuilder->RenderStream(&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video, m_pSource, NULL, m_pRender);
     if (hr != NOERROR)
@@ -1040,10 +1012,7 @@ BOOL TDshowContext::StartPreview()
     {
         hr = spMC->Run();
         if (FAILED(hr))
-        {
-            // stop parts that ran
             spMC->Stop();
-        }
     }
 
     m_fPreviewing = TRUE;
@@ -1201,7 +1170,7 @@ void TDshowContext::stopcapture()
 
 BOOL TDshowContext::video_size(LONG* lWidth, LONG* lHeight)
 {
-	if (NULL != m_pAMStreamConfig)
+	if (m_pAMStreamConfig)
 	{
 		AM_MEDIA_TYPE* amt = NULL;
 		HRESULT hr = m_pAMStreamConfig->GetFormat(&amt);
@@ -1278,13 +1247,13 @@ void TDshowContext::move_window()
 		GetClientRect(m_hOwner, &c);
 		if (h < 0)
 			h = -h;
-		float w2 = (float)(c.right - c.left);
-		float h2 = (float)(c.bottom - c.top);
-		float f = __min(w2 / w, h2 / h);
+		const float w2 = (float)(c.right - c.left);
+		const float h2 = (float)(c.bottom - c.top);
+		const float f = __min(w2 / w, h2 / h);
 		w = (long)(f * w + 0.5f);
 		h = (long)(f * h + 0.5f);
-		int left = c.left + ((c.right - c.left) - w) / 2;
-		int top = c.top+((c.bottom - c.top) - h) / 2;
+		const int left = c.left + ((c.right - c.left) - w) / 2;
+		const int top = c.top+((c.bottom - c.top) - h) / 2;
 		if (m_pVW)
 		{
 			m_pVW->SetWindowPosition(left, top, w, h);
@@ -1337,7 +1306,7 @@ void TDshowContext::on_notify()
 			//                                 == 0 indicates device removed
 			if (l2 == 0)
 			{
-				IBaseFilter* pf;
+				IBaseFilter* pf = NULL;
 				IUnknown* punk = (IUnknown*)(LONG_PTR)l1;
 				if (S_OK == punk->QueryInterface(IID_IBaseFilter, (void**)&pf))
 				{
@@ -1375,9 +1344,7 @@ void TDshowContext::on_dialog(int id)
 				pSpec = NULL;
 				if (hr == S_OK)
 				{
-					OleCreatePropertyFrame(m_hParent, 30, 30, FilterInfo.achName, 1,
-											(IUnknown**)&m_pSource, cauuid.cElems,
-											(GUID*)cauuid.pElems, 0, 0, NULL);
+					OleCreatePropertyFrame(m_hParent, 30, 30, FilterInfo.achName, 1, (IUnknown**)&m_pSource, cauuid.cElems, (GUID*)cauuid.pElems, 0, 0, NULL);
 					CoTaskMemFree(cauuid.pElems);
 				}
 			}
@@ -1417,9 +1384,7 @@ void TDshowContext::on_dialog(int id)
 					hr = pSpec->GetPages(&cauuid);
 					if (hr == S_OK)
 					{
-						OleCreatePropertyFrame(m_hParent, 30, 30, NULL, 1,
-												(IUnknown**)&pSC.p, cauuid.cElems,
-												(GUID*)cauuid.pElems, 0, 0, NULL);
+						OleCreatePropertyFrame(m_hParent, 30, 30, NULL, 1, (IUnknown**)&pSC.p, cauuid.cElems, (GUID*)cauuid.pElems, 0, 0, NULL);
 						CoTaskMemFree(cauuid.pElems);
 					}
 				}
@@ -1453,9 +1418,7 @@ void TDshowContext::on_dialog(int id)
 						hr = pSpec->GetPages(&cauuid);
 						if (hr == S_OK)
 						{
-							OleCreatePropertyFrame(m_hParent, 30, 30, NULL, 1,
-													(IUnknown**)&pStillImagePin.p, cauuid.cElems,
-													(GUID*)cauuid.pElems, 0, 0, NULL);
+							OleCreatePropertyFrame(m_hParent, 30, 30, NULL, 1, (IUnknown**)&pStillImagePin.p, cauuid.cElems, (GUID*)cauuid.pElems, 0, 0, NULL);
 							CoTaskMemFree(cauuid.pElems);
 						}
 					}
@@ -1543,7 +1506,7 @@ BOOL TDshowContext::snapshot(IBaseFilter* pSampleGrabber, const wchar_t* filenam
 	return bRet;
 }
 
-STDMETHODIMP SampleGrabberCBImpl::SampleCB( double SampleTime, IMediaSample *pSample )
+STDMETHODIMP SampleGrabberCBImpl::SampleCB(double SampleTime, IMediaSample* pSample)
 {
 	if (pSample)
 	{
@@ -1571,7 +1534,7 @@ STDMETHODIMP SampleGrabberCBImpl::SampleCB( double SampleTime, IMediaSample *pSa
 	return S_OK;
 }
 
-STDMETHODIMP SampleGrabberCBImpl::BufferCB( double SampleTime, BYTE *pBuffer, long BufferLen )
+STDMETHODIMP SampleGrabberCBImpl::BufferCB(double SampleTime, BYTE* pBuffer, long BufferLen)
 {
 	bCapturing_ = false;
 	return S_OK;
@@ -1587,7 +1550,7 @@ BOOL TDshowContext::stillimage_snapshot(const wchar_t* filename)
 	return snapshot(m_pStillSampleGrabber, filename);
 }
 
-HRESULT TDshowContext::queryinterface(const IID& riid,  void **ppvObj)
+HRESULT TDshowContext::queryinterface(const IID& riid, void** ppvObj)
 {
 	if (m_pSource)
 		return m_pSource->QueryInterface(riid, ppvObj);

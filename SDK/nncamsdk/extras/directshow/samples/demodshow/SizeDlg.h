@@ -4,7 +4,6 @@ class CSizeDlg : public CDialog
 {
 public:
 	CSizeDlg(CWnd* pParent = NULL);
-	virtual ~CSizeDlg();
 
 	enum { IDD = IDD_SIZEDLG };
 

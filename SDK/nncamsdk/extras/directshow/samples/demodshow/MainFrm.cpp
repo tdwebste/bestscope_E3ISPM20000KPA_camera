@@ -5,10 +5,6 @@
 #include <uuids.h>
 #include "SizeDlg.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
@@ -17,7 +13,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI(ID_CAMERA00, OnUpdateCamera)
 	ON_COMMAND_RANGE(ID_CAMERA00, ID_CAMERA39, OnCamera)
 	ON_COMMAND_RANGE(ID_SETUP_SETUP0, ID_SETUP_SETUP4, OnSetup)
-	ON_WM_DESTROY()
+	ON_WM_CLOSE()
 	ON_MESSAGE(MSG_DSNOTIFY, OnMsgDsnotify)
 	ON_MESSAGE(MSG_DSSIZE, OnMsgDssize)
 	ON_WM_SIZE()
@@ -208,7 +204,7 @@ void CMainFrame::OnStopCapture()
 	}
 }
 
-void CMainFrame::OnDestroy()
+void CMainFrame::OnClose()
 {
 	if (m_pDshowContext)
 	{
@@ -217,7 +213,7 @@ void CMainFrame::OnDestroy()
 		m_curDshowDevice.clear();
 	}
 
-	CFrameWnd::OnDestroy();
+	CFrameWnd::OnClose();
 }
 
 LRESULT CMainFrame::OnMsgDsnotify(WPARAM wp, LPARAM lp)
@@ -303,8 +299,8 @@ void CMainFrame::OnExampleFliphorizontal()
 {
 	if (m_pDshowContext)
 	{
-		CComPtr<INncam> spIcam;
-		if (SUCCEEDED(m_pDshowContext->queryinterface(IID_INncam, (void**)&spIcam)))
+		CComPtr<IToupcam> spIcam;
+		if (SUCCEEDED(m_pDshowContext->queryinterface(IID_IToupcam, (void**)&spIcam)))
 		{
 			BOOL bHFlip;
 			if  (SUCCEEDED(spIcam->get_HFlip(&bHFlip)))
@@ -317,8 +313,8 @@ void CMainFrame::OnExampleFlipvertical()
 {
 	if (m_pDshowContext)
 	{
-		CComPtr<INncam> spIcam;
-		if (SUCCEEDED(m_pDshowContext->queryinterface(IID_INncam, (void**)&spIcam)))
+		CComPtr<IToupcam> spIcam;
+		if (SUCCEEDED(m_pDshowContext->queryinterface(IID_IToupcam, (void**)&spIcam)))
 		{
 			BOOL bHFlip;
 			if  (SUCCEEDED(spIcam->get_VFlip(&bHFlip)))
@@ -354,8 +350,8 @@ void CMainFrame::OnSn()
 {
 	if (m_pDshowContext)
 	{
-		CComPtr<INncamSerialNumber> spISN;
-		m_pDshowContext->queryinterface(IID_INncamSerialNumber, (void**)&spISN);
+		CComPtr<IToupcamSerialNumber> spISN;
+		m_pDshowContext->queryinterface(IID_IToupcamSerialNumber, (void**)&spISN);
 		if (spISN)
 		{
 			char sn[32];

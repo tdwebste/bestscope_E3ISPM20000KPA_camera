@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>NnCam API Manual</title>
+<title>Toupcam API Manual</title>
 </head>
 <body>
-<h1 align="center">NnCam API Manual</h1>
+<h1 align="center">Toupcam API Manual</h1>
 <hr/>
 <h1><font color="#0000FF">1. Version &amp; Platform</font></h1>
 <hr/>
-<ul><li>Version: 37.14643.2019.0511</li></ul>
+<ul><li>Version: 46.17309.2020.0616</li></ul>
 <ul>
   <li>Platform
     <ul>
@@ -27,9 +27,9 @@
 	    <ul>
 		  <li>x86: CPU supports SSE3 instruction set or above; GLIBC 2.8 or above</li>
 		  <li>x64: GLIBC 2.14 or above</li>
-		  <li>armel: GLIBC 2.17 or above; built by toolchain arm-linux-gnueabi (version 4.9.2)</li>
-		  <li>armhf: GLIBC 2.17 or above; built by toolchain arm-linux-gnueabihf (version 4.9.2)</li>
-		  <li>arm64: GLIBC 2.17 or above; built by toolchain aarch64-linux-gnu (version 4.9.2)</li>
+		  <li>armel: GLIBC 2.17 or above; built by arm-linux-gnueabi (version 4.9.2)</li>
+		  <li>armhf: GLIBC 2.17 or above; built by arm-linux-gnueabihf (version 4.9.2)</li>
+		  <li>arm64: GLIBC 2.17 or above; built by aarch64-linux-gnu (version 4.9.2)</li>
 		</ul>
 	  </li>
       <li>Android: arm, arm64, x86, x64; built by android-ndk-r18b; __ANDROID_API__ = 23</li>
@@ -39,62 +39,65 @@
 <hr/>
 <h1><font color="#0000FF">2. Introduction</font></h1>
 <hr/>
-<p>NnCam cameras support various kinds of APIs (Application Program Interface), namely
+<p>Toupcam cameras support various kinds of APIs (Application Program Interface), namely
  Native C/C++, <a href="#dotnet">.NET/C#/VB.NET</a>, <a href="#python">Python</a>, <a href="#java">Java</a>, <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd375454(v=vs.85).aspx">DirectShow</a>, <a href="http://twain.org/">Twain</a>, LabView, MabLab and so on. Compared with other APIs, Native C/C++ API, as a low level API, don't depend any other runtime libraries. Besides, this interface is simple, flexible and easy to be integrated into the customized applications. 
 The SDK zip file contains all of the necessary resources and information:</p>
 <ul><li>inc</li></ul>
 <blockquote>
- <p align="left">nncam.h, C/C++ head file<br/></p>
+ <p align="left">toupcam.h, C/C++ head file<br/></p>
 </blockquote>
 <ul>
  <li>win: For Microsoft Windows
    <ul>
      <li>dotnet
      <blockquote>
-       <p align="left">nncam.cs, for C#. The nncam.cs use P/Invoke to call into nncam.dll. Please copy nncam.cs to your C# project to use it.<br/>
-         nncam.vb, for VB.NET. The nncam.vb use P/Invoke to call into nncam.dll. Please copy nncam.vb to your VB.NET project to use it.<br/>
+       <p align="left">toupcam.cs, for C#. The toupcam.cs use P/Invoke to call into toupcam.dll. Please copy toupcam.cs to your C# project to use it.<br/>
+         toupcam.vb, for VB.NET. The toupcam.vb use P/Invoke to call into toupcam.dll. Please copy toupcam.vb to your VB.NET project to use it.<br/>
       </p>
      </blockquote></li>
      <li>x86
      <blockquote>
-       <p align="left">nncam.lib, lib file for x86<br/>
-         nncam.dll, dll file for x86<br/>
+       <p align="left">toupcam.lib, lib file for x86<br/>
+         toupcam.dll, dll file for x86<br/>
          democpp.exe, x86 C++ demo exe file</p>
      </blockquote></li>
      <li>x64
       <blockquote>
-        <p align="left">nncam.lib, lib file for x64<br/>
-          nncam.dll, dll file for x64<br/>
+        <p align="left">toupcam.lib, lib file for x64<br/>
+          toupcam.dll, dll file for x64<br/>
          democpp.exe, x64 C++ demo exe file</p>
       </blockquote></li>
 	  <li>arm
      <blockquote>
-       <p align="left">nncam.lib, lib file for arm<br/>
-         nncam.dll, dll file for arm<br/></p>
+       <p align="left">toupcam.lib, lib file for arm<br/>
+         toupcam.dll, dll file for arm<br/></p>
      </blockquote></li>
 	  <li>arm64
      <blockquote>
-       <p align="left">nncam.lib, lib file for arm64<br/>
-         nncam.dll, dll file for arm64<br/></p>
+       <p align="left">toupcam.lib, lib file for arm64<br/>
+         toupcam.dll, dll file for arm64<br/></p>
      </blockquote></li>
 	 <li>winrt
 		<blockquote>
 		DLL files for WinRT / UWP (Universal Windows Platform) / Windows Store App.<br/>
 		These dll files are compatible with Windows Runtime, and can be consumed from a Universal Windows Platform app.<br/>
-		If use C# to develop the UWP, nncam.cs wrapper class can be used to P/Invoke into nncam.dll.<br/>
-		Please pay attation to DeviceCapability of uwp, see: <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/dn303351(v=vs.85).aspx">How to add USB device capabilities to the app manifest</a>. (It seems that microsoft limits the number of Device items to 100)<br/>
+		If use C# to develop the UWP, toupcam.cs wrapper class can be used to P/Invoke into toupcam.dll.<br/>
+		Please pay attation to:<blockquote>1. uwp must use winusb, cannot use the proprietary driver. If the proprietary driver has already been installed, please uninstall it in the device manager, after this, Windows will use winusb automatically.<br/>2. DeviceCapability of uwp, see: <a href="https://msdn.microsoft.com/en-us/library/windows/hardware/dn303351(v=vs.85).aspx">How to add USB device capabilities to the app manifest</a>. (It seems that microsoft limits the number of Device items to 100)</blockquote>
 		demouwp.zip is a simple demo, before build and run this demo, please change the value of vidpid in file Package.appxmanifest<br/>
 		</blockquote>
 	</li>
      <li>drivers (<b>The cameras produced after Jan. 1, 2017 support WinUSB, it's no longer need to install driver in Windows8 and above versions</b>)
        <ol>
-         <li>x86 folder contains the kernel mode drivers for x86, including nncam.cat, nncam.inf and nncam.sys.</li>
-         <li>x64 folder contains the kennel mode driver for x64, including nncam.cat, nncam.inf and nncam.sys.</li>
+         <li>x86 folder contains the kernel mode drivers for x86, including toupcam.cat, toupcam.inf and toupcam.sys.</li>
+         <li>x64 folder contains the kennel mode driver for x64, including toupcam.cat, toupcam.inf and toupcam.sys.</li>
+		 It is recommended to use DPInst.exe to automatically install the driver. If you use NSIS to make the installation file, you can use a statement similar to the following:
+			<table width="100%" border="0" bgcolor="#B0D0B0"><tr><td><pre>ExecWait '"$INSTDIR\drivers\x64\DPInst.exe" /SA /SW /PATH "$INSTDIR\drivers\x64"'</pre></td></tr></table>
        </ol>
      </li>
      <li>samples
        <ol>
          <li>democpp, C++ sample. It demonstrates to enumerate device, open device, video preview, image capture, set the preview resolution, trigger, multi-format image saving (.bmp, .jpg, .png, etc), wmv format video recording, trigger mode, IO control and so on. This sample use Pull Mode. To keep the code clean, this sample uses the WTL library which can be downloaded from <a href="http://sourceforge.net/projects/wtl/">http://sourceforge.net/projects/wtl</a></li>
+         <li>AutoTestTool, auto test tool used to automatically test, such as open/close the camera, change the resolution, snap, ROI, bitdepth, etc</li>
          <li>demopush, C++ sample, this sample use Push Mode, StartPushModeV3</li>
 		 <li>demomfc, a simple C++ sample. It use MFC as the GUI library. It demonstrates to open device, video preview, image capture, set the preview resolution, multi-format image saving (.bmp, .jpg, .png, etc). This sample use Pull Mode.</li>
          <li>demomono, a simple C++ sample. It demonstrates to use mono camera with 8 or 16 bits.</li>
@@ -109,19 +112,19 @@ The SDK zip file contains all of the necessary resources and information:</p>
 </ul>
  <ul><li>linux: For Linux
  	<ul>
- 	<li>udev: 99-nncam.rules, udev rule file. Please see: <a href="http://reactivated.net/writing_udev_rules.html">http://reactivated.net/writing_udev_rules.html</a></li>
-     <li>c#: nncam.cs, for .Net Core C#. The nncam.cs use P/Invoke to call into libnncam.so. Please copy nncam.cs to your C# project to use it</li>
-     <li>x86: libnncam.so, so file for x86</li>
-     <li>x64: libnncam.so, so file for x64</li>
-	 <li>armel: libnncam.so, so file for armel, use toolchain arm-linux-gnueabi</li>
-	 <li>armhf: libnncam.so, so file for armhf, use toolchain arm-linux-gnueabihf</li>
-	 <li>arm64: libnncam.so, so file for arm64, use toolchain aarch64-linux-gnu</li>
+ 	<li>udev: 99-toupcam.rules, udev rule file. Please see: <a href="http://reactivated.net/writing_udev_rules.html">http://reactivated.net/writing_udev_rules.html</a></li>
+     <li>c#: toupcam.cs, for .Net Core C#. The toupcam.cs use P/Invoke to call into libtoupcam.so. Please copy toupcam.cs to your C# project to use it</li>
+     <li>x86: libtoupcam.so, so file for x86</li>
+     <li>x64: libtoupcam.so, so file for x64</li>
+	 <li>armel: libtoupcam.so, so file for armel, use toolchain arm-linux-gnueabi</li>
+	 <li>armhf: libtoupcam.so, so file for armhf, use toolchain arm-linux-gnueabihf</li>
+	 <li>arm64: libtoupcam.so, so file for arm64, use toolchain aarch64-linux-gnu</li>
 	</ul>
  	</li></ul>
- <ul><li>android: libnncam.so for Android on arm, arm64, x86 and x64</li></ul>
+ <ul><li>android: libtoupcam.so for Android on arm, arm64, x86 and x64</li></ul>
  <ul><li>mac: For macOS</li></ul> 
- <ul><li>python: nncam.py and sample code (Console and pyQt)</li></ul>
- <ul><li>java: nncam.java and sample code (Console and Swing)</li></ul>
+ <ul><li>python: toupcam.py and sample code (Console and pyQt)</li></ul>
+ <ul><li>java: toupcam.java and sample code (Console and Swing)</li></ul>
  <ul><li>doc: User manuals in English and Simplified Chinese</li></ul>
  <ul><li>sample
 	<ul>
@@ -142,15 +145,15 @@ The SDK zip file contains all of the necessary resources and information:</p>
 <h1><font color="#0000FF">3. Concepts and terminology</font></h1>
 <hr/>
 <h2><font color="#0000FF">a. Modes for accessing image data: "Pull Mode" vs "Push Mode"</font></h2>
-<p>Nncam offers two modes to obtain image data: Pull Mode and Push Mode. The former is recommended since it's simpler and the application seldom gets stuck in multithreading conditions, especially when using windows message to notify the events.</p>
+<p>Toupcam offers two modes to obtain image data: Pull Mode and Push Mode. The former is recommended since it's simpler and the application seldom gets stuck in multithreading conditions, especially when using windows message to notify the events.</p>
 <ul>
-  <li>In Pull Mode, nncam plays a passive role and the application 'PULL' image data from nncam. The internal thread of nncam obtains image data from the camera hardware and saves them to the internal buffers, then notify the application (see below). The application then call functions Nncam_PullImage(WithRowPitch)(V2) and Nncam_PullStillImage(WithRowPitch)(V2) to access image data.</li>
+  <li>In Pull Mode, toupcam plays a passive role and the application 'PULL' image data from toupcam. The internal thread of toupcam obtains image data from the camera hardware and saves them to the internal buffers, then notify the application (see below). The application then call functions Toupcam_PullImage(WithRowPitch)(V2) and Toupcam_PullStillImage(WithRowPitch)(V2) to access image data.</li>
 </ul>
 <blockquote>
  <p>There are to ways to notify applications:</p>
 <blockquote>
- <p>a) Use Windows message: Start pull mode by using the function Nncam_StartPullModeWithWndMsg. When event occurs, nncam will post message (PostMessage) to the specified window. Parameter WPARAM is the event type, refer to the definition of NNCAM_EVENT_xxxx. This model avoids the multithreading issues, so it's the most simple way. (Obviously, this is only supported in Windows systems, and not supported in Linux and macOS.)</p>
- <p>b) Use Callback function: Start pull mode by using the function Nncam_StartPullModeWithCallback. When event occurs, nncam will callback the function PNNCAM_EVENT_CALLBACK.</p>
+ <p>a) Use Windows message: Start pull mode by using the function Toupcam_StartPullModeWithWndMsg. When event occurs, toupcam will post message (PostMessage) to the specified window. Parameter WPARAM is the event type, refer to the definition of TOUPCAM_EVENT_xxxx. This model avoids the multithreading issues, so it's the most simple way. (Obviously, this is only supported in Windows systems, and not supported in Linux and macOS.)</p>
+ <p>b) Use Callback function: Start pull mode by using the function Toupcam_StartPullModeWithCallback. When event occurs, toupcam will callback the function PTOUPCAM_EVENT_CALLBACK.</p>
 </blockquote>
 </blockquote>
 <blockquote>
@@ -158,92 +161,100 @@ The SDK zip file contains all of the necessary resources and information:</p>
 <div align="center">
 <table width="100%" border="1" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
  <tr>
-   <td width="27%" valign="top">NNCAM_EVENT_EXPOSURE</td>
+   <td width="27%" valign="top">TOUPCAM_EVENT_EXPOSURE</td>
    <td width="73%" valign="top">exposure time changed</td>
  </tr>
  <tr>
-   <td>NNCAM_EVENT_TEMPTINT</td>
+   <td>TOUPCAM_EVENT_TEMPTINT</td>
    <td>white balance changed. Temp/Tint Mode, please see <a href="#wb">here</a>.</td>
  </tr>
  <tr>
-   <td>NNCAM_EVENT_WBGAIN</td>
+   <td>TOUPCAM_EVENT_WBGAIN</td>
    <td>white balance changed. RGB Gain Mode, please see <a href="#wb">here</a>.</td>
  </tr>
  <tr>
-   <td>NNCAM_EVENT_IMAGE</td>
-   <td>Video image data arrives. Use Nncam_PullImage(V2) to 'pull' the image data</td>
+   <td>TOUPCAM_EVENT_IMAGE</td>
+   <td>Video image data arrives. Use Toupcam_PullImage(V2) to 'pull' the image data</td>
  </tr>
  <tr>
-   <td>NNCAM_EVENT_STILLIMAGE</td>
-   <td>Still image which is triggered by function Nncam_Snap or Nncam_SnapN arrives. Use Nncam_PullStillImage(V2) to 'pull' the image data</td>
+   <td>TOUPCAM_EVENT_STILLIMAGE</td>
+   <td>Still image which is triggered by function Toupcam_Snap or Toupcam_SnapN arrives. Use Toupcam_PullStillImage(V2) to 'pull' the image data</td>
  </tr>
  <tr>
-   <td>NNCAM_EVENT_ERROR</td>
+   <td>TOUPCAM_EVENT_ERROR</td>
    <td>Generic error, data acquisition cannot continue</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_DISCONNECTED</td>
+   <td>TOUPCAM_EVENT_DISCONNECTED</td>
    <td>Camera disconnected, maybe has been pulled out</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_TIMEOUT</td>
-   <td>Grab image timeout error, data acquisition cannot continue</td>
+   <td>TOUPCAM_EVENT_NOFRAMETIMEOUT</td>
+   <td>Grab image no frame timeout error, data acquisition cannot continue</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_TRIGGERFAIL</td>
+   <td>TOUPCAM_EVENT_NOPACKETIMEOUT</td>
+   <td>Grab image no packet timeout</td>
+ </tr>
+  <tr>
+   <td>TOUPCAM_EVENT_TRIGGERFAIL</td>
    <td>trigger failed (for example, bad frame data or timeout)</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_BLACK</td>
+   <td>TOUPCAM_EVENT_BLACK</td>
    <td>black balance changed</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_FFC</td>
+   <td>TOUPCAM_EVENT_FFC</td>
    <td>flat field correction status changed</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_DFC</td>
+   <td>TOUPCAM_EVENT_DFC</td>
    <td>dark field correction status changed</td>
  </tr>
   <tr>
-   <td>NNCAM_EVENT_FACTORY</td>
+   <td>TOUPCAM_EVENT_ROI</td>
+   <td>roi changed</td>
+ </tr>
+  <tr>
+   <td>TOUPCAM_EVENT_FACTORY</td>
    <td>restore factory settings. Please note that restoring factory settings may cause resolution changes.</td>
  </tr>
 </table>
 </div>
 </blockquote>
 <ul>
-  <li>In Push Mode, nncam plays an active role. Once the video data is obtained from camera by internal thread, nncam will 'PUSH' the image data to the application through PNNCAM_DATA_CALLBACK. Call the function Nncam_StartPushMode to start push mode. Push mode is more complex. There are some special precautions, such as multithread issues, being impossible to call Nncam_Close and Nncam_Stop in callback function PNNCAM_DATA_CALLBACK, etc.</li>
+  <li>In Push Mode, toupcam plays an active role. Once the video data is obtained from camera by internal thread, toupcam will 'PUSH' the image data to the application through PTOUPCAM_DATA_CALLBACK. Call the function Toupcam_StartPushMode to start push mode. Push mode is more complex. There are some special precautions, such as multithread issues, being impossible to call Toupcam_Close and Toupcam_Stop in callback function PTOUPCAM_DATA_CALLBACK, etc.</li>
 </ul>
 <h2><font color="#0000FF">b. <a id="stillcapture">Still Capture (Still Image)</a></font></h2>
 <p>Most cameras support the so-called still capture capability. This function switches the camera to another resolution temporarily when the camera is in preview mode, after a "still" image in the new resolution is captured and then switch back to the original resolution and resume preview mode.</p>
-<p>For example, UCMOS05100KPA support 3 resolutions and the current one in preview mode is 1280 * 960. Call Nncam_Snap(h, 0) to "still capture" an image in 2592 * 1944 resolution. To realize this function, the camera will temporarily switch to 2592 * 1944 firstly, get an image in 2592 * 1944 resolution and then switch back to 1280 * 960 and resume preview.</p>
-<blockquote>a) In pull mode operation, after the still capture, NNCAM_EVENT_STILLIMAGE will be sent out for external acknowledgement. The external application should call Nncam_PullStillImage(V2) to get the still captured image.</blockquote>
-<blockquote>b) In push mode operation, after the still capture, the callback function PNNCAM_DATA_CALLBACK_V3 will be called with bSnap parameter setting TRUE. The image information including the resolution information will be obtained via the parameter pHeader.</blockquote>
-<p>To check whether the camera have the still capture capability, call Nncam_get_StillResolutionNumber function or check the still field of the struct NncamModelV2.</p>
+<p>For example, UCMOS05100KPA support 3 resolutions and the current one in preview mode is 1280 * 960. Call Toupcam_Snap(h, 0) to "still capture" an image in 2592 * 1944 resolution. To realize this function, the camera will temporarily switch to 2592 * 1944 firstly, get an image in 2592 * 1944 resolution and then switch back to 1280 * 960 and resume preview.</p>
+<blockquote>a) In pull mode operation, after the still capture, TOUPCAM_EVENT_STILLIMAGE will be sent out for external acknowledgement. The external application should call Toupcam_PullStillImage(V2) to get the still captured image.</blockquote>
+<blockquote>b) In push mode operation, after the still capture, the callback function PTOUPCAM_DATA_CALLBACK_V3 will be called with bSnap parameter setting TRUE. The image information including the resolution information will be obtained via the parameter pHeader.</blockquote>
+<p>To check whether the camera have the still capture capability, call Toupcam_get_StillResolutionNumber function or check the still field of the struct ToupcamModelV2.</p>
 <h2><font color="#0000FF"><a id="raw">c. Data format: RGB vs RAW</a></font></h2>
-<p>Nncam supports two data formats: RGB format (default) and RAW format. RAW format could be enabled by assigning NNCAM_OPTION_RAW parameter to 1 when calling Nncam_put_Option function.</p>
+<p>Toupcam supports two data formats: RGB format (default) and RAW format. RAW format could be enabled by assigning TOUPCAM_OPTION_RAW parameter to 1 when calling Toupcam_put_Option function.</p>
 <ul><li>RGB format: The output of every pixel contains 3 componants which stand for R/G/B value respectively. This output is a processed output from the internal color processing engine.</li></ul>
-<ul><li>RAW format: In this format, the output is the raw data directly output from the sensor. The RAW format is for the users that want to skip the internal color processing and obtain the raw data for user-specific purpose. With the raw format output enabled, the functions that are related to the internal color processing will not work, such as Nncam_put_Hue or Nncam_AwbOnePush function and so on.</li></ul>
-<p>Users could switch these two format by calling Nncam_put_Option function with different value setting to NNCAM_OPTION_RAW. You must call this function BEFORE the camera start function (Nncam_StartPullModeWithWndMsg or Nncam_StartPullModeWithCallback or Nncam_StartPushMode).</p>
+<ul><li>RAW format: In this format, the output is the raw data directly output from the sensor. The RAW format is for the users that want to skip the internal color processing and obtain the raw data for user-specific purpose. With the raw format output enabled, the functions that are related to the internal color processing will not work, such as Toupcam_put_Hue or Toupcam_AwbOnePush function and so on.</li></ul>
+<p>Users could switch these two format by calling Toupcam_put_Option function with different value setting to TOUPCAM_OPTION_RAW. You must call this function BEFORE the camera start function (Toupcam_StartPullModeWithWndMsg or Toupcam_StartPullModeWithCallback or Toupcam_StartPushMode).</p>
 <h2><font color="#0000FF"><a id="wb">d. White Balance and Auto White Balance: Temp/Tint mode vs RGB Gain mode</a></font></h2>
-<p>1. Nncam sdk supports two independent modes for white balance: a) Temp/Tint Mode; b) RGB Gain Mode</p>
+<p>1. Toupcam sdk supports two independent modes for white balance: a) Temp/Tint Mode; b) RGB Gain Mode</p>
 <blockquote>
-<p>a) Temp/Tint mode is the default white balance mode. In this mode, temp and tint are the parameters that could be used to control the white balance. Nncam_get_TempTint function is used to acquire the temp and tint values and Nncam_put_TempTint is used to set the temp and tint values. Function Nncam_AwbOnePush is used to execute the auto white balance. When the white balance parameters change, NNCAM_EVENT_TEMPTINT event will be notified for external use.</p>
-<p>b) In RGB Gain mode, the while balace is controled by the gain values of the R,G,B channels. Nncam_get_WhiteBalanceGain is used to acquire the parameters and Nncam_put_WhiteBalanceGain is used to set the white balance parameters. Nncam_AwbInit is used to execute the execute the auto white balance. When the white balance parameters change, NNCAM_EVENT_WBGAIN event will be notified for external use.</p>
+<p>a) Temp/Tint mode is the default white balance mode. In this mode, temp and tint are the parameters that could be used to control the white balance. Toupcam_get_TempTint function is used to acquire the temp and tint values and Toupcam_put_TempTint is used to set the temp and tint values. Function Toupcam_AwbOnePush is used to execute the auto white balance. When the white balance parameters change, TOUPCAM_EVENT_TEMPTINT event will be notified for external use.</p>
+<p>b) In RGB Gain mode, the while balace is controled by the gain values of the R,G,B channels. Toupcam_get_WhiteBalanceGain is used to acquire the parameters and Toupcam_put_WhiteBalanceGain is used to set the white balance parameters. Toupcam_AwbInit is used to execute the execute the auto white balance. When the white balance parameters change, TOUPCAM_EVENT_WBGAIN event will be notified for external use.</p>
 <p>The functions for these two modes cannot be misused:</p>
 	<blockquote>
-	a) In Temp/Tint mode, please use Nncam_get_TempTint and Nncam_put_TempTint and Nncam_AwbOnePush. Nncam_get_WhiteBalanceGain and Nncam_put_WhiteBalanceGain and Nncam_AwbInit cannot be used, they always return E_NOTIMPL.<br/>
-	b) In RGB Gain mode, please use Nncam_get_WhiteBalanceGain and Nncam_put_WhiteBalanceGain and Nncam_AwbInit. Nncam_get_TempTint and Nncam_put_TempTint and Nncam_AwbOnePush cannot be used, they always return E_NOTIMPL<br/>
+	a) In Temp/Tint mode, please use Toupcam_get_TempTint and Toupcam_put_TempTint and Toupcam_AwbOnePush. Toupcam_get_WhiteBalanceGain and Toupcam_put_WhiteBalanceGain and Toupcam_AwbInit cannot be used, they always return E_NOTIMPL.<br/>
+	b) In RGB Gain mode, please use Toupcam_get_WhiteBalanceGain and Toupcam_put_WhiteBalanceGain and Toupcam_AwbInit. Toupcam_get_TempTint and Toupcam_put_TempTint and Toupcam_AwbOnePush cannot be used, they always return E_NOTIMPL<br/>
 	</blockquote>
-<p>When calling Nncam_Open function, whether to add a '@' character at the beginning of the id parameter will determine the white balance mode. Add a '@' character at the beginning of the id parameter means the RGB gain mode. If you want to use the RGB Gain mode, for example, if the id parameter is "abcdef", please call the Nncam_Open function with the id parameter "@abcdef".</p>
+<p>When calling Toupcam_Open function, whether to add a '@' character at the beginning of the id parameter will determine the white balance mode. Add a '@' character at the beginning of the id parameter means the RGB gain mode. If you want to use the RGB Gain mode, for example, if the id parameter is "abcdef", please call the Toupcam_Open function with the id parameter "@abcdef".</p>
 </blockquote>
-<p>2. There are two auto white balance mechanisms available in this field: one is continuous auto white balance and the other is a "one push" auto white balance. The white balance parameters will be always calculated and updated for the continuous auto white balance mechanism. For "one push" auto white balance mechanism, the white balance parameters will be calculated and updated only when triggered. Nncam cameras support "one push" auto white balance mechanism since it is more accurate and propriate for the microscope application, especially when the background is in pure color. Continuous white balance mechanism will encounter some problem in some cases.</p>
+<p>2. There are two auto white balance mechanisms available in this field: one is continuous auto white balance and the other is a "one push" auto white balance. The white balance parameters will be always calculated and updated for the continuous auto white balance mechanism. For "one push" auto white balance mechanism, the white balance parameters will be calculated and updated only when triggered. Toupcam cameras support "one push" auto white balance mechanism since it is more accurate and propriate for the microscope application, especially when the background is in pure color. Continuous white balance mechanism will encounter some problem in some cases.</p>
 <p>3. Monochromatic camera does not support white balance. The functions metioned above always return E_NOTIMPL.</p>
 <h2><font color="#0000FF">e. <a id="trigger">Trigger Mode</a></font></h2>
 <p>1. What is Trigger Mode</p>
 	<blockquote>
-		NnCam camera has two working modes: video mode and trigger mode. When in trigger mode, no images will be available until the trigger conditions are met. Cameras have 2 types for triggering according to the types of trigger source, including software trigger mode, external trigger mode and simulated trigger mode.
+		Toupcam camera has two working modes: video mode and trigger mode. When in trigger mode, no images will be available until the trigger conditions are met. Cameras have 2 types for triggering according to the types of trigger source, including software trigger mode, external trigger mode and simulated trigger mode.
 	</blockquote>
 <p>2. The Difference between Trigger and Snap</p>
 	<blockquote>
@@ -255,35 +266,39 @@ The SDK zip file contains all of the necessary resources and information:</p>
 	</blockquote>
 <p>4. External Trigger Mode</p>
 	<blockquote>
-		Camera could be triggered by external trigger signal. By now Nncam camera only supports positive-edge trigger mode.
+		Camera could be triggered by external trigger signal. By now Toupcam camera only supports positive-edge trigger mode.
 	</blockquote>
-<p>5. Simulated Trigger Mode</p>
+<p>5. Mix Trigger Mode</p>
+	<blockquote>
+		Both external and software trigger are enabled.
+	</blockquote>
+<p>6. Simulated Trigger Mode</p>
 	<blockquote>
 		For cameras that do not support software trigger and external trigger, simulated trigger mode could be available. When in simulated trigger mode, the camera hardware actually works in the same mode as the video mode. But the up-level software will not obtain any images from the camera. The software buffer will stay empty until the user set the trigger conditions by software. 
 	</blockquote>
-<p>6. How to Enter the Trigger Mode</p>
+<p>7. How to Enter the Trigger Mode</p>
 	<blockquote>
 		After the numeration of the connected camera, you can check the flag and find out what trigger mode does the camera support according to the following definition.
-			<blockquote><table width="100%" border="0" bgcolor="#B0D0B0"><tr><td><pre>#define NNCAM_FLAG_TRIGGER_SOFTWARE   0x00080000  /* support software trigger */
-#define NNCAM_FLAG_TRIGGER_EXTERNAL   0x00100000  /* support external trigger */
-#define NNCAM_FLAG_TRIGGER_SINGLE     0x00200000  /* only support trigger single: one trigger, one image */</pre></td></tr></table></blockquote>
-		Function Nncam_put_Option(HNnCam h, unsigned iOption, int iValue) could be used to set the camera to trigger mode when assign NNCAM_OPTION_TRIGGER to the iOption parameter. iValue is used to specify the types of the trigger modes. Please see the following for reference.
+			<blockquote><table width="100%" border="0" bgcolor="#B0D0B0"><tr><td><pre>#define TOUPCAM_FLAG_TRIGGER_SOFTWARE   0x00080000  /* support software trigger */
+#define TOUPCAM_FLAG_TRIGGER_EXTERNAL   0x00100000  /* support external trigger */
+#define TOUPCAM_FLAG_TRIGGER_SINGLE     0x00200000  /* only support trigger single: one trigger, one image */</pre></td></tr></table></blockquote>
+		Function Toupcam_put_Option(HToupcam h, unsigned iOption, int iValue) could be used to set the camera to trigger mode when assign TOUPCAM_OPTION_TRIGGER to the iOption parameter. iValue is used to specify the types of the trigger modes. Please see the following for reference.
 			<blockquote>
-<table width="100%" border="0" bgcolor="#B0D0B0"><tr><td><pre>#define NNCAM_OPTION_TRIGGER   0x0b    /* 0 = video mode, 1 = software or simulated trigger mode, 2 = external trigger mode, default value =  0 */</pre></td></tr></table>
+<table width="100%" border="0" bgcolor="#B0D0B0"><tr><td><pre>#define TOUPCAM_OPTION_TRIGGER   0x0b    /* 0 = video mode, 1 = software or simulated trigger mode, 2 = external trigger mode, 3 = external + software trigger, default value =  0 */</pre></td></tr></table>
 			</blockquote>
-		Function Nncam_get_Option(HNnCam h, unsigned iOption, int* piValue) could be used to get what type of trigger mode the camera is in.
+		Function Toupcam_get_Option(HToupcam h, unsigned iOption, int* piValue) could be used to get what type of trigger mode the camera is in.
 	</blockquote>
-<p>7. How to Trigger the camera</p>
+<p>8. How to Trigger the camera</p>
 	<blockquote>
-		Function Nncam_Trigger(HNnCam h, unsigned short nNumber) could be used to trigger the camera. Assigning different value to nNumber means different:
+		Function Toupcam_Trigger(HToupcam h, unsigned short nNumber) could be used to trigger the camera. Assigning different value to nNumber means different:
 			<blockquote>
 			nNumber = 0 means stop the trigger.<br/>
 			nNumber = 0xFFFF means trigger continuously, the same as video mode;<br/>
 			nNumber = other valid values means nNumber images will come out from the camera.<br/>
 			</blockquote>
-		If the NNCAM_FLAG_TRIGGER_SINGLE flag is checked, the nNumber parameter must be assigned to 1 and 1 image will come out from the camera when Nncam_Trigger is called.<br/>Enter the trigger mode first and then call Nncam_Trigger function to trigger the camera.
+		If the TOUPCAM_FLAG_TRIGGER_SINGLE flag is checked, the nNumber parameter must be assigned to 1 and 1 image will come out from the camera when Toupcam_Trigger is called.<br/>Enter the trigger mode first and then call Toupcam_Trigger function to trigger the camera.
 	</blockquote>
-<p>8. Trigger timeout</p>
+<p>9. Trigger timeout</p>
 	<blockquote>
 	The timeout is recommended for not less than (Exposure Time * 102% + 4 Seconds).
 	</blockquote>
@@ -292,6 +307,8 @@ The SDK zip file contains all of the necessary resources and information:</p>
 <hr/>
 <ul><li><h2><font color="#0000FF">HRESULT return value</font></h2>
 	<p>HRESULT is not uncommon on the Windows platform. It's borrowed to macOS and Linux, see the table:</p>
+	<p><strong>Please note that the return value >=0 means success (especially S_FALSE is also successful, indicating that the internal value and the value set by the user is equivalent, which means "no operation"). Therefore, the SUCCEEDED and FAILED macros should generally be used to determine whether the return value is successful or failed.<br/>
+(Unless there are special needs, do not use "==S_OK" or "==0" to judge the return value)</strong></p>
   <div align="center">
     <table width="100%" border="1" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
       <tr>
@@ -306,7 +323,7 @@ The SDK zip file contains all of the necessary resources and information:</p>
 	  </tr>
 	  <tr>
         <td>S_FALSE</td>
-        <td>Operation successful</td>
+        <td>Operation successful, nothing changed</td>
 		<td>0x00000001</td>
 	  </tr>
 	  <tr>
@@ -344,6 +361,11 @@ The SDK zip file contains all of the necessary resources and information:</p>
         <td>Called in wrong thread</td>
 		<td>0x8001010E</td>
 	  </tr>
+	  <tr>
+        <td>E_GEN_FAILURE</td>
+        <td>Device not functioning</td>
+		<td>0x8007001F</td>
+	  </tr>
     </table>
   </div><br/>
 <div align="center"><table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
@@ -355,26 +377,30 @@ The SDK zip file contains all of the necessary resources and information:</p>
 	<p>Win: __stdcall, please see <a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall">here</a></p>
 	<p>macOS, Linux and Android: __cdecl</p>
 </li></ul>
-<ul><li><h2><a id="callback"><font color="#0000FF">Callback: PNNCAM_EVENT_CALLBACK and PNNCAM_DATA_CALLBACK_V3</font></a></h2>
-	<p>These callback functions are called back from the internal thread in nncam.dll, so great attention should be paid to multithread issue.</p>
+<ul><li><h2><a id="callback"><font color="#0000FF">Callback: PTOUPCAM_EVENT_CALLBACK and PTOUPCAM_DATA_CALLBACK_V3</font></a></h2>
+	<p>These callback functions are called back from the internal thread in toupcam.dll, so great attention should be paid to multithread issue.<br/>
+        Please ensure that the callback funcion is simple and return quickly.<br/>
+        Otherwise, in callback mode, TOUPCAM_OPTION_CALLBACK_THREAD can be setted to use a dedicated thread for callback.
+    </p>
 	<p><strong>There are limitations in the callback context:</strong></p>
-	<p><strong>(a) Do NOT call Nncam_Stop and Nncam_Close in this callback function, otherwise, deadlocks.</strong></p>
-	<p><strong>(b) Do NOT call Nncam_put_Option with NNCAM_OPTION_TRIGGER, NNCAM_OPTION_BITDEPTH, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_OPTION_BINNING, NNCAM_OPTION_ROTATE, the return value is E_WRONG_THREAD.</strong></p>
+	<p><strong>(a) Do NOT call Toupcam_Stop and Toupcam_Close in this callback function, otherwise, deadlocks.</strong></p>
+	<p><strong>(b) Do NOT call Toupcam_put_Option with TOUPCAM_OPTION_TRIGGER, TOUPCAM_OPTION_BITDEPTH, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_OPTION_BINNING, TOUPCAM_OPTION_ROTATE, the return value is E_WRONG_THREAD.</strong></p>
 </li></ul>
 <ul><li><h2><font color="#0000FF"><a id="cord">Coordinate</a></font></h2>
-<p>Functions with coordinate parameters, such as Nncam_put_Roi, Nncam_put_AEAuxRect, etc., the coordinate is <strong>always relative to the original resolution</strong>, even that the video has been flipped, rotated, digital binning, ROIed, or combination of the previous operations.</p>
+<p>Functions with coordinate parameters, such as Toupcam_put_Roi, Toupcam_put_AEAuxRect, etc., the coordinate is <strong>always relative to the original resolution</strong>, even that the video has been flipped, rotated, digital binning, ROIed, or combination of the previous operations.</p>
+<p>If the image is upsize down (see <a href="#upsizedown">here</a>), the coordinate must be also upsize down.</p> 
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_EnumV2</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_EnumV2</font></h2>
     <p><strong>Return value:</strong> non-negative integer, enumerated camera number</p>
     <p><strong>Parameters:</strong></p>
     	<blockquote>
-    		<p>NncamInstV2 pti[NNCAM_MAX]: NncamInstV2 buffer</p>
+    		<p>ToupcamDeviceV2 pti[TOUPCAM_MAX]: ToupcamDeviceV2 buffer</p>
     	</blockquote>
-    <p><strong>Remarks:</strong> call this function to enumerate NnCam cameras that are currently connected to computer and when it is returned, NncamInstV2 buffer contains the information of each camera instance enumerated.<strong>If we don't care about that multiple cameras connect to the computer simultaneously, it's optional to call this function to enumerate the camera instances</strong>.</p>
+    <p><strong>Remarks:</strong> call this function to enumerate Toupcam cameras that are currently connected to computer and when it is returned, ToupcamDeviceV2 buffer contains the information of each camera instance enumerated.<strong>If we don't care about that multiple cameras connect to the computer simultaneously, it's optional to call this function to enumerate the camera instances</strong>.</p>
     <p>The code snippet shows as below:<br/></p>
 <table width="100%" border="0" bgcolor="#B0D0B0">
-  <tr><td><pre>NncamInstV2 arr[NNCAM_MAX];
-unsigned cnt = Nncam_EnumV2(arr);
+  <tr><td><pre>ToupcamDeviceV2 arr[TOUPCAM_MAX];
+unsigned cnt = Toupcam_EnumV2(arr);
 for (unsigned i = 0; i &lt; cnt; ++i)
     ......</pre></td></tr>
 </table><br/>
@@ -385,13 +411,13 @@ for (unsigned i = 0; i &lt; cnt; ++i)
 #else
     const char*        name;
 #endif
-    unsigned long long flag;     /* NNCAM_FLAG_xxx */
-    unsigned           maxspeed; /* maximum speed level, Nncam_get_MaxSpeed, the speed range = [0, maxspeed], closed interval */
-    unsigned           preview;  /* number of preview resolution, Nncam_get_ResolutionNumber */
-    unsigned           still;    /* number of still resolution, Nncam_get_StillResolutionNumber */
+    unsigned long long flag;     /* TOUPCAM_FLAG_xxx */
+    unsigned           maxspeed; /* maximum speed level, Toupcam_get_MaxSpeed, the speed range = [0, maxspeed], closed interval */
+    unsigned           preview;  /* number of preview resolution, Toupcam_get_ResolutionNumber */
+    unsigned           still;    /* number of still resolution, Toupcam_get_StillResolutionNumber */
     unsigned           maxfanspeed; /* maximum fan speed */
-    NncamResolution  res[NNCAM_MAX];
-}NncamModelV2;</pre></td></tr>
+    ToupcamResolution  res[TOUPCAM_MAX];
+}ToupcamModelV2;</pre></td></tr>
 </table><br/>
 <div align="center">
 <table width="100%" border="1" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
@@ -400,170 +426,174 @@ for (unsigned i = 0; i &lt; cnt; ++i)
    <td colspan="2" valign="top">The name of this model</td>
    </tr>
  <tr>
-   <td width="8%" rowspan="37" valign="top">flag</td>
+   <td width="8%" rowspan="39" valign="top">flag</td>
    <td colspan="2" valign="top">Bitwise flag</td>
    </tr>
  <tr>
-   <td valign="top">NNCAM_FLAG_CMOS</td>
+   <td valign="top">TOUPCAM_FLAG_CMOS</td>
    <td valign="top">cmos sensor</td>
  </tr>
  <tr>
-   <td valign="top">NNCAM_FLAG_CCD_PROGRESSIVE</td>
+   <td valign="top">TOUPCAM_FLAG_CCD_PROGRESSIVE</td>
    <td valign="top">progressive ccd sensor</td>
  </tr>
  <tr>
-   <td valign="top">NNCAM_FLAG_CCD_INTERLACED</td>
+   <td valign="top">TOUPCAM_FLAG_CCD_INTERLACED</td>
    <td valign="top">interlaced ccd sensor</td>
  </tr>
  <tr>
-   <td valign="top">NNCAM_FLAG_ROI_HARDWARE</td>
+   <td valign="top">TOUPCAM_FLAG_ROI_HARDWARE</td>
    <td valign="top">support hardware ROI. Hardware ROI means only the ROI part of image is output from the sensor and the software cropping operation is not required. Higher frame rate is achieved when using hardware ROI method. Software ROI means the image with the complete field of view of the sensor will be output and software cropping operation is required to obtain the ROI image.</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_MONO</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_MONO</td>
    <td width="63%" valign="top">monochromatic sensor</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_BINSKIP_SUPPORTED</td>
-   <td width="63%" valign="top">support bin/skip mode, see Nncam_put_Mode and Nncam_get_Mode</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_BINSKIP_SUPPORTED</td>
+   <td width="63%" valign="top">support bin/skip mode, see Toupcam_put_Mode and Toupcam_get_Mode</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_USB30</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_USB30</td>
    <td width="63%" valign="top">usb3.0</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_TEC</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_TEC</td>
    <td width="63%" valign="top">Thermoelectric Cooler</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_USB30_OVER_USB20</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_USB30_OVER_USB20</td>
    <td width="63%" valign="top">usb3.0 camera connected to usb2.0 port</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_ST4</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_ST4</td>
    <td width="63%" valign="top">ST4 port</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_GETTEMPERATURE</td>
-   <td width="63%" valign="top">support to get the temperature of the sensor, Nncam_get_Temperature</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_GETTEMPERATURE</td>
+   <td width="63%" valign="top">support to get the temperature of the sensor, Toupcam_get_Temperature</td>
  </tr>
  <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_PUTTEMPERATURE</td>
-   <td width="63%" valign="top">support to put the target temperature of the sensor, Nncam_put_Temperature</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_PUTTEMPERATURE</td>
+   <td width="63%" valign="top">support to put the target temperature of the sensor, Toupcam_put_Temperature</td>
  </tr> 
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_RAW10</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_RAW10</td>
    <td width="63%" valign="top">Pixel format, RAW 10 bits</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_RAW12</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_RAW12</td>
    <td width="63%" valign="top">Pixel format, RAW 12 bits</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_RAW14</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_RAW14</td>
    <td width="63%" valign="top">Pixel format, RAW 14 bits</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_RAW16</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_RAW16</td>
    <td width="63%" valign="top">Pixel format, RAW 16 bits</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_FAN</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_FAN</td>
    <td width="63%" valign="top">cooling fan</td>
  </tr>
   <tr>
-   <td width="29%" valign="top">NNCAM_FLAG_TEC_ONOFF</td>
+   <td width="29%" valign="top">TOUPCAM_FLAG_TEC_ONOFF</td>
    <td width="63%" valign="top">Thermoelectric Cooler can be turn on or off, target temperature of TEC, see:<br/>
-							NNCAM_OPTION_TEC<br/>
-							NNCAM_OPTION_TECTARGET</td>
+							TOUPCAM_OPTION_TEC<br/>
+							TOUPCAM_OPTION_TECTARGET</td>
  </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_ISP</td>
+    <td valign="top">TOUPCAM_FLAG_ISP</td>
     <td valign="top">ISP (Image Signal Processing) chip</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_TRIGGER_SOFTWARE</td>
+    <td valign="top">TOUPCAM_FLAG_TRIGGER_SOFTWARE</td>
     <td valign="top">support software trigger</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_TRIGGER_EXTERNAL</td>
+    <td valign="top">TOUPCAM_FLAG_TRIGGER_EXTERNAL</td>
     <td valign="top">support external trigger</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_TRIGGER_SINGLE</td>
+    <td valign="top">TOUPCAM_FLAG_TRIGGER_SINGLE</td>
     <td valign="top">only support trigger single, one trigger, one image</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_BLACKLEVEL</td>
+    <td valign="top">TOUPCAM_FLAG_BLACKLEVEL</td>
     <td valign="top">support set and get the black level</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_FOCUSMOTOR</td>
+    <td valign="top">TOUPCAM_FLAG_FOCUSMOTOR</td>
     <td valign="top">support focus motor</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_AUTO_FOCUS</td>
+    <td valign="top">TOUPCAM_FLAG_AUTO_FOCUS</td>
     <td valign="top">support auto focus</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_BUFFER</td>
+    <td valign="top">TOUPCAM_FLAG_BUFFER</td>
     <td valign="top">frame buffer</td>
   </tr>
   <tr>
-    <td valign="top"><a id="ddr">NNCAM_FLAG_DDR</a></td>
+    <td valign="top"><a id="ddr">TOUPCAM_FLAG_DDR</a></td>
     <td valign="top">use very large capacity DDR (Double Data Rate SDRAM) for frame buffer</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_CG</td>
+    <td valign="top">TOUPCAM_FLAG_CG</td>
     <td valign="top">Conversion Gain: LCG, HCG</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_CGHDR</td>
+    <td valign="top">TOUPCAM_FLAG_CGHDR</td>
     <td valign="top">Conversion Gain: LCG, HCG, HDR</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_YUV411</td>
+    <td valign="top">TOUPCAM_FLAG_YUV411</td>
     <td valign="top">pixel format, yuv411</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_YUV422</td>
+    <td valign="top">TOUPCAM_FLAG_YUV422</td>
     <td valign="top">pixel format, yuv422</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_YUV444</td>
+    <td valign="top">TOUPCAM_FLAG_YUV444</td>
     <td valign="top">pixel format, yuv444</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_RGB888</td>
+    <td valign="top">TOUPCAM_FLAG_RGB888</td>
     <td valign="top">pixel format, RGB888</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_RAW8</td>
+    <td valign="top">TOUPCAM_FLAG_RAW8</td>
     <td valign="top">pixel format, RAW 8 bits</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_GMCY8</td>
+    <td valign="top">TOUPCAM_FLAG_GMCY8</td>
     <td valign="top">pixel format, GMCY, 8bits</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_GMCY12</td>
+    <td valign="top">TOUPCAM_FLAG_GMCY12</td>
     <td valign="top">pixel format, GMCY, 12 btis</td>
   </tr>
   <tr>
-    <td valign="top">NNCAM_FLAG_GLOBALSHUTTER</td>
+    <td valign="top">TOUPCAM_FLAG_GLOBALSHUTTER</td>
     <td valign="top">global shutter</td>
+  </tr>
+  <tr>
+    <td valign="top">TOUPCAM_FLAG_PRECISE_FRAMERATE</td>
+    <td valign="top">support precise framerate &amp; bandwidth, see TOUPCAM_OPTION_PRECISE_FRAMERATE &amp; TOUPCAM_OPTION_BANDWIDTH</td>
   </tr>
  <tr>
    <td width="8%" valign="top">maxspeed</td>
-   <td colspan="2" valign="top">Maximum speed level, same with Nncam_get_MaxSpeed. The speed range is [0, maxspeed]. see Nncam_put_Speed and Nncam_get_Speed</td>
+   <td colspan="2" valign="top">Maximum speed level, same with Toupcam_get_MaxSpeed. The speed range is [0, maxspeed]. see Toupcam_put_Speed and Toupcam_get_Speed</td>
    </tr>
  <tr>
    <td width="8%" valign="top">preview</td>
-   <td colspan="2" valign="top">Number of preview resolution. Same with Nncam_get_ResolutionNumber</td>
+   <td colspan="2" valign="top">Number of preview resolution. Same with Toupcam_get_ResolutionNumber</td>
    </tr>
  <tr>
    <td width="8%" valign="top">still</td>
-   <td colspan="2" valign="top">Number of still resolution, zero means still capture is not supported. Same with Nncam_get_StillResolutionNumber</td>
+   <td colspan="2" valign="top">Number of still resolution, zero means still capture is not supported. Same with Toupcam_get_StillResolutionNumber</td>
    </tr>
   <tr>
    <td width="8%" valign="top">res</td>
@@ -572,15 +602,15 @@ for (unsigned i = 0; i &lt; cnt; ++i)
 </table>
 </div>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_HotPlug</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_HotPlug</font></h2>
   <p><strong>Return value:</strong> NA</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>PNNCAM_HOTPLUG pHotPlugCallback: callback function</p>
+    <p>PTOUPCAM_HOTPLUG pHotPlugCallback: callback function</p>
     <blockquote>
     <table width="100%" border="0" bgcolor="#B0D0B0">
       <tr>
-        <td><div align="center">typedef void (*PNNCAM_HOTPLUG)(void* pCallbackCtx);</div></td>
+        <td><div align="center">typedef void (*PTOUPCAM_HOTPLUG)(void* pCallbackCtx);</div></td>
       </tr>
     </table>
   </blockquote>
@@ -589,55 +619,55 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   <p><strong>Remarks:</strong></p><blockquote>
   <p>This function is only available on macOS, Linux and Android.</p>
   <p>To process the device plug in / pull out in Windows, please refer to the MSDN(<a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363224(v=vs.85).aspx">Device Management</a>, <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/aa363215(v=vs.85).aspx">Detecting Media Insertion or Removal</a>).</p>
-  <p>To process the device plug in / pull out in Linux/macOS/Android, please call this function to register the callback function. When the device is inserted or pulled out, you will be notified by the callback funcion, and then call Nncam_EnumV2(...) again to enum the cameras.</p>
+  <p>To process the device plug in / pull out in Linux/macOS/Android, please call this function to register the callback function. When the device is inserted or pulled out, you will be notified by the callback funcion, and then call Toupcam_EnumV2(...) again to enum the cameras.</p>
   <p>On macOS, IONotificationPortCreate series APIs can also be used as an alternative.</p>
   <p>Recommendation: for better rubustness, when notify of device insertion arrives, don't open handle of this device immediately, but open it <b>after delaying a short time (e.g., 200 milliseconds)</b>.</p>
 </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Open</font></h2>
-  <p><strong>Return value:</strong> HNnCam handle. Return NULL when fails (Such as the device has been pulled out).</p>
+<ul><li><h2><font color="#0000FF">Toupcam_Open</font></h2>
+  <p><strong>Return value:</strong> HToupcam handle. Return NULL when fails (Such as the device has been pulled out).</p>
   <p><strong>Parameters:</strong></p>
   	<blockquote>
-  		<p>id: NnCam camera instance, enumerated by Nncam_EnumV2. <strong>If id is NULL, Nncam_Open will open the first camera which connects to the computer. So, if we don't care about that multiple cameras connect to the computer simultaneously, Nncam_EnumV2 is optional, we can simply use NULL as the parameter.</strong></p>
+  		<p>id: Toupcam camera instance, enumerated by Toupcam_EnumV2. <strong>If id is NULL, Toupcam_Open will open the first camera which connects to the computer. So, if we don't care about that multiple cameras connect to the computer simultaneously, Toupcam_EnumV2 is optional, we can simply use NULL as the parameter.</strong></p>
   	</blockquote>
   <p><strong>Remarks:</strong> open the camera instance.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Close</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_Close</font></h2>
     <p><strong>Return value:</strong> void</p>
     <p><strong>Parameters:</strong></p>
 		<blockquote>
-			<p>HNnCam h: camera instance handle</p>
+			<p>HToupcam h: camera instance handle</p>
 		</blockquote>
-    <p><strong>Remarks:</strong> close the camera instance. After it is closed, never use the HNnCam handle any more.</p>
+    <p><strong>Remarks:</strong> close the camera instance. After it is closed, never use the HToupcam handle any more.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_StartPullModeWithWndMsg, Nncam_StartPullModeWithCallback</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_StartPullModeWithWndMsg, Toupcam_StartPullModeWithCallback</font></h2>
     <p><strong>Return value:</strong> HRESULT type means "success / failure"</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: instance handle opened by Nncam_Open</p>
+      <p>HToupcam h: instance handle opened by Toupcam_Open</p>
       <p>HWND hWnd: event occurs, message will be posted in this window</p>
-      <p>UINT nMsg: Windows custom message type. Its WPARAM parameter means event type NNCAM_EVENT_xxxx, LPARAM is useless (always zero)</p>
-      <p>PNNCAM_EVENT_CALLBACK pEventCallback, void* pCallbackContext: callback function specified by user's application and callback context parameter.</p>
+      <p>UINT nMsg: Windows custom message type. Its WPARAM parameter means event type TOUPCAM_EVENT_xxxx, LPARAM is useless (always zero)</p>
+      <p>PTOUPCAM_EVENT_CALLBACK pEventCallback, void* pCallbackContext: callback function specified by user's application and callback context parameter.</p>
         <table width="100%" border="0">
           <tr>
-            <td bgcolor="#B0D0B0"><div align="center">typedef void (*PNNCAM_EVENT_CALLBACK)(unsigned nEvent, void* pCallbackCtx);</div></td>
+            <td bgcolor="#B0D0B0"><div align="center">typedef void (*PTOUPCAM_EVENT_CALLBACK)(unsigned nEvent, void* pCallbackCtx);</div></td>
           </tr>
         </table>
 		<p>see <a href="#callback">here</a>.</p>
       </blockquote>
-    <p><strong>Remarks:</strong> Obviously, Nncam_StartPullModeWithWndMsg is only supported in Windows OS.</p>
+    <p><strong>Remarks:</strong> Obviously, Toupcam_StartPullModeWithWndMsg is only supported in Windows OS.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF"><a id="infov2">Nncam_PullImageV2, Nncam_PullStillImageV2, Nncam_PullImageWithRowPitchV2, Nncam_PullStillImageWithRowPitchV2</a>,
-			Nncam_PullImage, Nncam_PullStillImage, <a id="rowpitch1">Nncam_PullImageWithRowPitch</a>, <a id="rowpitch2">Nncam_PullStillImageWithRowPitch</a></font></h2>
+<ul><li><h2><font color="#0000FF"><a id="infov2">Toupcam_PullImageV2, Toupcam_PullStillImageV2, Toupcam_PullImageWithRowPitchV2, Toupcam_PullStillImageWithRowPitchV2</a>,
+			Toupcam_PullImage, Toupcam_PullStillImage, <a id="rowpitch1">Toupcam_PullImageWithRowPitch</a>, <a id="rowpitch2">Toupcam_PullStillImageWithRowPitch</a></font></h2>
       <p><strong>Return value:</strong> HRESULT type means "success/ failure". Return E_FAIL when there isn't image ready for pull.</p>
       <p><strong>Parameters:</strong></p>
       <blockquote>
-    <p>HNnCam h: instance handle opened by Nncam_Open</p>
+    <p>HToupcam h: instance handle opened by Toupcam_Open</p>
     <p>void* pImageData: Data buffer. Users have to make sure that the data buffer capacity is enough to save the image data, data buffer capacity must >= rowPitch * nHeight.</p>
     <p>int bits: 24, 32, 48, 8, 16, means RGB24, RGB32, RGB48, 8 bits gray or 16 bits gray images. This parameter is ignored in RAW mode.</p>
     <p>int rowPitch: the distance from one row to the next row. rowPitch = 0 means using the default row pitch.</p>
     <p>unsigned* pnWidth, unsigned* pnHeight: out parameter. width and height of image.</p>
-	<p>NncamFrameInfoV2* pInfo: out parameter, frame info. Some cameras support frame sequence and frame timestamp, for other unsigned cameras, sequence and timestamp are always 0</p>
+	<p>ToupcamFrameInfoV2* pInfo: out parameter, frame info. Some cameras support frame sequence and frame timestamp, for other unsigned cameras, sequence and timestamp are always 0</p>
 </blockquote>
   <p><strong>Remarks:</strong> when pImageData is NULL, while pnWidth and pnHeight are not NULL, you can "peek" the width and height of images.</p>
   <p>Please ensure that the pImageData buffer is large enough to hold the entire frame data, see the table below:</p>
@@ -683,17 +713,17 @@ for (unsigned i = 0; i &lt; cnt; ++i)
 </td></tr>
 </table></div></blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_StartPushModeV3</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_StartPushModeV3</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: instance handle opened by Nncam.</p>
-      <p>PNNCAM_DATA_CALLBACK_V3 pDataCallback, void* pDataCallbackCtx: the callback function and callback context parameters that are specified by the user's program. Nncam.dll gets image data from the camera, then calls back this function.</p>
+      <p>HToupcam h: instance handle opened by Toupcam.</p>
+      <p>PTOUPCAM_DATA_CALLBACK_V3 pDataCallback, void* pDataCallbackCtx: the callback function and callback context parameters that are specified by the user's program. Toupcam.dll gets image data from the camera, then calls back this function.</p>
     </blockquote>
   <blockquote>
     <table width="100%" border="0" bgcolor="#B0D0B0">
       <tr>
-		<td>typedef void (*PNNCAM_DATA_CALLBACK_V3)(const void* pData, const NncamFrameInfoV2* pInfo, int bSnap, void* pCallbackCtx);</td>
+		<td>typedef void (*PTOUPCAM_DATA_CALLBACK_V3)(const void* pData, const ToupcamFrameInfoV2* pInfo, int bSnap, void* pCallbackCtx);</td>
       </tr>
     </table>
 	<p>see <a href="#callback">here</a>.</p>
@@ -701,116 +731,116 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   <blockquote>
     <p align="left">when calls back, if Parameter pData == NULL, then internal error occurs (eg: the camera is pulled out suddenly).<br/>
       The row pitch of pData is always the default value.<br/>
-      For parameter int bSnap, TRUE means still image snap by Nncam_Snap or Nncam_SnapN function, FALSE means ordinary previewed pictures / videos.<br/>
+      For parameter int bSnap, TRUE means still image snap by Toupcam_Snap or Toupcam_SnapN function, FALSE means ordinary previewed pictures / videos.<br/>
   </p></blockquote>
   <p><strong>Remarks:</strong> start camera instance.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Stop</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_Stop</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     	<blockquote>
-    		<p>HNnCam handle</p>
+    		<p>HToupcam handle</p>
     	</blockquote>
     <p><strong>Remarks:</strong> stop the camera instance. After stopped, it can be restart again. For example, switching the video resolution:   </p>
     <blockquote>
-      <p>Step 1: call Nncam_Stop to stop</p>
-      <p>Step 2: call Nncam_put_Size or Nncam_put_eSize to set the new resolution</p>
-      <p>Step 3: call Nncam_StartPullModeWithWndMsg or Nncam_StartPullModeWithCallback or Nncam_StartPushModeV3 to restart</p>
+      <p>Step 1: call Toupcam_Stop to stop</p>
+      <p>Step 2: call Toupcam_put_Size or Toupcam_put_eSize to set the new resolution</p>
+      <p>Step 3: call Toupcam_StartPullModeWithWndMsg or Toupcam_StartPullModeWithCallback or Toupcam_StartPushModeV3 to restart</p>
     </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Pause</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_Pause</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     	<blockquote>
-    		<p>HNnCam h: camera instance handle</p>
+    		<p>HToupcam h: camera instance handle</p>
     	</blockquote>
     <p><strong>Remarks:</strong> pause/continue camera instance.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Snap, Nncam_SnapN</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_Snap, Toupcam_SnapN</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned nResolutionIndex: resolution index.</p>
 	<p><a id="snapn">unsigned nNum: the number to be snapped.</a></p>
   </blockquote>
   <p><strong>Remarks:</strong> snap 'still' image, please see <a href="#stillcapture">here</a>. When snap successfully:</p>
   <blockquote><blockquote>
-  <p>a) If we use Pull Mode, it will be notified by NNCAM_EVENT_STILLIMAGE.</p>
-  <p>b) If we use Push Mode, the image will be returned by callback function PNNCAM_DATA_CALLBACK_V3 with the parameter int bSnap is TRUE.</p>
+  <p>a) If we use Pull Mode, it will be notified by TOUPCAM_EVENT_STILLIMAGE.</p>
+  <p>b) If we use Push Mode, the image will be returned by callback function PTOUPCAM_DATA_CALLBACK_V3 with the parameter int bSnap is TRUE.</p>
 	</blockquote>
-    <p>Most cameras can snap still image with different resolutions under continuous preview. For example, UCMOS03100KPA's previewed resolution is 1024*768, if we call Nncam_Snap(h, 0), we get so called "still image" with 2048*1536 resolution.<br/>
-    Some cameras hasn't this ability, so nResolutionIndex must be equal the preview resolution which is set by Nncam_put_Size, or Nncam_put_eSize.<br/>
-    Whether it supports "still snap" or not, see "still" domain in NncamModelV2.</p>
-	<p>Nncam_Snap(h, index) == Nncam_SnapN(h, index, 1)</p>
+    <p>Most cameras can snap still image with different resolutions under continuous preview. For example, UCMOS03100KPA's previewed resolution is 1024*768, if we call Toupcam_Snap(h, 0), we get so called "still image" with 2048*1536 resolution.<br/>
+    Some cameras hasn't this ability, so nResolutionIndex must be equal the preview resolution which is set by Toupcam_put_Size, or Toupcam_put_eSize.<br/>
+    Whether it supports "still snap" or not, see "still" domain in ToupcamModelV2.</p>
+	<p>Toupcam_Snap(h, index) == Toupcam_SnapN(h, index, 1)</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_Trigger</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_Trigger</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure.</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned short nNumber: 0xffff(trigger continuously), 0(stop / cancel trigger), others(number of images to be triggered)</p>
   </blockquote>
   <p><strong>Remarks:</strong> in trigger mode, call this function to trigger an image:</p>
   <blockquote>
-  <p>a) If we use Pull Mode, it will be notified by NNCAM_EVENT_IMAGE.</p>
-  <p>b) If we use Push Mode, the image will be returned by callback function PNNCAM_DATA_CALLBACK_V3 with the parameter int bSnap is FALSE.</p>
+  <p>a) If we use Pull Mode, it will be notified by TOUPCAM_EVENT_IMAGE.</p>
+  <p>b) If we use Push Mode, the image will be returned by callback function PTOUPCAM_DATA_CALLBACK_V3 with the parameter int bSnap is FALSE.</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_Size, Nncam_get_Size, Nncam_put_eSize, Nncam_get_eSize</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_Size, Toupcam_get_Size, Toupcam_put_eSize, Toupcam_get_eSize</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned nResolutionIndex: current/present resolution index</p>
       <p>int nWidth, int nHeight: width and height of current resolution index</p>
     </blockquote>
   <p><strong>Remarks:</strong> set/get current resolution</p>
         <blockquote>
-          <p align="left">Set resolution before running Nncam_StartPullModeWithWndMsg or Nncam_StartPullModeWithCallback or Nncam_StartPushModeV3<br/>
+          <p align="left">Set resolution before running Toupcam_StartPullModeWithWndMsg or Toupcam_StartPullModeWithCallback or Toupcam_StartPushModeV3<br/>
             There are two ways to set current resolution: one is by resolution index, the other by width/height. Both ways are equivalent. For example, UCMOS03100KPA supports the following three kinds of resolution: <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;Index 0: 2048, 1536<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;Index 1: 1024, 768<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;Index 2: 680, 510<br/>
-            So Nncam_put_Size(h, 1024, 768) is as effective as Nncam_put_eSize(h, 1)</p>
+            So Toupcam_put_Size(h, 1024, 768) is as effective as Toupcam_put_eSize(h, 1)</p>
         </blockquote>
 </li></ul>
-<ul><li><h2><a id="roi"><font color="#0000FF">Nncam_put_Roi, Nncam_get_Roi</font></a></h2>
+<ul><li><h2><a id="roi"><font color="#0000FF">Toupcam_put_Roi, Toupcam_get_Roi</font></a></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure.</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned xOffset: x offset, must be even number</p>
       <p>unsigned yOffset: y offset, must be even number</p>
       <p>unsigned xWidth: width, must be even number and must not be less than 16</p>
       <p>unsigned yHeight: height, must be even number and must not be less than 16</p>
     </blockquote>
-  <p><strong>Remarks:</strong> set/get the ROI. Nncam_put_Roi(h, 0, 0, 0, 0) means to clear the ROI and restore the original size.</p>
+  <p><strong>Remarks:</strong> set/get the ROI. Toupcam_put_Roi(h, 0, 0, 0, 0) means to clear the ROI and restore the original size.</p>
   <blockquote>
-	<p><strong>Important: It is forbidden to call Nncam_put_Roi in the callback context of PNNCAM_EVENT_CALLBACK and PNNCAM_DATA_CALLBACK_V3, the return value is E_WRONG_THREAD.</strong></p>
+	<p><strong>Important: It is forbidden to call Toupcam_put_Roi in the callback context of PTOUPCAM_EVENT_CALLBACK and PTOUPCAM_DATA_CALLBACK_V3, the return value is E_WRONG_THREAD.</strong></p>
   	<p><strong>Pay attention to that the coordinate is always relative to the original resolution</strong>, see <a href="#cord">here</a>.</p>
 	<p>The second resolution of UHCCD03100KPB, UHCCD05000KPA, UHCCD05100KPA don't support ROI, so the return value is E_NOTIMPL.</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_ResolutionNumber, Nncam_get_Resolution</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_ResolutionNumber, Toupcam_get_Resolution</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned nResolutionIndex: resolution index</p>
       <p>int* pWidth, int* pHeight: width/height</p>
     </blockquote>
-    <p><strong>Remarks:</strong> Nncam_get_ResolutionNumber means the number of resolution supported. Take UCMOS03100KPA as an example, if we call the function Nncam_get_ResolutionNumber and get "3", which means it can support three kinds of resolution. Nncam_get_Resolution gets the width/height of each kind of resolution.</p>
+    <p><strong>Remarks:</strong> Toupcam_get_ResolutionNumber means the number of resolution supported. Take UCMOS03100KPA as an example, if we call the function Toupcam_get_ResolutionNumber and get "3", which means it can support three kinds of resolution. Toupcam_get_Resolution gets the width/height of each kind of resolution.</p>
   <blockquote>
-    <p align="left">These parameters have also been contained in NncamModelV2.</p>
+    <p align="left">These parameters have also been contained in ToupcamModelV2.</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_RawFormat</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_RawFormat</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned* nFourCC: raw format, see the table below</p>
     <p>unsigned* bitdepth: Bit Depth, such as 8, 12, 14, 16</p>
 <div align="center"><table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
@@ -854,11 +884,11 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   </div>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_Option, Nncam_get_Option</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_Option, Toupcam_get_Option</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned iOption: see the table</p>
     <p>int iValue: see the table</p>
   <div align="center">
@@ -867,32 +897,11 @@ for (unsigned i = 0; i &lt; cnt; ++i)
     	<td width="28%">Option</td>
     	<td width="48%">Description</td>
     	<td width="4%">Default</td>
-    	<td width="20%">The value can be changed after Nncam_StartPullModeWithWndMsg or Nncam_StartPullModeWithCallback or Nncam_StartPushModeV3?<br/>
+    	<td width="20%">The value can be changed after Toupcam_StartPullModeWithWndMsg or Toupcam_StartPullModeWithCallback or Toupcam_StartPushModeV3?<br/>
 					<b>The value can be changed on-the-fly?</b></td>
 	</tr>
       <tr>
-        <td>NNCAM_OPTION_NOFRAME_TIMEOUT</td>
-        <td>Report error if cannot grab frame in a certain time.<br/>
-          1 = enable this feature;<br/>0 = disable this feature.</td>
-        <td>0</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td>NNCAM_OPTION_THREAD_PRIORITY</td>
-        <td>set the priority of the internal thread which grab data from the usb device.<br/>
-          0 = THREAD_PRIORITY_NORMAL;<br/>1 = THREAD_PRIORITY_ABOVE_NORMAL;<br/>2 = THREAD_PRIORITY_HIGHEST;<br/>3 = THREAD_PRIORITY_TIME_CRITICAL;<br/>Please refer to <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx">SetThreadPriority</a><br/>This option is not available at Linux and macOS.</td>
-        <td>1</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td>NNCAM_OPTION_PROCESSMODE</td>
-        <td>0 = better image quality, more cpu usage.<br/>
-          1 = lower image quality, less cpu usage.</td>
-        <td>0</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td><a id="rawo">NNCAM_OPTION_RAW</a></td>
+        <td><a id="rawo">TOUPCAM_OPTION_RAW</a></td>
         <td>0 means RGB mode.<br/>
           1 means RAW mode, read the CMOS or CCD raw data.</td>
         <td>0</td>
@@ -900,36 +909,37 @@ for (unsigned i = 0; i &lt; cnt; ++i)
           (The return value is E_UNEXPECTED when set this option after the camera is started)</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_BITDEPTH</td>
+      	<td>TOUPCAM_OPTION_BITDEPTH</td>
       	<td>Some cameras support the bit depth which is more than 8 such as 10, 12, 14, 16.<br/>
       	  0 = use 8 bits depth.<br/>1 = use the maximum bits depth of this camera.</td>
       	<td>NA</td>
-      	<td>Yes</td>
+      	<td>Yes.<br/>But not recommended to modify frequently after starting the camera, it is best to set it up before starting.</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_FAN</td>
+      	<td>TOUPCAM_OPTION_FAN</td>
       	<td>Some cameras support the cooling fan.<br/>
       	  0 = turn off the cooling fan<br/>[1, max] = fan speed</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_TEC</td>
+      	<td>TOUPCAM_OPTION_TEC</td>
       	<td>Some cameras support to turn on or off the thermoelectric cooler.<br/>
       	  0 = turn off the thermoelectric cooler<br/>1 = turn on the thermoelectric cooler</td>
       	<td>1</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_TRIGGER</td>
+      	<td>TOUPCAM_OPTION_TRIGGER</td>
       	<td>0 = video mode<br/>
       	  1 = software or simulated trigger mode<br/>
-      	  2 = external trigger mode</td>
+      	  2 = external trigger mode<br/>
+		  <a id="mix">3 = external + software trigger</a></td>
       	<td>0</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="rgb">NNCAM_OPTION_RGB</a></td>
+      	<td><a id="rgb">TOUPCAM_OPTION_RGB</a></td>
       	<td>0 = RGB24<br/>
 			1 = enable RGB48 format when bitdepth > 8<br/>
 			2 = RGB32<br/>
@@ -940,96 +950,83 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	  (The return value is E_UNEXPECTED when set this option after the camera is started)</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_TECTARGET</td>
+      	<td><a id="bgr">TOUPCAM_OPTION_BYTEORDER</a></td>
+      	<td>Byte order:<br/>
+			1: BGR<br/>
+			0: RGB</td>
+      	<td>Win: 1<br/>Linux/MacOS/Android: 0</td>
+      	<td>Yes.<br/>But not recommended to modify frequently after starting the camera, it is best to set it up before starting.</td>
+      </tr>
+      <tr>
+      	<td><a id="upsizedown">TOUPCAM_OPTION_UPSIDE_DOWN</a></td>
+      	<td>Upside down:<br/>
+			1: yes<br/>
+			0: no<br/>
+			Please distinguish it from Toupcam_put_VFlip, which requires the CPU to perform data moving work on each frame of data</td>
+      	<td>Win: 1<br/>Linux/MacOS/Android: 0</td>
+      	<td>Yes</td>
+      </tr>
+      <tr>
+      	<td>TOUPCAM_OPTION_TECTARGET</td>
       	<td>get or set the target temperature of the thermoelectric cooler, in 0.1℃. For example, 125 means 12.5℃, -35 means -3.5℃</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="aepolicy">NNCAM_OPTION_AUTOEXP_POLICY</a></td>
-      	<td>Auto Exposure Policy:<br/>0: Exposure Only<br/>1: Exposure Preferred<br/>2: Analog Gain Only<br/>3: Analog Gain Preferred</td>
+      	<td><a id="aepolicy">TOUPCAM_OPTION_AUTOEXP_POLICY</a></td>
+      	<td>Auto Exposure Policy:<br/>0: Exposure Only<br/>1: Exposure Preferred<br/>2: Gain Only<br/>3: Gain Preferred</td>
       	<td>1</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="aepolicy">NNCAM_OPTION_AUTOEXP_THRESHOLD</a></td>
-      	<td>threshold of auto exposure, range: [5~15]</td>
+      	<td>TOUPCAM_OPTION_AUTOEXP_THRESHOLD</td>
+      	<td>threshold of auto exposure, range: [2~15]</td>
       	<td>5</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_FRAMERATE</td>
+      	<td>TOUPCAM_OPTION_FRAMERATE</td>
       	<td>limit the frame rate, range=[0, 63].<br/>frame rate control is disabled automatically in trigger mode.</td>
       	<td>0<br/>(means no limit)</td>
       	<td><b>No</b><br/>(The return value is E_UNEXPECTED when set this option after the camera is started)</td>
       </tr>
       <tr>
-      	<td width="28%"><a id="demosaic">NNCAM_OPTION_DEMOSAIC</a></td>
-      	<td width="48%">Demosaic mothod for both video and still image: (Please refrence <a href="https://en.wikipedia.org/wiki/Demosaicing">https://en.wikipedia.org/wiki/Demosaicing</a>)<br/>
-      			0 = BILINEAR<br/>
-      			1 = VNG(Variable Number of Gradients interpolation)<br/>
-      			2 = PPG(Patterned Pixel Grouping interpolation)<br/>
-      			3 = AHD(Adaptive Homogeneity-Directed interpolation)<br/>
-      			Always return E_NOTIMPL for monochromatic camera.</td>
-      	<td>0</td>
-      	<td>Yes</td>
-      </tr>
-      <tr>
-      	<td>NNCAM_OPTION_DEMOSAIC_VIDEO</td>
-      	<td>Demosaic mothod for video</td>
-      	<td>0</td>
-      	<td>Yes</td>
-      </tr>
-      <tr>
-      	<td>NNCAM_OPTION_DEMOSAIC_STILL</td>
-      	<td>Demosaic mothod for still image<br/>
-      			Always return E_NOTIMPL for camera that don't support sill image capture.</td>
-      	<td>0</td>
-      	<td>Yes</td>
-      </tr>
-      <tr>
-      	<td><a id="blacklevel">NNCAM_OPTION_BLACKLEVEL</a></td>
-      	<td>Black Level<br/>
-      			Always return E_NOTIMPL for camera that don't support black level.</td>
-      	<td>0</td>
-      	<td>Yes</td>
-      </tr>
-      <tr>
-      	<td>NNCAM_OPTION_MULTITHREAD</td>
+      	<td>TOUPCAM_OPTION_MULTITHREAD</td>
       	<td>multithread image processing</td>
       	<td>1</td>
       	<td><b>No</b><br/>
 			(The return value is E_UNEXPECTED when set this option after the camera is started)</td>
       </tr>
       <tr>
-      	<td><a id="binning">NNCAM_OPTION_BINNING</a></td>
+      	<td><a id="binning">TOUPCAM_OPTION_BINNING</a></td>
       	<td>digital binning:<br/>
 					0x01 (no binning)<br/>
 					0x02 (add, 2*2)<br/>
 					0x03 (add, 3*3)<br/>
 					0x04 (add, 4*4)<br/>
+					0x05 (add, 5*5)<br/>
+					0x06 (add, 6*6)<br/>
+					0x07 (add, 7*7)<br/>
+					0x08 (add, 8*8)<br/>
 					0x82 (average, 2*2)<br/>
 					0x83 (average, 3*3)<br/>
-					0x84 (average, 4*4)</td>
+					0x84 (average, 4*4)<br/>
+					0x85 (average, 5*5)<br/>
+					0x86 (average, 6*6)<br/>
+					0x87 (average, 7*7)<br/>
+					0x88 (average, 8*8)<br/>
+                    The final image size is rounded down to an even number, such as 640/3 to get 212</td>
       	<td>1</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="rotate">NNCAM_OPTION_ROTATE</a></td>
+      	<td><a id="rotate">TOUPCAM_OPTION_ROTATE</a></td>
       	<td>rotate clockwise: 0, 90, 180, 270</td>
       	<td>0</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_UPSIDE_DOWN</td>
-      	<td>Upside down:<br/>
-			1: yes<br/>
-			0: no</td>
-      	<td>Win: 1<br/>Linux/MacOS/Android: 0</td>
-      	<td>No</td>
-      </tr>
-      <tr>
-      	<td>NNCAM_OPTION_CG</td>
+      	<td>TOUPCAM_OPTION_CG</td>
       	<td>Conversion Gain:<br/>
 			0: LCG<br/>
 			1: HCG<br/>
@@ -1038,13 +1035,13 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_PIXEL_FORMAT</td>
+      	<td>TOUPCAM_OPTION_PIXEL_FORMAT</td>
       	<td>pixel format</td>
       	<td>NA</td>
-      	<td>Yes</td>
+      	<td>Yes.<br/>But not recommended to modify frequently after starting the camera, it is best to set it up before starting.</td>
       </tr>
       <tr>
-      	<td><a id="ddrdepth">NNCAM_OPTION_DDR_DEPTH</a></td>
+      	<td><a id="ddrdepth">TOUPCAM_OPTION_DDR_DEPTH</a></td>
       	<td>the number of the frames that DDR can cache:<br/>
 		                    1: DDR cache only one frame<br/>
                             0: Auto:
@@ -1055,7 +1052,7 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="ffc">NNCAM_OPTION_FFC</a></td>
+      	<td><a id="ffc">TOUPCAM_OPTION_FFC</a></td>
       	<td>Flat Field Correction:<br/>
 					set:
                         <blockquote>0: disable</blockquote>
@@ -1070,7 +1067,7 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td><a id="dfc">NNCAM_OPTION_DFC</a></td>
+      	<td><a id="dfc">TOUPCAM_OPTION_DFC</a></td>
       	<td>Dark Field Correction:<br/>
 					set:
                         <blockquote>0: disable</blockquote>
@@ -1085,7 +1082,7 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_SHARPENING</td>
+      	<td>TOUPCAM_OPTION_SHARPENING</td>
       	<td>Sharpening, (threshold &lt;&lt; 24) | (radius &lt;&lt; 16) | strength)<br/>
 						<blockquote>strength: [0, 500], default: 0 (disable)</blockquote>
 						<blockquote>radius: [1, 10]</blockquote>
@@ -1095,69 +1092,177 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_FACTORY</td>
+      	<td>TOUPCAM_OPTION_FACTORY</td>
       	<td>restore the factory settings<br/>Only put</td>
       	<td>Always 0</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_TEC_VOLTAGE</td>
+      	<td>TOUPCAM_OPTION_TEC_VOLTAGE</td>
       	<td>get the current TEC voltage in 0.1V, 59 mean 5.9V;<br/>
 					Please do not get this value too frequently, the recommended interval is 2 seconds or more<br/>Only get</td>
       	<td>NA</td>
       	<td>NA</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_TEC_VOLTAGE_MAX</td>
+      	<td>TOUPCAM_OPTION_TEC_VOLTAGE_MAX</td>
       	<td>get the TEC maximum voltage in 0.1V<br/>Only get</td>
       	<td>NA</td>
       	<td>NA</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_DEVICE_RESET</td>
+      	<td>TOUPCAM_OPTION_DEVICE_RESET</td>
       	<td>reset usb device, simulate a replug<br/>Only put</td>
       	<td>NA</td>
       	<td>NA</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_AFPOSITION</td>
+      	<td>TOUPCAM_OPTION_AFPOSITION</td>
       	<td>auto focus sensor board positon</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_AFMODE</td>
+      	<td>TOUPCAM_OPTION_AFMODE</td>
       	<td>auto focus mode:<br/>0: manul focus<br/>1: auto focus<br/>2: onepush focus<br/>3: conjugate calibration</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_AFZONE</td>
+      	<td>TOUPCAM_OPTION_AFZONE</td>
       	<td>auto focus zone</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_AFFEEDBACK</td>
+      	<td>TOUPCAM_OPTION_AFFEEDBACK</td>
       	<td>auto focus information feedback:<br/>0: unknown<br/>1: focused<br/>2: focusing<br/>3: defocus<br/>4: up<br/>5: down<br/>Only get</td>
       	<td>NA</td>
       	<td>Yes</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_TESTPATTERN</td>
+      	<td>TOUPCAM_OPTION_TESTPATTERN</td>
       	<td>test pattern:<br/>0: TestPattern Off<br/>3: monochrome diagonal stripes<br/>5: monochrome vertical stripes<br/>7: monochrome horizontal stripes<br/>9: chromatic diagonal stripes<br/>Only put</td>
       	<td>0</td>
       	<td>Yes</td>
       </tr>
 	  <tr>
-      	<td>NNCAM_OPTION_LINEAR</td>
+        <td>TOUPCAM_OPTION_NOFRAME_TIMEOUT</td>
+        <td>Report error if cannot grab frame in maximum exposure time.<br/>
+          1 = enable this feature;<br/>0 = disable this feature.</td>
+        <td>0</td>
+        <td>Yes</td>
+      </tr>
+	  <tr>
+        <td><a id="nopacket">TOUPCAM_OPTION_NOPACKET_TIMEOUT</a></td>
+        <td>Report event if cannot grab packet in the set time.<br/>
+          0 = disable this feature<br/>
+          positive value = timeout milliseconds</td>
+        <td>0</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td><a id="precise">TOUPCAM_OPTION_MAX_PRECISE_FRAMERATE</a></td>
+        <td>get the precise frame maximum value in 0.1fps, such as 115 means 11.5fps<br/>
+          the maximum value depends the resolution/bitdepth/ROI, etc<br/>
+          E_NOTIMPL means not supported</td>
+		<td>NA</td>
+		<td>NA</td>
+      </tr>
+      <tr>
+        <td>TOUPCAM_OPTION_MIN_PRECISE_FRAMERATE</td>
+        <td>get the precise frame minimum value in 0.1fps, such as 15 means 1.5fps<br/>
+          the minimum value depends the resolution/bitdepth/ROI, etc<br/>
+          E_NOTIMPL means not supported</td>
+		<td>NA</td>
+		<td>NA</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_PRECISE_FRAMERATE</td>
+        <td>in 0.1fps, such as 115 means 11.5fps. range:[1~maximum]</td>
+		<td>90% of the maximum</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_BANDWIDTH</td>
+        <td>bandwidth, [1-100]%</td>
+		<td>90%</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td><a id="reload">TOUPCAM_OPTION_RELOAD</a></td>
+        <td>Reload the last frame in the trigger mode<br/>
+        get return value S_OK means supporting this feature, E_NOTIMPL means not supported</td>
+		<td>NA</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_CALLBACK_THREAD</td>
+        <td>dedicated thread for callback, only available in pull mode</td>
+		<td>0</td>
+		<td>No</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_FRAME_DEQUE_LENGTH</td>
+        <td>frame deque length, range: [2, 1024]</td>
+		<td>3</td>
+		<td>No</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_SEQUENCER_ONOFF</td>
+        <td>sequencer trigger: on/off</td>
+		<td>0</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_SEQUENCER_NUMBER</td>
+        <td>sequencer trigger: number, range = [1, 255]</td>
+		<td>NA</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_SEQUENCER_EXPOTIME</td>
+        <td>sequencer trigger: exposure time<br/>iOption = TOUPCAM_OPTION_SEQUENCER_EXPOTIME | index<br/>iValue = exposure time<br/><br/>
+		For example, to set the exposure time of the third group to 50ms, call<br/>Toupcam_put_Option(TOUPCAM_OPTION_SEQUENCER_EXPOTIME | 3, 50000)</td>
+		<td>NA</td>
+		<td>Yes</td>
+      </tr>
+	  <tr>
+        <td>TOUPCAM_OPTION_SEQUENCER_EXPOGAIN</td>
+        <td>sequencer trigger: exposure gain<br/>iOption = TOUPCAM_OPTION_SEQUENCER_EXPOGAIN | index<br/>iValue = gain</td>
+		<td>NA</td>
+		<td>Yes</td>
+      </tr>
+      <tr>
+        <td><a id="denoise">TOUPCAM_OPTION_DENOISE</a></td>
+        <td>Denoise<br/>
+		strength range: [0, 100], 0 means disable</td>
+		<td>0</td>
+		<td>是</td>
+      </tr>
+      <tr>
+        <td>TOUPCAM_OPTION_THREAD_PRIORITY</td>
+        <td>set the priority of the internal thread which grab data from the usb device.<br/>
+          0 = THREAD_PRIORITY_NORMAL;<br/>1 = THREAD_PRIORITY_ABOVE_NORMAL;<br/>2 = THREAD_PRIORITY_HIGHEST;<br/>3 = THREAD_PRIORITY_TIME_CRITICAL;<br/>Please refer to <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx">SetThreadPriority</a><br/>This option is not available at Linux and macOS.</td>
+        <td>1</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>TOUPCAM_OPTION_PROCESSMODE</td>
+        <td>0 = better image quality, more cpu usage.<br/>
+          1 = lower image quality, less cpu usage.</td>
+        <td>0</td>
+        <td>Yes</td>
+      </tr>
+	  <tr>
+      	<td>TOUPCAM_OPTION_LINEAR</td>
       	<td>0 = turn off the builtin linear tone mapping<br/>
       	  1 = turn on the builtin linear tone mapping</td>
       	<td>1</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_CURVE</td>
+      	<td>TOUPCAM_OPTION_CURVE</td>
       	<td>0 = turn off the builtin curve tone mapping<br/>
       	  1 = turn on the builtin polynomial curve tone mapping<br/>
 		  2 = turn on the builtin logarithmic curve tone mapping</td>
@@ -1165,17 +1270,47 @@ for (unsigned i = 0; i &lt; cnt; ++i)
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_COLORMATIX</td>
+      	<td>TOUPCAM_OPTION_COLORMATIX</td>
       	<td>0 = turn off the builtin color matrix<br/>
       	  1 = turn on the builtin color matrix</td>
       	<td>1</td>
       	<td>Yes</td>
       </tr>
       <tr>
-      	<td>NNCAM_OPTION_WBGAIN</td>
+      	<td>TOUPCAM_OPTION_WBGAIN</td>
       	<td>0 = turn off the builtin white balance gain<br/>
       	  1 = turn on the builtin white balance gain</td>
       	<td>1</td>
+      	<td>Yes</td>
+      </tr>
+	  <tr>
+      	<td width="28%"><a id="demosaic">TOUPCAM_OPTION_DEMOSAIC</a></td>
+      	<td width="48%">Demosaic mothod for both video and still image: (Please refrence <a href="https://en.wikipedia.org/wiki/Demosaicing">https://en.wikipedia.org/wiki/Demosaicing</a>)<br/>
+      			0 = BILINEAR<br/>
+      			1 = VNG(Variable Number of Gradients interpolation)(Temporarily unavailable)<br/>
+      			2 = PPG(Patterned Pixel Grouping interpolation)<br/>
+      			3 = AHD(Adaptive Homogeneity-Directed interpolation)<br/>
+      			Always return E_NOTIMPL for monochromatic camera.</td>
+      	<td>0</td>
+      	<td>Yes</td>
+      </tr>
+      <tr>
+      	<td>TOUPCAM_OPTION_DEMOSAIC_VIDEO</td>
+      	<td>Demosaic mothod for video</td>
+      	<td>0</td>
+      	<td>Yes</td>
+      </tr>
+      <tr>
+      	<td>TOUPCAM_OPTION_DEMOSAIC_STILL</td>
+      	<td>Demosaic mothod for still image</td>
+      	<td>0</td>
+      	<td>Yes</td>
+      </tr>
+      <tr>
+      	<td><a id="blacklevel">TOUPCAM_OPTION_BLACKLEVEL</a></td>
+      	<td>Black Level<br/>
+      			Always return E_NOTIMPL for camera that don't support black level.</td>
+      	<td>0</td>
       	<td>Yes</td>
       </tr>
     </table>
@@ -1184,207 +1319,213 @@ for (unsigned i = 0; i &lt; cnt; ++i)
 <blockquote>
 	<p><strong>Important:</strong></p>
 <p><strong>a. Some options cannot be changed after the camera is started. This is to say the option cannot be changed on-the-fly.</strong></p>
-  <p><strong>b. It is forbidden to call Nncam_put_Option with NNCAM_OPTION_TRIGGER, NNCAM_OPTION_BITDEPTH, NNCAM_OPTION_PIXEL_FORMAT, NNCAM_OPTION_BINNING, NNCAM_OPTION_ROTATE in the callback context of PNNCAM_EVENT_CALLBACK and PNNCAM_DATA_CALLBACK_V3, the return value is E_WRONG_THREAD.</strong></p>
+  <p><strong>b. It is forbidden to call Toupcam_put_Option with TOUPCAM_OPTION_TRIGGER, TOUPCAM_OPTION_BITDEPTH, TOUPCAM_OPTION_PIXEL_FORMAT, TOUPCAM_OPTION_BINNING, TOUPCAM_OPTION_ROTATE in the callback context of PTOUPCAM_EVENT_CALLBACK and PTOUPCAM_DATA_CALLBACK_V3, the return value is E_WRONG_THREAD.</strong></p>
   <p>c. The second resolution of UHCCD03100KPB, UHCCD05000KPA, UHCCD05100KPA don't support RAW mode.</p>
 </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_RealTime, Nncam_get_RealTime</font></h2>
+<ul><li><h2><font color="#0000FF"><a id="realtime">Toupcam_put_RealTime, Toupcam_get_RealTime</a></font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
-      <p>int bEnable: TRUE or FALSE</p>
+      <p>HToupcam h: camera instance handle</p>
+      <p>int val:<br/>
+      0: stop grab frame when frame buffer deque is full, until the frames in the queue are pulled away and the queue is not full<br/>
+    1: realtime<br/>
+          use minimum frame buffer. When new frame arrive, drop all the pending frame regardless of whether the frame buffer is full<br/>
+          If DDR present, also limit the DDR frame buffer to only one frame.
+    2: soft realtime<br/>
+          Drop the oldest frame when the queue is full and then enqueue the new frame</p>
     </blockquote>
-    <p><strong>Remarks:</strong> If you set RealTime mode as TRUE, then you get shorter frame delay but lower frame rate which damages fluency. The default value is FALSE.</p>
+    <p><strong>Remarks:</strong> If you set RealTime mode as 1, then you get shorter frame delay but lower frame rate which damages fluency. The default value is 0.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_AutoExpoEnable, Nncam_put_AutoExpoEnable, Nncam_get_AutoExpoTarget, Nncam_put_AutoExpoTarget, Nncam_put_MaxAutoExpoTimeAGain, Nncam_get_MaxAutoExpoTimeAGain, Nncam_put_MinAutoExpoTimeAGain, Nncam_get_MinAutoExpoTimeAGain</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_AutoExpoEnable, Toupcam_put_AutoExpoEnable, Toupcam_get_AutoExpoTarget, Toupcam_put_AutoExpoTarget, Toupcam_put_MaxAutoExpoTimeAGain, Toupcam_get_MaxAutoExpoTimeAGain, Toupcam_put_MinAutoExpoTimeAGain, Toupcam_get_MinAutoExpoTimeAGain</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>int bAutoExposure: TRUE or FALSE</p>
       <p>unsigned short Target: auto-exposure target</p>
-      <p>unsigned maxTime, unsigned short maxAGain: the maximum time and maximum analog gain of auto exposure. The default values are 350ms and 500.</p>
-	  <p>unsigned minTime, unsigned short minAGain: the minimal time and minimal analog gain of auto exposure. The default values are 0 and 100.</p>
+      <p>unsigned maxTime, unsigned short maxAGain: the maximum time and maximum gain of auto exposure. The default values are 350ms and 500.</p>
+	  <p>unsigned minTime, unsigned short minAGain: the minimal time and minimal gain of auto exposure. The default values are 0 and 100.</p>
     </blockquote>
-    <p><strong>Remarks:</strong> If auto exposure is enabled, the exposure time and analog gain are controlled by software to make the average brightness of the target rectangle as close as possible to the auto exposure target. The auto exposure target value is the target brightness of the target rectangle (see Nncam_put_AEAuxRect, Nncam_get_AEAuxRect).</p>
+    <p><strong>Remarks:</strong> If auto exposure is enabled, the exposure time and gain are controlled by software to make the average brightness of the target rectangle as close as possible to the auto exposure target. The auto exposure target value is the target brightness of the target rectangle (see Toupcam_put_AEAuxRect, Toupcam_get_AEAuxRect).</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_ExpoTime, Nncam_put_ExpoTime, Nncam_get_ExpTimeRange, Nncam_get_RealExpoTime</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_ExpoTime, Toupcam_put_ExpoTime, Toupcam_get_ExpTimeRange, Toupcam_get_RealExpoTime</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned Time: exposure time, unit: microsecond</p>
       <p>unsigned* nMin, unsigned* nMax, unsigned* nDef: the minimum, maximum and default value of exposure time.</p>
     </blockquote>
-  <p><strong>Remarks:</strong> exposure time related. Nncam_get_RealExpoTime get the real exposure time based on 50HZ/60HZ.</p>
+  <p><strong>Remarks:</strong> exposure time related. Toupcam_get_RealExpoTime get the real exposure time based on 50HZ/60HZ.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_ExpoAGain, Nncam_put_ExpoAGain, Nncam_get_ExpoAGainRange</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_ExpoAGain, Toupcam_put_ExpoAGain, Toupcam_get_ExpoAGainRange</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
-      <p>unsigned short AGain: analog gain, shown in percentage, eg, 200 means the analog gain is 200%</p>
-      <p>unsigned short* nMin, unsigned short* nMax, unsigned short* nDef: the minimum, maximum and default value of analog gain.</p>
+      <p>HToupcam h: camera instance handle</p>
+      <p>unsigned short AGain: gain, shown in percentage, eg, 200 means the gain is 200%</p>
+      <p>unsigned short* nMin, unsigned short* nMax, unsigned short* nDef: the minimum, maximum and default value of gain.</p>
     </blockquote>
-  <p><strong>Remarks:</strong> analog gain related.</p>
+  <p><strong>Remarks:</strong> gain related.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_Hue, Nncam_get_Hue, Nncam_put_Saturation, Nncam_get_Saturation, Nncam_put_Brightness, Nncam_get_Brightness, Nncam_get_Contrast, Nncam_put_Contrast, Nncam_get_Gamma, Nncam_put_Gamma</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_Hue, Toupcam_get_Hue, Toupcam_put_Saturation, Toupcam_get_Saturation, Toupcam_put_Brightness, Toupcam_get_Brightness, Toupcam_get_Contrast, Toupcam_put_Contrast, Toupcam_get_Gamma, Toupcam_put_Gamma</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>HNnCam h: camera instance handle</p>
+    	<p>HToupcam h: camera instance handle</p>
     </blockquote>
     <p><strong>Remarks:</strong> set or get hue, saturation, brightness, contrast and gamma.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_Chrome, Nncam_put_Chrome</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_Chrome, Toupcam_put_Chrome</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>int bChrome: TRUE or FALSE</p>
     </blockquote>
     <p><strong>Remarks:</strong> color or gray mode</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_VFlip, Nncam_put_VFlip, Nncam_get_HFlip, Nncam_put_HFlip</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_VFlip, Toupcam_put_VFlip, Toupcam_get_HFlip, Toupcam_put_HFlip</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
-      <p><strong>Parameters:</strong> HNnCam h: camera instance handle</p>
+      <p><strong>Parameters:</strong> HToupcam h: camera instance handle</p>
       <p><strong>Remarks:</strong> vertical/horizontal flip.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_Speed, Nncam_get_Speed, Nncam_get_MaxSpeed</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_Speed, Toupcam_get_Speed, Toupcam_get_MaxSpeed</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned short nSpeed: frame rate level</p>
     </blockquote>
-    <p><strong>Remarks:</strong> the minimum frame rate level is "0", the maximum one can be achieved through Function "Nncam_get_MaxSpeed" which equals to maxspeed in NncamModelV2.</p>
+    <p><strong>Remarks:</strong> the minimum frame rate level is "0", the maximum one can be achieved through Function "Toupcam_get_MaxSpeed" which equals to maxspeed in ToupcamModelV2.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_HZ, Nncam_get_HZ</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_HZ, Toupcam_get_HZ</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>int nHZ: 0: 60Hz alternating current, 1: 50Hz alternating current, 2: direct current</p>
     </blockquote>
     <p><strong>Remarks:</strong> set the light source power frequency</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_Temperature, Nncam_put_Temperature</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_Temperature, Toupcam_put_Temperature</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure, E_NOTIMPL means not supporting get or set the temperature</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>short nTemperature: in 0.1℃ (32 means 3.2℃, -35 means -3.5℃).</p>
     </blockquote>
-    <p><strong>Remarks:</strong> get the temperature of the sensor. see NNCAM_FLAG_GETTEMPERATURE.</p>
+    <p><strong>Remarks:</strong> get the temperature of the sensor. see TOUPCAM_FLAG_GETTEMPERATURE.</p>
 	<blockquote><p>set the target temperature of the sensor.</p></blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_Mode, Nncam_get_Mode</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_Mode, Toupcam_get_Mode</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>int bSkip: Bin mode or Skip mode.</p>
   </blockquote>
   <p><strong>Remarks:</strong> set Bin mode or Skip mode. Cameras with higher resolution can support two sampling modes, one is Bin mode (Neighborhood averaging), the other is Skip (sampling extraction). In comparison, the former is with better image effect but decreasing frame rate while the latter is just the reverse.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_TempTint, Nncam_get_TempTint</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_TempTint, Toupcam_get_TempTint</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure. Works int Temp/Tint mode. Does not work int RGB Gain mode, E_NOTIMPL will be return.</p>
       <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>HNnCam h: camera instance handle</p>
+    	<p>HToupcam h: camera instance handle</p>
     	<p>int nTemp, int nTint: color temperature and Tint</p>
 	</blockquote>
   <p><strong>Remarks:</strong> set/get the color temperature and Tint parameters of white balance (Temp/Tint Mode, please see <a href="#wb">here</a>).</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_AwbOnePush</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_AwbOnePush</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure. Works int Temp/Tint mode. Does not work int RGB Gain mode, E_NOTIMPL will be return.</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
-      <p>PINNCAM_TEMPTINT_CALLBACK fnTTProc, void* pTTCtx: callback function and callback context when the automatic white balance completes.</p>
+      <p>HToupcam h: camera instance handle</p>
+      <p>PITOUPCAM_TEMPTINT_CALLBACK fnTTProc, void* pTTCtx: callback function and callback context when the automatic white balance completes.</p>
     </blockquote>
-    <p><strong>Remarks:</strong> Call this function to perform one "auto white balance" in Temp/Tint Mode. When the "auto white balance" completes, NNCAM_EVENT_TEMPTINT event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
+    <p><strong>Remarks:</strong> Call this function to perform one "auto white balance" in Temp/Tint Mode. When the "auto white balance" completes, TOUPCAM_EVENT_TEMPTINT event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_WhiteBalanceGain, Nncam_get_WhiteBalanceGain</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_WhiteBalanceGain, Toupcam_get_WhiteBalanceGain</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure. Works int RGB Gain mode. Does not work int Temp/Tint Gain mode, E_NOTIMPL will be return.</p>
       <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>HNnCam h: camera instance handle</p>
+    	<p>HToupcam h: camera instance handle</p>
     	<p>int aGain[3]: RGB Gain</p>
 	</blockquote>
   <p><strong>Remarks:</strong> set/get the RGB gain parameters of white balance (RGB Gain Mode, please see <a href="#wb">here</a>).</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_AwbInit</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_AwbInit</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure. Works int RGB Gain mode. Does not work int Temp/Tint mode, E_NOTIMPL will be return.</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
-      <p>PINNCAM_WHITEBALANCE_CALLBACK fnWBProc, void* pWBCtx: callback function and callback context when the automatic white balance completes.</p>
+      <p>HToupcam h: camera instance handle</p>
+      <p>PITOUPCAM_WHITEBALANCE_CALLBACK fnWBProc, void* pWBCtx: callback function and callback context when the automatic white balance completes.</p>
     </blockquote>
-    <p><strong>Remarks:</strong> Call this function to perform one "auto white balance" in RGB Gain Mode. When the "auto white balance" completes, NNCAM_EVENT_WBGAIN event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
+    <p><strong>Remarks:</strong> Call this function to perform one "auto white balance" in RGB Gain Mode. When the "auto white balance" completes, TOUPCAM_EVENT_WBGAIN event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
 </li></ul>
-<ul><li><h2><a id="black"><font color="#0000FF">Nncam_AbbOnePush</font></a></h2>
+<ul><li><h2><a id="black"><font color="#0000FF">Toupcam_AbbOnePush</font></a></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure.</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
-      <p>PINNCAM_BLACKBALANCE_CALLBACK fnBBProc, void* pBBCtx: callback function and callback context when the automatic black balance completes.</p>
+      <p>HToupcam h: camera instance handle</p>
+      <p>PITOUPCAM_BLACKBALANCE_CALLBACK fnBBProc, void* pBBCtx: callback function and callback context when the automatic black balance completes.</p>
     </blockquote>
-    <p><strong>Remarks:</strong> Call this function to perform one "auto black balance". When the "auto black balance" completes, NNCAM_EVENT_BLACK event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
+    <p><strong>Remarks:</strong> Call this function to perform one "auto black balance". When the "auto black balance" completes, TOUPCAM_EVENT_BLACK event notify the application (In Pull Mode) and callback happens. In pull mode, this callback is useless, set it to NULL.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_BlackBalance, Nncam_get_BlackBalance</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_BlackBalance, Toupcam_get_BlackBalance</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure.</p>
       <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>HNnCam h: camera instance handle</p>
+    	<p>HToupcam h: camera instance handle</p>
     	<p>unsigned short aSub[3]: RGB Offset</p>
 	</blockquote>
   <p><strong>Remarks:</strong> set/get the RGB offset parameters of black balance.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_AWBAuxRect, Nncam_get_AWBAuxRect, Nncam_put_AEAuxRect, Nncam_get_AEAuxRect, Nncam_put_ABBAuxRect, Nncam_get_ABBAuxRect</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_AWBAuxRect, Toupcam_get_AWBAuxRect, Toupcam_put_AEAuxRect, Toupcam_get_AEAuxRect, Toupcam_put_ABBAuxRect, Toupcam_get_ABBAuxRect</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
       <blockquote>
-      	<p>HNnCam h: camera instance handle</p>
+      	<p>HToupcam h: camera instance handle</p>
       </blockquote>
       <p><strong>Remarks:</strong> set/get the rectangle of automatic white balance and auto-exposure and automatic black balance. The default Rectangle is in the center of the image, its width is 20% image with, its height is 20% image height.</p>
 	  <p><strong>Pay attention to that the coordinate is always relative to the original resolution</strong>, see <a href="#cord">here</a>.</p>
   </li>
 </ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_MonoMode</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_MonoMode</font></h2>
     <p><strong>Return value:</strong> S_OK means mono mode, S_FALSE means color mode</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>NnCam h: camera instance handle</p>
+    	<p>Toupcam h: camera instance handle</p>
     </blockquote>
-    <p><strong>Remarks:</strong> gray camera or not, find the flag in NnCamModelV2: NNCAM_FLAG_MONO</p>
+    <p><strong>Remarks:</strong> gray camera or not, find the flag in ToupcamModelV2: TOUPCAM_FLAG_MONO</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_get_MaxBitDepth</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_get_MaxBitDepth</font></h2>
     <p><strong>Return value:</strong> the maximum bit depth this camera supports.</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-    	<p>HNnCam h: camera instance handle</p>
+    	<p>HToupcam h: camera instance handle</p>
     </blockquote>
     <p><strong>Remarks:</strong> Some cameras support the bit depth which is more than 8 such as 10, 12, 14, 16.</p>
 </li></ul>
 <ul><li>
-    <h2><font color="#0000FF">Nncam_get_StillResolutionNumber, Nncam_get_StillResolution</font></h2>
+    <h2><font color="#0000FF">Toupcam_get_StillResolutionNumber, Toupcam_get_StillResolution</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned nResolutionIndex: resolution index</p>
       <p>int* pWidth, int* pHeight: width/height</p>
     </blockquote>
-    <p><strong>Remarks:</strong> Nncam_get_StillResolutionNumber means the number of supported still resolution. Take UCMOS03100KPA as an example, if we call the function Nncam_get_StillResolutionNumber and get "3", which means it can support three kinds of resolution. If it doesn't support "still snap", then we get "0". Nncam_get_Resolution gs the width/height of each kind of resolution.</p>
+    <p><strong>Remarks:</strong> Toupcam_get_StillResolutionNumber means the number of supported still resolution. Take UCMOS03100KPA as an example, if we call the function Toupcam_get_StillResolutionNumber and get "3", which means it can support three kinds of resolution. If it doesn't support "still snap", then we get "0". Toupcam_get_Resolution gs the width/height of each kind of resolution.</p>
 </li></ul>
 <ul><li>
-    <h2><font color="#0000FF">Nncam_get_SerialNumber, Nncam_get_FwVersion, Nncam_get_HwVersion, Nncam_get_ProductionDate, Nncam_get_Revision</font></h2>
+    <h2><font color="#0000FF">Toupcam_get_SerialNumber, Toupcam_get_FwVersion, Toupcam_get_HwVersion, Toupcam_get_ProductionDate, Toupcam_get_Revision</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>char sn[32]: buffer to the serial number, such as: TP110826145730ABCD1234FEDC56787</p>
     <p>char fwver[16]: buffer to the firmware version, such as: 3.2.1.20140922</p>
     <p>char hwver[16]: buffer to the hardware version, such as: 3.12</p>
@@ -1394,32 +1535,32 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   <p><strong>Remarks:</strong> each camera has a unique serial number with 31 letters.</p>
 </li></ul>
 <ul><li>
-    <h2><font color="#0000FF">Nncam_get_PixelSize</font></h2>
+    <h2><font color="#0000FF">Toupcam_get_PixelSize</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned nResolutionIndex: resolution index</p>
     <p>float* x, float* y: physical pixel size(µm)</p>
   </blockquote>
 </li></ul>
 <ul><li>
-    <h2><font color="#0000FF">Nncam_put_LEDState</font></h2>
+    <h2><font color="#0000FF">Toupcam_put_LEDState</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned short iLed: the index of LED light</p>
     <p>unsigned short iState: LED status, 1 -&gt; Ever bright; 2 -&gt; Flashing; other -&gt; Off</p>
     <p>unsigned short iPeriod: Flashing Period (&gt;= 500ms)</p>
   </blockquote>
   <p><strong>Remarks:</strong> One or more LED lights installed on some camera. This function controls the status of these lights.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_read_EEPROM, Nncam_write_EEPROM</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_read_EEPROM, Toupcam_write_EEPROM</font></h2>
   <p><strong>Return value:</strong> HRESULT type means failure or byte(s) transferred</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned addr: EEPROM address</p>
     <p>const unsigned char* pBuffer: data buffer to be written</p>
     <p>unsigned char* pBuffer: read EEPROM to buffer</p>
@@ -1427,11 +1568,11 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   </blockquote>
   <p><strong>Remarks:</strong> In some cameras, EEPROM is available for read and write. If failed to read or write, a negative HRESULT error code will be return, when success, the bytes number has been read or written will be return.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_IoControl</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_IoControl</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>unsigned index: IO port index</p>
     <p>unsigned nType: type of control</p>
     <p>int outVal: output control value</p>
@@ -1439,51 +1580,51 @@ for (unsigned i = 0; i &lt; cnt; ++i)
   <div align="center">
     <table width="100%" border="1" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
       <tr>
-        <td width="28%" valign="top">NNCAM_IOCONTROLTYPE_GET_SUPPORTEDMODE</td>
+        <td width="28%" valign="top">TOUPCAM_IOCONTROLTYPE_GET_SUPPORTEDMODE</td>
         <td width="72%" valign="top">get the supported mode:<br/>0x01->&gt;Input<br/>0x02->&gt;Output<br/>(0x01 | 0x02)->&gt;support both Input and Output</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_GET_GPIODIR</td>
+        <td>TOUPCAM_IOCONTROLTYPE_GET_GPIODIR</td>
         <td>0x00->&gt;Input, 0x01->&gt;Output</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_SET_GPIODIR</td>
+        <td>TOUPCAM_IOCONTROLTYPE_SET_GPIODIR</td>
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_GET_FORMAT</td>
+        <td>TOUPCAM_IOCONTROLTYPE_GET_FORMAT</td>
         <td>format:<br/>0x00->&gt;not connected<br/>0x01->&gt;Tri-state<br/>0x02->&gt;TTL<br/>0x03->&gt;LVDS<br/>0x04->&gt;RS422<br/>0x05->&gt;Opto-coupled</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_SET_FORMAT</td>
+        <td>TOUPCAM_IOCONTROLTYPE_SET_FORMAT</td>
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_GET_OUTPUTINVERTER</td>
+        <td>TOUPCAM_IOCONTROLTYPE_GET_OUTPUTINVERTER</td>
         <td>boolean, only support output signal</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_SET_OUTPUTINVERTER</td>
+        <td>TOUPCAM_IOCONTROLTYPE_SET_OUTPUTINVERTER</td>
         <td>&nbsp;</td>
       </tr>
       <tr>
-        <td>NNCAM_IOCONTROLTYPE_GET_INPUTACTIVATION</td>
+        <td>TOUPCAM_IOCONTROLTYPE_GET_INPUTACTIVATION</td>
         <td>0x00->&gt;Positive, 0x01->&gt;Negative</td>
       </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_INPUTACTIVATION</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_INPUTACTIVATION</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_DEBOUNCERTIME</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_DEBOUNCERTIME</td>
    <td>debouncer time in microseconds, [0, 20000]</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_DEBOUNCERTIME</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_TRIGGERSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_TRIGGERSOURCE</td>
    <td>0x00->&gt; Opto-isolated input<br/>
                                 0x01->&gt; GPIO0<br/>
                                 0x02->&gt; GPIO1<br/>
@@ -1492,220 +1633,180 @@ for (unsigned i = 0; i &lt; cnt; ++i)
                                 0x05->&gt; Software</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_TRIGGERSOURCE</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_TRIGGERDELAY</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_TRIGGERDELAY</td>
    <td>Trigger delay time in microseconds, [0, 5000000]</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_TRIGGERDELAY</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_TRIGGERDELAY</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_BURSTCOUNTER</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_BURSTCOUNTER</td>
    <td>Burst Counter: 1, 2, 3 ... 1023</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_BURSTCOUNTER</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_BURSTCOUNTER</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_COUNTERSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_COUNTERSOURCE</td>
    <td>0x00->&gt; Opto-isolated input<br/>0x01->&gt; GPIO0<br/>0x02->&gt; GPIO1</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_COUNTERSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_COUNTERSOURCE</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_COUNTERVALUE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_COUNTERVALUE</td>
    <td>Counter Value: 1, 2, 3 ... 1023</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_COUNTERVALUE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_COUNTERVALUE</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_RESETCOUNTER</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_RESETCOUNTER</td>
    <td>&nbsp;</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_PWMSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_PWMSOURCE</td>
    <td>0x00->&gt; Opto-isolated input<br/>
 		0x01->&gt; GPIO0<br/>
 		0x02->&gt; GPIO1</td>
  </tr>
   <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_PWMSOURCE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_PWMSOURCE</td>
    <td>&nbsp;</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_OUTPUTMODE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_OUTPUTMODE</td>
    <td>0x00->&gt; Frame Trigger Wait<br/>
                                 0x01->&gt; Exposure Active<br/>
                                 0x02->&gt; Strobe<br/>
                                 0x03->&gt; User output</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_OUTPUTMODE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_OUTPUTMODE</td>
    <td>&nbsp;</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_STROBEDELAYMODE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_STROBEDELAYMODE</td>
    <td>boolean, 0->&gt; pre-delay, 1->&gt; delay; compared to exposure active signal</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_STROBEDELAYMODE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYMODE</td>
    <td>&nbsp;</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_STROBEDELAYTIME</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_STROBEDELAYTIME</td>
    <td>Strobe delay or pre-delay time in microseconds, [0, 5000000]</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_STROBEDELAYTIME</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_STROBEDELAYTIME</td>
    <td>&nbsp;</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_STROBEDURATION</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_STROBEDURATION</td>
    <td>Strobe duration time in microseconds, [0, 5000000]</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_STROBEDURATION</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_STROBEDURATION</td>
    <td>&nbsp;</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_GET_USERVALUE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_USERVALUE</td>
    <td>bit0->&gt; Opto-isolated output<br/>
        bit1->&gt; GPIO0 output<br/>
        bit2->&gt; GPIO1 output</td>
  </tr>
  <tr>
-   <td>NNCAM_IOCONTROLTYPE_SET_USERVALUE</td>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_USERVALUE</td>
+   <td>&nbsp;</td>
+ </tr> <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_UART_ENABLE</td>
+   <td>UART enable: 1-> on; 0-> off</td>
+ </tr>
+ <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_UART_ENABLE</td>
+   <td>&nbsp;</td>
+ </tr>
+ <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_UART_BAUDRATE</td>
+   <td>baud rate:<br/>
+   0-> 9600<br/>1-> 19200<br/>2-> 38400<br/>3-> 57600<br/>4-> 115200</td>
+ </tr>
+ <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_UART_BAUDRATE</td>
+   <td>&nbsp;</td>
+ </tr>
+ <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_GET_UART_LINEMODE</td>
+   <td>Line Mode:<br/>0->TX(GPIO_0)/RX(GPIO_1)<br/>1->TX(GPIO_1)/RX(GPIO_0)</td>
+ </tr>
+ <tr>
+   <td>TOUPCAM_IOCONTROLTYPE_SET_UART_LINEMODE</td>
    <td>&nbsp;</td>
  </tr>
     </table>
   </div>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_read_UART, Nncam_write_UART</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_read_UART, Toupcam_write_UART</font></h2>
   <p><strong>Return value:</strong> HRESULT type means failure or byte(s) transferred</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
     <p>const unsigned char* pBuffer: data buffer to be written</p>
     <p>unsigned char* pBuffer: read buffer</p>
     <p>unsigned nBufferLen: buffer length</p>
   </blockquote>
   <p><strong>Remarks:</strong> If failed to read or write, a negative HRESULT error code will be return, when success, the bytes number has been read or written will be return.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_FfcOnePush</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_FfcOnePush</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_DfcOnePush</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_DfcOnePush</font></h2>
   <p><strong>Return value:</strong> HRESULT type means success or failure</p>
   <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
+    <p>HToupcam h: camera instance handle</p>
   </blockquote>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_ExpoCallback</font></h2>
-      <p><strong>Return value:</strong> HRESULT type means success or failure</p>
-      <p><strong>Parameters:</strong></p>
-  <blockquote>
-    <p>HNnCam h: camera instance handle</p>
-    <p>PINNCAM_EXPOSURE_CALLBACK fnExpoProc, void* pExpoCtx: exposure callback function and callback context. If we set fnExpoProc as NULL, then it means stop calling back.</p>
-  </blockquote>
-  <p><strong>Remarks:</strong> Once we set non-NULL callback function, then callback happens whenever the exposure time changes.</p>
-</li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_ChromeCallback</font></h2>
-      <p><strong>Return value:</strong> HRESULT type means success or failure</p>
-      <p><strong>Parameters:</strong></p>
-  <blockquote>
-    <p>HNnCam h: camera instance handle</p>
-    <p>PINNCAM_CHROME_CALLBACK fnChromeProc, void* pChromeCtx: color/gray switches callback function and callback context. If we set fnChromeProc as NULL, then it means stop calling back.</p>
-  </blockquote>
-  <p><strong>Remarks:</strong> once we set non-NULL callback function, then callback happens whenever the color/gray switches, eg, call Nncam_put_Chrome</p>
-</li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_LevelRangeAuto</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_LevelRangeAuto</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
       <blockquote>
-      	<p>HNnCam h: camera instance handle</p>
+      	<p>HToupcam h: camera instance handle</p>
       </blockquote>
       <p><strong>Remarks:</strong> auto Level Range.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_put_LevelRange, Nncam_get_LevelRange</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_put_LevelRange, Toupcam_get_LevelRange</font></h2>
     <p><strong>Return value:</strong> HRESULT type means success or failure</p>
     <p><strong>Parameters:</strong></p>
     <blockquote>
-      <p>HNnCam h: camera instance handle</p>
+      <p>HToupcam h: camera instance handle</p>
       <p>unsigned short aLow[4], unsigned short aHigh[4]: Level Range of R, G, B, and Gray. RGB is only available for color image, and gray is only available for gray image.</p>
     </blockquote>
     <p><strong>Remarks:</strong> level range related.</p>
 </li></ul>
-<ul><li><h2><font color="#0000FF">Nncam_GetHistogram</font></h2>
+<ul><li><h2><font color="#0000FF">Toupcam_GetHistogram</font></h2>
       <p><strong>Return value:</strong> HRESULT type means success or failure</p>
       <p><strong>Parameters:</strong></p>
   <blockquote>
-    <p>HNnCam h: camera instance handle</p>
-    <p>PINNCAM_HISTOGRAM_CALLBACK fnHistogramProc, void* pHistogramCtx: callback function and callback context of histogram data.</p>
+    <p>HToupcam h: camera instance handle</p>
+    <p>PITOUPCAM_HISTOGRAM_CALLBACK fnHistogramProc, void* pHistogramCtx: callback function and callback context of histogram data.</p>
   </blockquote>
   <p><strong>Remarks:</strong> get histogram data.</p>
 </li></ul>
-<hr/>
-<h1><font color="#0000FF"><a id="dotnet">5. .NET and C# and VB.NET</a></font></h1>
-<hr/>
-<p>Nncam does support .NET development environment (C# and VB.NET).</p>
-<p>nncam.cs use P/Invoke to call into nncam.dll. Copy nncam.cs to your C# project, please reference demowinformcs1, demowinformcs2 and demowinformcs3 in the samples directory.</p>
-<p>Please pay attation to that <strong>the object of the C# class Nn.NnCam must be obtained by static mothod Open or OpenByIndex, it cannot be obtained by obj = new Nn.NnCam</strong> (The constructor is private on purpose).</p>
-<p>Most properties and methods of the NnCam class P/Invoke into the corresponding Nncam_xxxx functions of nncam.dll/so. So, the descriptions of the Nncam_xxxx function are also applicable for the corresponding C# properties or methods. For example, the C# Snap method call the function Nncam_Snap, the descriptions of the Nncam_Snap function is applicable for C# Snap method:</p>
-<table width="100%" border="0" bgcolor="#B0D0B0">
-<tr><td><pre>[DllImport(&quot;nncam.dll&quot;, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
-private static extern int Nncam_Snap(SafeHNnCamHandle h, uint nResolutionIndex);
-
-public bool Snap(uint nResolutionIndex)
-{
-    if (_handle == null || _handle.IsInvalid || _handle.IsClosed)
-        return false;
-    return (Nncam_Snap(_handle, nResolutionIndex) &gt;= 0);
-}</pre></td></tr></table>
-<p>VB.NET is similar with C#, not otherwise specified.</p>
-<hr/>
-<h1><font color="#0000FF"><a id="python">6. Python</a></font></h1>
-<hr/>
-<p>Nncam does support Python (version 3.0 or above), please import nncam to use nncam.py and reference the sample code simplest.py and qt.py.</p>
-<p>Please pay attation to that <strong>the object of the python class nncam.NnCam must be obtained by classmethod Open or OpenByIndex, it cannot be obtained by obj = nncam.NnCam()</strong></p>
-<p>Most methods of the NnCam class use ctypes to call into the corresponding Nncam_xxxx functions of nncam.dll/so/dylib. So, the descriptions of the Nncam_xxxx function are also applicable for the corresponding python methods.</p>
-<p>Please reference __errcheck in nncam.py, the original HRESULT return code is mapped to HRESULTException exception (in win32 it's inherited from OSError).</p>
-<p>Please make sure the nncam dll/so/dylib library file is in the same directory with nncam.py.</p>
-<h1><font color="#0000FF"><a id="java">7. Java</a></font></h1>
-<hr/>
-<p>Nncam does support Java, nncam.java use <a href="https://github.com/java-native-access/jna">JNA (https://github.com/java-native-access/jna)</a> to call into nncam.dll/so/dylib. Copy nncam.java to your java project, please reference the sample code simplest.java (Console), javafx.java, swing.java.</p>
-<p>Please pay attation to that <strong>the object of the java class nncam must be obtained by static method Open or OpenByIndex, it cannot be obtained by obj = new nncam()</strong>(The constructor is private on purpose).</p>
-<p>Most methods of the nncam class use <a href="https://github.com/java-native-access/jna">JNA</a> to call into the corresponding Nncam_xxxx functions of nncam.dll/so/dylib. So, the descriptions of the Nncam_xxxx function are also applicable for the corresponding java methods.</p>
-<p>Please reference errcheck in nncam.java, the original HRESULT return code is mapped to HRESULTException exception.</p>
-<p>Remark: (1) Download jna-*.jar from github; (2) Make sure nncam.dll/so/dylib is placed in the correct directory.</p>
-<hr/>
-<h1><font color="#0000FF">8. Misc</font></h1>
-<hr/>
-<ul>
-  <li>Byte order (BGR vs RGB)
-    <blockquote>
-      <p>Windows: BGR</p>
-      <p>macOS, Linux, Android: RGB</p>
-    </blockquote>
-  </li>
-</ul>
-<ul>
-  <li>Ranges and default value of some parameters</li>
-</ul>
+<ul><li><h2><font color="#0000FF">Ranges and default value of some parameters</font></h2>
 <blockquote>
 <div align="center">
  <table width="100%" border="1" cellpadding="0" cellspacing="0" bgcolor="#B0D0B0">
@@ -1719,10 +1820,10 @@ public bool Snap(uint nResolutionIndex)
   </tr>
   <tr>
     <td colspan="3">Auto Exposure Target</td>
-    <td width="15%">16~235</td>
+    <td width="15%">16~220</td>
     <td width="8%">120</td>
-    <td width="17%">Nncam_get_AutoExpoTarget</td>
-    <td width="17%">Nncam_put_AutoExpoTarget</td>
+    <td width="17%">Toupcam_get_AutoExpoTarget</td>
+    <td width="17%">Toupcam_put_AutoExpoTarget</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
@@ -1731,9 +1832,9 @@ public bool Snap(uint nResolutionIndex)
     <td width="10%">Color Temperature</td>
     <td width="15%">2000~15000</td>
     <td width="8%">6503</td>
-    <td width="17%" rowspan="2">Nncam_get_TempTint</td>
-    <td width="17%" rowspan="2">Nncam_put_TempTint</td>
-    <td width="14%" rowspan="2">Nncam_AwbOnePush</td>
+    <td width="17%" rowspan="2">Toupcam_get_TempTint</td>
+    <td width="17%" rowspan="2">Toupcam_put_TempTint</td>
+    <td width="14%" rowspan="2">Toupcam_AwbOnePush</td>
   </tr>
   <tr>
     <td width="10%">Tint</td>
@@ -1745,9 +1846,9 @@ public bool Snap(uint nResolutionIndex)
     <td>Red Gain</td>
     <td rowspan="3">-127~127</td>
     <td rowspan="3">0</td>
-    <td rowspan="3">Nncam_get_WhiteBalanceGain</td>
-    <td rowspan="3">Nncam_put_WhiteBalanceGain</td>
-    <td rowspan="3">Nncam_AwbInit</td>
+    <td rowspan="3">Toupcam_get_WhiteBalanceGain</td>
+    <td rowspan="3">Toupcam_put_WhiteBalanceGain</td>
+    <td rowspan="3">Toupcam_AwbInit</td>
   </tr>
   <tr>
     <td>Green Gain</td>
@@ -1760,48 +1861,48 @@ public bool Snap(uint nResolutionIndex)
     <td width="15%">0~255</td>
     <td width="8%">Low = 0<br/>
       High = 255</td>
-    <td width="17%">Nncam_get_LevelRange</td>
-    <td width="17%">Nncam_put_LevelRange</td>
-    <td width="14%">Nncam_LevelRangeAuto</td>
+    <td width="17%">Toupcam_get_LevelRange</td>
+    <td width="17%">Toupcam_put_LevelRange</td>
+    <td width="14%">Toupcam_LevelRangeAuto</td>
   </tr>
   <tr>
     <td colspan="3">Contrast</td>
     <td width="15%">-100~100</td>
     <td width="8%">0</td>
-    <td width="17%">Nncam_get_Contrast</td>
-    <td width="17%">Nncam_put_Contrast</td>
+    <td width="17%">Toupcam_get_Contrast</td>
+    <td width="17%">Toupcam_put_Contrast</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
     <td colspan="3">Hue</td>
     <td width="15%">-180~180</td>
     <td width="8%">0</td>
-    <td width="17%">Nncam_get_Hue</td>
-    <td width="17%">Nncam_put_Hue</td>
+    <td width="17%">Toupcam_get_Hue</td>
+    <td width="17%">Toupcam_put_Hue</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
     <td colspan="3">Saturation</td>
     <td width="15%">0~255</td>
     <td width="8%">128</td>
-    <td width="17%">Nncam_get_Saturation</td>
-    <td width="17%">Nncam_put_Saturation</td>
+    <td width="17%">Toupcam_get_Saturation</td>
+    <td width="17%">Toupcam_put_Saturation</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
     <td colspan="3">Brightness</td>
     <td width="15%">-64~64</td>
     <td width="8%">0</td>
-    <td width="17%">Nncam_get_Brightness</td>
-    <td width="17%">Nncam_put_Brightness</td>
+    <td width="17%">Toupcam_get_Brightness</td>
+    <td width="17%">Toupcam_put_Brightness</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
     <td colspan="3">Gamma</td>
     <td width="15%">20~180</td>
     <td width="8%">100</td>
-    <td width="17%">Nncam_get_Gamma</td>
-    <td width="17%">Nncam_put_Gamma</td>
+    <td width="17%">Toupcam_get_Gamma</td>
+    <td width="17%">Toupcam_put_Gamma</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
@@ -1812,8 +1913,8 @@ public bool Snap(uint nResolutionIndex)
     				0~31 * 64 (bit depth=14)<br/>
     				0~31 * 256 (bit depth=16)</td>
     <td width="8%">&nbsp;</td>
-    <td width="17%">Nncam_get_Option</td>
-    <td width="17%">Nncam_put_Option</td>
+    <td width="17%">Toupcam_get_Option</td>
+    <td width="17%">Toupcam_put_Option</td>
     <td width="14%">&nbsp;</td>
   </tr>
   <tr>
@@ -1822,12 +1923,12 @@ public bool Snap(uint nResolutionIndex)
     <td width="10%">Exposure Time</td>
     <td width="15%">&nbsp;</td>
     <td width="8%">350ms</td>
-    <td width="17%" rowspan="2">Nncam_get_MaxAutoExpoTimeAGain</td>
-    <td width="17%" rowspan="2">Nncam_put_MaxAutoExpoTimeAGain</td>
+    <td width="17%" rowspan="2">Toupcam_get_MaxAutoExpoTimeAGain</td>
+    <td width="17%" rowspan="2">Toupcam_put_MaxAutoExpoTimeAGain</td>
     <td width="14%" rowspan="2">&nbsp;</td>
   </tr>
   <tr>
-    <td width="10%">Analog Gain</td>
+    <td width="10%">Gain</td>
     <td width="15%">&nbsp;</td>
     <td width="8%">500</td>
     </tr>
@@ -1836,49 +1937,93 @@ public bool Snap(uint nResolutionIndex)
     <td>Exposure Time</td>
     <td>&nbsp;</td>
     <td>0</td>
-    <td rowspan="2">Nncam_get_MinAutoExpoTimeAGain</td>
-    <td rowspan="2">Nncam_put_MinAutoExpoTimeAGain</td>
+    <td rowspan="2">Toupcam_get_MinAutoExpoTimeAGain</td>
+    <td rowspan="2">Toupcam_put_MinAutoExpoTimeAGain</td>
     <td rowspan="2">&nbsp;</td>
   </tr>
   <tr>
-    <td>Analog Gain</td>
+    <td>Gain</td>
 	<td>&nbsp;</td>
 	<td>100</td>
     </tr>
  </table>
 </div>
 </blockquote>
+</li></ul>
 <hr/>
-<h1><font color="#0000FF">7. Changelog</font></h1>
+<h1><font color="#0000FF"><a id="dotnet">5. .NET and C# and VB.NET</a></font></h1>
 <hr/>
-<p>v37: Add Android support<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Nncam_StartPushModeV3 (Nncam_StartPushModeV2 and Nncam_StartPushMode are obsoleted)</p>
+<p>Toupcam does support .NET development environment (C# and VB.NET).</p>
+<p>toupcam.cs use P/Invoke to call into toupcam.dll. Copy toupcam.cs to your C# project, please reference demowinformcs1, demowinformcs2 and demowinformcs3 in the samples directory.</p>
+<p>Please pay attation to that <strong>the object of the C# class Toupcam. Toupcam must be obtained by static mothod Open or OpenByIndex, it cannot be obtained by obj = new Toupcam</strong> (The constructor is private on purpose).</p>
+<p>Most properties and methods of the Toupcam class P/Invoke into the corresponding Toupcam_xxxx functions of toupcam.dll/so. So, the descriptions of the Toupcam_xxxx function are also applicable for the corresponding C# properties or methods. For example, the C# Snap method call the function Toupcam_Snap, the descriptions of the Toupcam_Snap function is applicable for C# Snap method:</p>
+<table width="100%" border="0" bgcolor="#B0D0B0">
+<tr><td><pre>[DllImport(&quot;toupcam.dll&quot;, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+private static extern int Toupcam_Snap(SafeHToupcamHandle h, uint nResolutionIndex);
+
+public bool Snap(uint nResolutionIndex)
+{
+    if (_handle == null || _handle.IsInvalid || _handle.IsClosed)
+        return false;
+    return (Toupcam_Snap(_handle, nResolutionIndex) &gt;= 0);
+}</pre></td></tr></table>
+<p>VB.NET is similar with C#, not otherwise specified.</p>
+<hr/>
+<h1><font color="#0000FF"><a id="python">6. Python</a></font></h1>
+<hr/>
+<p>Toupcam does support Python (version 3.0 or above), please import toupcam to use toupcam.py and reference the sample code simplest.py and qt.py.</p>
+<p>Please pay attation to that <strong>the object of the python class toupcam.Toupcam must be obtained by classmethod Open or OpenByIndex, it cannot be obtained by obj = toupcam.Toupcam()</strong></p>
+<p>Most methods of the Toupcam class use ctypes to call into the corresponding Toupcam_xxxx functions of toupcam.dll/so/dylib. So, the descriptions of the Toupcam_xxxx function are also applicable for the corresponding python methods.</p>
+<p>Please reference __errcheck in toupcam.py, the original HRESULT return code is mapped to HRESULTException exception (in win32 it's inherited from OSError).</p>
+<p>Please make sure the toupcam dll/so/dylib library file is in the same directory with toupcam.py.</p>
+<h1><font color="#0000FF"><a id="java">7. Java</a></font></h1>
+<hr/>
+<p>Toupcam does support Java, toupcam.java use <a href="https://github.com/java-native-access/jna">JNA (https://github.com/java-native-access/jna)</a> to call into toupcam.dll/so/dylib. Copy toupcam.java to your java project, please reference the sample code simplest.java (Console), javafx.java, swing.java.</p>
+<p>Please pay attation to that <strong>the object of the java class toupcam must be obtained by static method Open or OpenByIndex, it cannot be obtained by obj = new toupcam()</strong>(The constructor is private on purpose).</p>
+<p>Most methods of the toupcam class use <a href="https://github.com/java-native-access/jna">JNA</a> to call into the corresponding Toupcam_xxxx functions of toupcam.dll/so/dylib. So, the descriptions of the Toupcam_xxxx function are also applicable for the corresponding java methods.</p>
+<p>Please reference errcheck in toupcam.java, the original HRESULT return code is mapped to HRESULTException exception.</p>
+<p>Remark: (1) Download jna-*.jar from github; (2) Make sure toupcam.dll/so/dylib is placed in the correct directory.</p>
+<hr/>
+<h1><font color="#0000FF">8. Changelog</font></h1>
+<hr/>
+<p>v46: Add support denose. Please see <a href="#denoise">here</a></p>
+<p>v45: Add sequencer trigger, UART, mix trigger (<a href="#mix">external and software trigger both are enabled</a>)</p>
+<p>v44: Extend the realtime mode, Please see <a href="#realtime">here</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add TOUPCAM_OPTION_CALLBACK_THREAD and TOUPCAM_OPTION_FRAME_DEQUE_LENGTH</p>
+<p>v43: Reload the last frame in the trigger mode. Please see <a href="#reload">TOUPCAM_OPTION_RELOAD</a></p>
+<p>v42: Precise frame rate and bandwidth. Please see <a href="#precise">here</a> and TOUPCAM_FLAG_PRECISE_FRAMERATE</p>
+<p>v41: no packet timeout. Please see <a href="#nopacket">here</a></p>
+<p>v40: Auto test tool, see samples\AutoTestTool</p>
+<p>v39: Update C#/VB.NET/Java/Python</p>
+<p>v38: Add support to byte order, change BGR/RGB. Please see <a href="#bgr">here</a></p>
+<p>v37: Add Android support<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Toupcam_StartPushModeV3 (Toupcam_StartPushModeV2 and Toupcam_StartPushMode are obsoleted)</p>
 <p>v36: Add Java support. Please see <a href="#java">here</a></p>
 <p>v35: Add Python support. Please see <a href="#python">here</a></p>
 <p>v34: Auto Focus and Focus Motor</p>
-<p>v33: extend NNCAM_OPTION_AGAIN to NNCAM_OPTION_AUTOEXP_POLICY, support more options. Please see <a href="#aepolicy">here</a></p>
+<p>v33: extend TOUPCAM_OPTION_AGAIN to TOUPCAM_OPTION_AUTOEXP_POLICY, support more options. Please see <a href="#aepolicy">here</a></p>
 <p>v32: Addd support to Windows 10 on ARM and ARM64, both desktop and WinRT</p>
-<p>v31: Add Nncam_deBayerV2, support RGB48 and RGB64</p>
-<p>v30: Add NNCAM_FLAG_CGHDR</p>
-<p>v29: Add NncamFrameInfoV2, a group of functions (PullImageV2 and StartPushModeV2), some cameras support frame sequence number and timestamp. Please see <a href="#infov2">here</a></p>
-<p>v28: Add Nncam_read_Pipe, Nncam_write_Pipe, Nncam_feed_Pipe</p>
-<p>v27: Add Nncam_SnapN, support to snap multiple images, please see <a href="#snapn">here</a> and democpp</p>
-<p>v26: Add support to restore factory settings, NNCAM_OPTION_FACTORY</p>
-<p>v25: Add sharpening, NNCAM_OPTION_SHARPENING</p>
+<p>v31: Add Toupcam_deBayerV2, support RGB48 and RGB64</p>
+<p>v30: Add TOUPCAM_FLAG_CGHDR</p>
+<p>v29: Add ToupcamFrameInfoV2, a group of functions (PullImageV2 and StartPushModeV2), some cameras support frame sequence number and timestamp. Please see <a href="#infov2">here</a></p>
+<p>v28: Add Toupcam_read_Pipe, Toupcam_write_Pipe, Toupcam_feed_Pipe</p>
+<p>v27: Add Toupcam_SnapN, support to snap multiple images, please see <a href="#snapn">here</a> and democpp</p>
+<p>v26: Add support to restore factory settings, TOUPCAM_OPTION_FACTORY</p>
+<p>v25: Add sharpening, TOUPCAM_OPTION_SHARPENING</p>
 <p>v24: Add support to Auto Exposure with the 50/60 HZ constraint</p>
 <p>v23: Add support to Linux armhf, armel and arm64<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add FFC and DFC, please see <a href="#ffc">here</a> and <a href="#dfc">here</a></p>
-<p>v22: Add NNCAM_OPTION_DDR_DEPTH, please see <a href="#ddrdepth">here</a></p>
-<p>v21: Add Nncam_IoControl</p>
-<p>v20: Add Nncam_EnumV2, NncamModelV2, NncamInstV2; (Nncam_Enum, NncamModel and NncamInst are obsoleted)<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Pixel Format, see NNCAM_OPTION_PIXEL_FORMAT; (NNCAM_OPTION_PIXEL_FORMAT is the super set of NNCAM_OPTION_BITDEPTH)<br/>
+<p>v22: Add TOUPCAM_OPTION_DDR_DEPTH, please see <a href="#ddrdepth">here</a></p>
+<p>v21: Add Toupcam_IoControl</p>
+<p>v20: Add Toupcam_EnumV2, ToupcamModelV2, ToupcamDeviceV2; (Toupcam_Enum, ToupcamModel and ToupcamDevice are obsoleted)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Pixel Format, see TOUPCAM_OPTION_PIXEL_FORMAT; (TOUPCAM_OPTION_PIXEL_FORMAT is the super set of TOUPCAM_OPTION_BITDEPTH)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add Flat Field Correction</p>
 <p>v19: Add Black Balance: please see <a href="#black">here</a></p>
-<p>v18: Add Nncam_get_Revision</p>
-<p>v17: Add <a href="#rotate">NNCAM_OPTION_ROTATE</a></p>
-<p>v16: Add <a href="#ddr">NNCAM_FLAG_DDR</a>, use very large capacity DDR (Double Data Rate SDRAM) for frame buffer</p>
-<p>v15: Add <a href="#binning">NNCAM_OPTION_BINNING</a></p>
+<p>v18: Add Toupcam_get_Revision</p>
+<p>v17: Add <a href="#rotate">TOUPCAM_OPTION_ROTATE</a></p>
+<p>v16: Add <a href="#ddr">TOUPCAM_FLAG_DDR</a>, use very large capacity DDR (Double Data Rate SDRAM) for frame buffer</p>
+<p>v15: Add <a href="#binning">TOUPCAM_OPTION_BINNING</a></p>
 <p>v14: Add support to WinRT / UWP (Universal Windows Platform) / Windows Store App</p>
-<p>v13: support row pitch, please see <a href="#rowpitch1">Nncam_PullImageWithRowPitch</a> and <a href="#rowpitch2">Nncam_PullStillImageWithRowPitch</a></p>
+<p>v13: support row pitch, please see <a href="#rowpitch1">Toupcam_PullImageWithRowPitch</a> and <a href="#rowpitch2">Toupcam_PullStillImageWithRowPitch</a></p>
 <p>v12: support RGB32, 8 bits Gray, 16 bits Gray, please see <a href="#rgb">here</a></p>
 <p>v11: black level: please see <a href="#blacklevel">here</a></p>
 <p>v10: demosaic method: please see <a href="#demosaic">here</a></p>
@@ -1892,10 +2037,10 @@ public bool Snap(uint nResolutionIndex)
 <p>v2: support RAW format, please see <a href="#raw">here</a> and <a href="#rawo">here</a>; support Linux and macOS</p>
 <p>v1: initial release</p>
 <hr/>
-<h1><font color="#0000FF">8. Contact</font></h1>
+<h1><font color="#0000FF">9. Contact</font></h1>
 <hr/>
 <p>If you have any problems in using this SDK, please use the following information to contact us.<br/>
- www: <a href="http://www.nn.com">www.nn.com</a><br/>
- email: support@nn.com</p>
+ www: <a href="http://www.touptek.com">www.touptek.com</a><br/>
+ email: support@touptek.com</p>
 </body>
 </html>
