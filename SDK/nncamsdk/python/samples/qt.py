@@ -1,4 +1,10 @@
-import sys, toupcam
+import git
+import sys
+
+repo = git.Repo('.', search_parent_directories=True)
+sys.path.insert(0, repo.working_tree_dir)
+from SDK.nncamsdk.python import toupcam
+
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QDesktopWidget, QCheckBox, QMessageBox
