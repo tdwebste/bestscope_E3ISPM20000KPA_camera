@@ -12,7 +12,8 @@ class MainWin(QWidget):
         self.buf = None      # video buffer
         self.w = 0           # video width
         self.h = 0           # video height
-        self.setFixedSize(640, 480)
+        self.total = 0
+        self.setFixedSize(800, 600)
         qtRectangle = self.frameGeometry()
         centerPoint = QDesktopWidget().availableGeometry().center()
         qtRectangle.moveCenter(centerPoint)
@@ -36,30 +37,29 @@ class MainWin(QWidget):
 
 # run in the UI thread
     @pyqtSlot()
-    def eventImageCallback(self):
+    def eventImageSignal(self):
         if self.hcam is not None:
             try:
                 self.hcam.PullImageV2(self.buf, 24, None)
+                self.total += 1
             except toupcam.HRESULTException:
                 QMessageBox.warning(self, '', 'pull image failed', QMessageBox.Ok)
             else:
+                self.setWindowTitle('{}: {}'.format(self.camname, self.total))
                 img = QImage(self.buf, self.w, self.h, (self.w * 24 + 31) // 32 * 4, QImage.Format_RGB888)
-                if sys.platform == 'win32':
-                    newimg = img.rgbSwapped()
-                else:
-                    newimg = img
-                self.label.setPixmap(QPixmap.fromImage(newimg))
+                self.label.setPixmap(QPixmap.fromImage(img))
 
     def initCamera(self):
-        a = toupcam.ToupCam.EnumV2()
+        a = toupcam.Toupcam.EnumV2()
         if len(a) <= 0:
             self.setWindowTitle('No camera found')
             self.cb.setEnabled(False)
         else:
-            self.setWindowTitle(a[0].displayname)
-            self.eventImage.connect(self.eventImageCallback)
+            self.camname = a[0].displayname
+            self.setWindowTitle(self.camname)
+            self.eventImage.connect(self.eventImageSignal)
             try:
-                self.hcam = toupcam.ToupCam.Open(a[0].id)
+                self.hcam = toupcam.Toupcam.Open(a[0].id)
             except toupcam.HRESULTException:
                 QMessageBox.warning(self, '', 'failed to open camera', QMessageBox.Ok)
             else:
@@ -68,6 +68,8 @@ class MainWin(QWidget):
                 self.buf = bytes(bufsize)
                 self.cb.setChecked(self.hcam.get_AutoExpoEnable())            
                 try:
+                    if sys.platform == 'win32':
+                        self.hcam.put_Option(toupcam.TOUPCAM_OPTION_BYTEORDER, 0) # QImage.Format_RGB888
                     self.hcam.StartPullModeWithCallback(self.cameraCallback, self)
                 except toupcam.HRESULTException:
                     QMessageBox.warning(self, '', 'failed to start camera', QMessageBox.Ok)
