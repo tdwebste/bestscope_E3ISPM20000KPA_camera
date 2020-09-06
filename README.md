@@ -9,8 +9,8 @@ Some references to the older nncam sdk remain. These will be removed as the soft
 
 # To test camera 
 ## Windows Developer
-1.MIDshowSetupp.exe is the DirectShow SDK installation file. Running it will install the driver, DirectShow files, sample application and its source code.
-2.MITwainSetup.exe is the TWAIN SDK installation file. Running it will install the driver, TWAIN files, sample application and its source code.
+1. MIDshowSetupp.exe is the DirectShow SDK installation file. Running it will install the driver, DirectShow files, sample application and its source code.
+2. MITwainSetup.exe is the TWAIN SDK installation file. Running it will install the driver, TWAIN files, sample application and its source code.
 
 
 ## Linux Developer
