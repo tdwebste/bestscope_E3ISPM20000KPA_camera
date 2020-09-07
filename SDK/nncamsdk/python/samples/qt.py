@@ -19,7 +19,8 @@ class MainWin(QWidget):
         self.w = 0           # video width
         self.h = 0           # video height
         self.total = 0
-        self.setFixedSize(800, 600)
+      #  self.setFixedSize(800, 600)
+        self.setFixedSize(2736, 1824)
         qtRectangle = self.frameGeometry()
         centerPoint = QDesktopWidget().availableGeometry().center()
         qtRectangle.moveCenter(centerPoint)
@@ -92,5 +93,7 @@ class MainWin(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MainWin()
+
     win.show()
+   # win.image.save("test.png")
     sys.exit(app.exec_())
